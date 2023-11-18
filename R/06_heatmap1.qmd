@@ -1,0 +1,88 @@
+---
+title: "06_heatmap1"
+format: html
+editor: visual
+---
+
+# Heat map based on hierachial clustering
+
+I believe this should be changed so we use tidyverse e.g. geom_tile to create the plot -\
+However, then we need to cluster it ourselves. I attempted that at the bottom
+
+```{r}
+#| echo: false
+#| label: load packages
+
+if (!require('pheatmap', character.only = TRUE)) {
+  # If not installed, install the package
+  install.packages('pheatmap')
+}
+library(pheatmap)
+
+if (!require('tidyclust', character.only = TRUE)) {
+  # If not installed, install the package
+  install.packages('tidyclust')
+}
+library(tidyclust)
+
+if (!require('tidymodels', character.only = TRUE)) {
+  # If not installed, install the package
+  install.packages('tidymodels')
+}
+library(tidymodels)
+
+library(tidyverse)
+```
+
+```{r}
+#| label: heatmap
+
+
+cm |> #cm = countmatrix2 as defined in 05_PCA1.qmd
+  pheatmap(
+         clustering_method = "ward.D2", # use hierachial clustering method
+         scale = "row",
+         show_rownames = FALSE,
+         main = "TEST PLOT",
+         treeheight_row = 0 #do not display row tree as we're interested in the grouping of the columns.
+          )
+```
+
+An unsuccesful attempt to color the branches
+
+```{r}
+#| label: heatmap v2
+
+# Sample clinical_data
+clinical_subset <- data.frame(id = colnames(cm), PAM50 = c("HER2-enriched", "Basal-like", "Luminal A", "Luminal B"))
+
+# Merge clinical_data with the count matrix based on 'id'
+merged_data <- merge(clinical_data, data.frame(id = colnames(cm)), by = "id", all.x = TRUE)
+
+# Extract PAM50 classifications
+pam50_colors <- merged_data$PAM50
+
+# Create the heatmap with PAM50 colors
+heatmap <- cm |>
+  pheatmap(
+    clustering_method = "ward.D2",
+    scale = "row",
+    show_rownames = FALSE,
+    main = "TEST PLOT",
+    treeheight_row = 0,
+    annotation_col = data.frame(PAM50 = pam50_colors),
+    annotation_colors = list(PAM50 = c("HER2-enriched" = "red", "Basal-like" = "blue", "Luminal A" = "green", "Luminal B" = "yellow"))
+  )
+
+heatmap
+```
+
+Attempt to do hierachial clustering manually:
+
+```{r}
+#| label: hierachial clustering
+
+dist_matrix <- dist(cm)
+hc_fit <- tidyclust::hier_clust(dist_matrix, num_clusters = 4, linkage_method = "ward.D2")
+#this method seemed too computationally intense. 
+```
