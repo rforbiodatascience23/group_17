@@ -1,0 +1,74 @@
+---
+title: "Loading of datasets"
+format: html
+editor: visual
+---
+
+Load data:
+
+```{r}
+  
+protein_data <- count_matrix_1 |>
+  t() |>
+  data.frame() |>
+  rownames_to_column("ID")
+
+full_data <- clinical_data |>
+  rename(PAM50 = "PAM50 mRNA", ID = "Complete TCGA ID" ) |>
+  mutate(
+    DGEA_HER2 = case_when(
+      PAM50 == "HER2-enriched" ~ 1, 
+      TRUE ~ 0
+    ), 
+    DGEA_Luminal_A = case_when(
+      PAM50 == "Luminal A" ~ 1, 
+      TRUE ~ 0
+  ), 
+    DGEA_Luminal_B = case_when(
+      PAM50 == "Luminal B" ~ 1, 
+      TRUE ~ 0
+      ),
+    DGEA_Basal_like = case_when(
+      PAM50 == "Basal-like" ~ 1, 
+      TRUE ~ 0)) |>
+  left_join(protein_data, by = "ID")
+
+
+
+HER2_long <- full_data |>
+  select(c(DGEA_HER2, starts_with("NP"))) |>
+  pivot_longer(cols = starts_with("NP"),
+               names_to = "protein",
+               values_to = "value") 
+
+HER2_nest <- HER2_long |>
+  group_by(protein) |>
+  nest() 
+
+HER2_LM <- HER2_nest|> 
+  mutate(LM = map(.x = data,
+                  .f = ~lm(formula = DGEA_HER2 ~ value,
+                            data = .x))) 
+
+HER2_LM_tidy <- HER2_LM |>
+  mutate(LM_tidy = map(.x = LM,
+                          .f = ~broom::tidy(x = .x,
+                                     conf.int = TRUE,
+                                     conf.level = 0.95))) |>
+  unnest(LM_tidy) 
+
+HER2_clean |>
+  filter(term == "value") |>
+  select(-c(data, LM, term))
+
+  
+  
+
+
+
+
+```
+
+```{r}
+clinical2 |> filter(ID == "TCGA-C8-A131")
+```

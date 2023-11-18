@@ -1,0 +1,22 @@
+---
+title: "Cleaning of data"
+format: html
+editor: visual
+---
+
+## Cleaning of data
+
+```{r}
+target_url <- "https://github.com/rforbiodatascience23/group17/blob/main/_raw/"
+output_file <- "Proteomics_data.RData"
+curl::curl_download(url = target_url,
+                    destfile = output_file)
+readRDS("Proteomics_data.RData")
+```
+
+```{r}
+target_url <- "https://github.com/ramhiser/datamicroarray/raw/master/data/gravier.RData"
+output_file <- "gravier.RData"
+curl::curl_download(url = target_url,
+                    destfile = output_file)
+```
