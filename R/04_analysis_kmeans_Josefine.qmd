@@ -14,12 +14,12 @@ First, we make a PCA using the
 # signif_fdr_prots <- c(HER2 |> filter(adjusted_fdr <= 0.05) |> pull(protein),
 #                   Luminal_A |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
 #                   Luminal_B |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
-#                   DGEA_Basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
+#                   Basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
 
 signif_fdr_prots <- c(HER2 |> filter(adjusted_fdr <= 0.05) |> pull(protein),
-                  lumA |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
-                  lumB |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
-                  basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
+                  Luminal_A |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
+                  Luminal_B |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
+                  Basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
 
 signif_fdr_prots_unique <- unique(signif_fdr_prots)
 
@@ -40,6 +40,9 @@ count_matrix_reduced_save <- count_matrix_reduced |> rownames_to_column("id")
 write_tsv(count_matrix_reduced_save, "../data/count_matrix_significant_proteins.tsv")
 
 rm(count_matrix_reduced_save)
+
+count_matrix_reduced <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) |>
+  column_to_rownames("id")
 
 pca <- count_matrix_reduced |>
   prcomp(center = TRUE,
@@ -70,6 +73,8 @@ pca_plot_axes_labels <- pca |>
 ```
 
 ```{r}
+
+clinical_data <- read_delim("../data/clinical_data.tsv")
 
 pca_aug <- pca |>
   broom::augment(count_matrix_reduced) |>

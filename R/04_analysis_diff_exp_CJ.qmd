@@ -9,7 +9,11 @@ Load data:
 ```{r}
 
 protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
+<<<<<<< HEAD
   pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
+=======
+  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |> 
+>>>>>>> 41c8fcefc2eb468b0732cd2ea8a4855e21a55c9a
   pivot_wider(names_from = id, values_from = value) |>
   rename(id = variable)
 

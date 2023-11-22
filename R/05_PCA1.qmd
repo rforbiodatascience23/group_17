@@ -5,6 +5,17 @@ editor: visual
 ---
 
 ```{r}
+<<<<<<< HEAD
+=======
+#| label: define dataframe
+
+# use this df from the 01_load 
+cm <- read.table("../data/count_matrix_1_77.tsv", header = T)
+
+```
+
+```{r}
+>>>>>>> 41c8fcefc2eb468b0732cd2ea8a4855e21a55c9a
 #| echo: false
 #| label: load packages
 
