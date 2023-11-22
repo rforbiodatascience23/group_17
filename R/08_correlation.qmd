@@ -4,7 +4,54 @@ format: html
 editor: visual
 ---
 
-## Load differential expression data
+## Correlation of 4 subgroups with ER, PR and HER2
+
+Load clinical data 
+```{r}
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+```
+
+
+One-out-of-k encoding for the 4 subgroups
+```{r}
+clinical_data <- clinical_data |>
+  mutate(
+    DGEA_HER2 = case_when(
+      pam50 == "HER2-enriched" ~ 1, 
+      TRUE ~ 0
+    ), 
+    DGEA_Luminal_A = case_when(
+      pam50 == "Luminal A" ~ 1, 
+      TRUE ~ 0
+  ), 
+    DGEA_Luminal_B = case_when(
+      pam50 == "Luminal B" ~ 1, 
+      TRUE ~ 0
+      ),
+    DGEA_Basal_like = case_when(
+      pam50 == "Basal-like" ~ 1, 
+      TRUE ~ 0)) |> 
+  mutate(er_status = as.factor(er_status),  
+    er_status = fct_recode(er_status, "0" = "Negative", "1" = "Positive"),  # Recode
+    er_status = as.numeric(as.character(er_status)) - 1)
+
+clinical_corr <- clinical_data |> 
+  select()
+```
+
+
+Load corrr
+```{r}
+library(corrr)
+library(ggcorrplot)
+
+
+corr <- correlate ()
+```
+
+
+
+Load differential expression data
 
 ```{r}
 HER2 <- read_table("../data/diff_exp_HER2.tsv")
@@ -17,12 +64,12 @@ Basal_like <- read_table("../data/diff_exp_Basal_like.tsv")
 
 Load and join clinical and protein data
 ```{r}
-clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 
-protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T)
-#pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |> 
- # pivot_wider(names_from = id, values_from = value) |> 
- # rename(id = variable)
+protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
+pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
+  pivot_wider(names_from = id, values_from = value) |> 
+  rename(id = variable)
+
 
 full_data <- clinical_data |> 
   left_join(protein_data, by = "id")
@@ -39,7 +86,6 @@ full_data <- full_data |>
   ))
 
 
-group_by
 summarize(mean = mean(Sale_Price),
             std_err = sd(Sale_Price) / sqrt(length(Sale_Price)))
 ```
@@ -84,11 +130,15 @@ Extract significant proteins
 
 
 full_data |> 
-  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value'))
+  pivot_longer(cols = starts_with, names_to = 'variable', values_to = 'value'))
   filter ()
 ```
 
 
-
+Create long protein table with ids and expressions
+```{r}
+protein_long <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
+pivot_longer(cols = -id, names_to = 'Proteins', values_to = 'Expression') 
+```
 
 
