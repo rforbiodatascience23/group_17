@@ -86,11 +86,3 @@ write_tsv(PAM50_file, "../data/PAM50_file.tsv")
 ```{r}
 rm(list = ls())
 ```
-
-```{r}
-target_url <- "https://github.com/rforbiodatascience23/group17/blob/main/_raw/"
-output_file <- "Proteomics_data.RData"
-curl::curl_download(url = target_url,
-                    destfile = output_file)
-readRDS("Proteomics_data.RData")
-```
