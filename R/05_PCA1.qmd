@@ -8,7 +8,7 @@ editor: visual
 #| label: define dataframe
 
 # use this df from the 01_load 
-cm <- count_matrix_2
+cm <- read.table("../data/count_matrix_1_77.tsv", header = T)
 
 ```
 
