@@ -14,7 +14,7 @@ First, we make a PCA using the
 signif_fdr_prots <- c(HER2 |> filter(adjusted_fdr <= 0.05) |> pull(protein),
                   Luminal_A |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
                   Luminal_B |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
-                  DGEA_Basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
+                  Basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
 
 signif_fdr_prots_unique <- unique(signif_fdr_prots)
 
