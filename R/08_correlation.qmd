@@ -3,6 +3,14 @@ title: "08_correlation"
 format: html
 editor: visual
 ---
+```{r}
+library(tidyverse)
+library(corrr)
+library(ggcorrplot)
+library(ggplot2)
+table(clinical_data$er_status)
+```
+
 
 ## Correlation of 4 subgroups with ER, PR and HER2
 
@@ -33,20 +41,41 @@ clinical_data <- clinical_data |>
       TRUE ~ 0)) |> 
   mutate(er_status = as.factor(er_status),  
     er_status = fct_recode(er_status, "0" = "Negative", "1" = "Positive"),  # Recode
-    er_status = as.numeric(as.character(er_status)) - 1)
+    er_status = as.numeric(as.character(er_status))) |> 
+  mutate(pr_status = as.factor(pr_status),  
+    pr_status = fct_recode(pr_status, "0" = "Negative", "1" = "Positive"),  # Recode
+    pr_status = as.numeric(as.character(pr_status))) |> 
+  mutate(her2_final_status = as.factor(her2_final_status),  
+    her2_final_status = fct_recode(her2_final_status, "0" = "Negative", "1" = "Positive"),  # Recode
+    her2_final_status = as.numeric(as.character(her2_final_status)))
 
 clinical_corr <- clinical_data |> 
-  select()
+  select(c("er_status","pr_status", "her2_final_status", "DGEA_HER2", "DGEA_Luminal_A", "DGEA_Luminal_B", "DGEA_Basal_like"))
+
+
+corr_pearson <- clinical_corr |> 
+  correlate() |> 
+  focus(er_status, pr_status, her2_final_status)
+  
+  
+corr_kendall <- clinical_corr |> 
+  correlate(method = "kendall") |>
+  focus(er_status, pr_status, her2_final_status)
+
+  
 ```
 
 
-Load corrr
+Visualize
 ```{r}
-library(corrr)
-library(ggcorrplot)
+corr_kendall |> 
+ggcorrplot(aes(ggtheme = ggplot2::theme_light(),
+           lab = TRUE,
+           ))
 
-
-corr <- correlate ()
+ggcorrplot(corr_kendall, 
+           ggtheme = theme_light(),
+           lab = TRUE)
 ```
 
 
