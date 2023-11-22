@@ -11,10 +11,21 @@ Here, we want to see if we can determine the PAM50 groups using only the signifi
 First, we make a PCA using the
 
 ```{r}
+# signif_fdr_prots <- c(HER2 |> filter(adjusted_fdr <= 0.05) |> pull(protein),
+#                   Luminal_A |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
+#                   Luminal_B |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
+#                   DGEA_Basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
+
 signif_fdr_prots <- c(HER2 |> filter(adjusted_fdr <= 0.05) |> pull(protein),
+<<<<<<< HEAD
                   Luminal_A |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
                   Luminal_B |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
                   Basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
+=======
+                  lumA |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
+                  lumB |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
+                  basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
+>>>>>>> b06cee426e9ca3709e5dac956806ecfd3c9fec91
 
 signif_fdr_prots_unique <- unique(signif_fdr_prots)
 
@@ -30,6 +41,11 @@ count_matrix_reduced <- protein_data |>
   pivot_wider(names_from = protein, values_from = value) |>
   column_to_rownames("id")
 
+count_matrix_reduced_save <- count_matrix_reduced |> rownames_to_column("id")
+
+write_tsv(count_matrix_reduced_save, "../data/count_matrix_significant_proteins.tsv")
+
+rm(count_matrix_reduced_save)
 
 pca <- count_matrix_reduced |>
   prcomp(center = TRUE,

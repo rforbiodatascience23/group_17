@@ -19,7 +19,6 @@ clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 Wrangling
 
 ```{r}
-library(stats)
 
 full_data <- clinical_data |>
   mutate(
