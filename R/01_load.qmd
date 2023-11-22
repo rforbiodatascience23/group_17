@@ -12,57 +12,98 @@ editor: visual
 
 ```{r}
 rm(list = ls())
+
 library(curl)
 library(tidyverse)
-protein_data <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/77_cancer_proteomes_CPTAC_itraq.csv")
-clinical_data <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/clinical_data_breast_cancer.csv")
-PAM50_file <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/PAM50_proteins.csv")
+
+protein_data <- read_csv("../_raw/77_cancer_proteomes_CPTAC_itraq.csv")
+
+clinical_data <- read_csv("../_raw/clinical_data_breast_cancer.csv") 
+
+PAM50_file <- read_csv("../_raw/PAM50_proteins.csv")
 ```
 
 ```{r}
 
 # Removal of negative controls
-samples <- protein_data %>% select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>%  # Remove columns with the names: "RefSeq_accession_number,gene_symbol,gene_name"
-  colnames() %>% #Returns all colnames in a list
+
+samples <- protein_data |>
+  select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>%  
+          # Remove columns with the names: "RefSeq_accession_number,gene_symbo
+          # ,gene_name"
+  colnames() |>
+          #R eturns all colnames in a list
   str_subset(pattern = regex("TCGA$"))
-    # Removes all columns that does not contain TCGA as their last letters. THis is because the dataset have 3 controls, named: "263d3f-I.CPTAC" "blcdb9-I.CPTAC" "c4155b-C.CPTAC"
+          # Removes all columns that does not contain TCGA as their last letters. THis is because the dataset have 3 controls, named: "263d3f-I.CPTAC" "blcdb9-I.CPTAC" "c4155b-C.CPTAC"
 
 #Creation of the count_matrix
-count_matrix_1 <- protein_data %>% 
-  select(RefSeq_accession_number, all_of(samples)) %>% # Creating a subset with  RefSeq_accession_number and all samples, excluding the control samples
-  replace(is.na(.), 0) %>%  # replace all NA values in the count-matrix with 0
-  pivot_longer(cols = -c("RefSeq_accession_number")) %>% # Transfroms the dataset to a pivot longer with sample ID as names and values as expression counts
-  mutate(name = str_replace(name,"\\..*",""), # Removing everyting after the first "." in the name column. "C8-A130.02TCGA" bliver til "C8-A130"
-         name = str_c("TCGA","-",name)) %>% # Adding back the "TCGA", connected by a "-"
-  pivot_wider(names_from = name, values_from = value, values_fn = {list}) %>% # Transforms the dataset back to a pivot wider with columns as sample ID and values as expression counts
-  unnest(cols = -c("RefSeq_accession_number")) |> # We unnest the dataset
-  distinct(RefSeq_accession_number,.keep_all = TRUE) %>%  # removing duplicates from the "RefSeq_accession_number" column
-  column_to_rownames(var = "RefSeq_accession_number") # Change the the rownames to the values from the "RefSeq_accession_number" column.
+count_matrix_1 <- protein_data |>
+  select(RefSeq_accession_number, all_of(samples)) |>
+          # Creating a subset with  RefSeq_accession_number and all samples,
+          # excluding the control samples
+  mutate(
+    across(everything(), ~replace_na(.x, 0)))|>
+          # replace all NA values in the count-matrix with 0
+  pivot_longer(cols = -c("RefSeq_accession_number")) %>% 
+          # Transfroms the dataset to a pivot longer with sample ID as names and
+          # values as expression counts
+  mutate(name = str_extract(name, "[^.]+"),
+         name = str_replace(name, "-", "_"),
+         name = str_c("TCGA", name, sep = "_")) |>
+           # Removing everyting after the first "." in the name column. 
+           # "C8-A130.02TCGA"
+         #`bliver til "C8-A130" a "-"
+  pivot_wider(names_from = name, values_from = value, values_fn = {list}) |>
+         # Transforms the dataset back to a pivot wider with columns as sample ID 
+         # and values as expression counts
+  unnest(cols = -c("RefSeq_accession_number")) |> 
+        # We unnest the dataset
+  distinct(RefSeq_accession_number,.keep_all = TRUE) |>
+  rename(id = RefSeq_accession_number)
+
+
 
 
 ## This method is a bit weird, as we have columns that are going missing, and i do not really know why. It happens during mutate with the use of str_detect. We're returned with 77 columns, but we need 80, as 3 of them are negative controls and 3 of them are meta data (See column names of protein_data)
 ```
 
 ```{r}
-samples_without_control <- protein_data %>% select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>%  # Removing columns names: "RefSeq_accession_number,gene_symbol,gene_name"
-  colnames() %>% # finding all column names
-  str_subset(pattern = regex("TCGA$"))# Removes all columns that does not contain TCGA as their last letters. THis is because the dataset have 3 controls, named: "263d3f-I.CPTAC" "blcdb9-I.CPTAC" "c4155b-C.CPTAC"
 
-true_sample_names <- samples_without_control %>% 
-  str_replace("\\..*","") %>%  # Removing everyting after the first "." in the name column. "C8-A130.02TCGA" bliver til "C8-A130"
-  str_c("TCGA","-",.) # Adding back the "TCGA", connected by a "-"
-
-count_matrix_2 <- protein_data %>% 
-  select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>% # We remove all meta data from the "protein_data" dataset
-  select(all_of(samples_without_control)) %>% # we remove the negative controls 
-  `colnames<-`(true_sample_names) %>%  # We rename the column names to fit the clinical_data dataset
-  replace(is.na(.), 0) # replace all NA values in the matrix with 0. 
-
-# With this method, we ned up with 80 columns, as 3 of them are meta data and 3 of them are controls. 
+# count_matrix_2 <- protein_data %>% 
+#   select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>% # We remove all meta data from the "protein_data" dataset
+#   select(all_of(samples_without_control)) %>% # we remove the negative controls 
+#   `colnames<-`(true_sample_names) %>%  # We rename the column names to fit the clinical_data dataset
+#   replace(is.na(.), 0) # replace all NA values in the matrix with 0. 
+# 
+# # With this method, we ned up with 80 columns, as 3 of them are meta data and 3 of them are controls. 
 ```
 
 ```{r}
-clinical_data <- data.frame(true_sample_names) %>% # Creating a data.frame from the true sample names
-  rename("Complete TCGA ID" = "true_sample_names") %>%  # renaming the column from true_sample_names to "Complete TCGA ID"
-  left_join(., clinical_data, by = c("Complete TCGA ID")) # left joining by the "Complete TCGA ID". If the value from "Complete TCGA ID" exist in clinical_data dataset, it will be retained. 
+clinical_data_final <- clinical_data |>
+  rename(id = "Complete TCGA ID") |>
+          # renames "Complete TCGA ID" to id
+  mutate(id = str_replace_all(id, "-", "_")) |>
+          # mutates the ids to having to -, but only _
+  rename_with( ~ str_to_lower(str_replace_all(.x, " ", "_"))) |> 
+          # makes everything to camel case
+  rename(pam50 = pam50_mrna) 
+          # rename for the same of ease later on
+```
+
+Save:
+
+```{r}
+write_tsv(clinical_data_final, "../data/clinical_data.tsv")
+
+write_tsv(count_matrix_1, "../data/count_matrix_1_77.tsv")
+
+#write_tsv(count_matrix_2, "../data/count_matrix_2_80.tsv")
+
+write_tsv(PAM50_file, "../data/PAM50_file.tsv")
+```
+
+Clean:
+
+```{r}
+rm(list = ls())
 ```
