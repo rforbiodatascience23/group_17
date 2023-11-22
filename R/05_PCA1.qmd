@@ -5,14 +5,6 @@ editor: visual
 ---
 
 ```{r}
-#| label: define dataframe
-
-# use this df from the 01_load 
-cm <- count_matrix_2
-
-```
-
-```{r}
 #| echo: false
 #| label: load packages
 
@@ -23,21 +15,21 @@ library(cowplot)
 ```
 
 ```{r}
-#| label: augment 
+#| label: define countmatrix and augment
 
-# flip rows and columns
-t_count <- t(cm)
+cm <- read.table("../data/count_matrix_1_77.tsv", header = T)
 
-# 
-clinical_data <- clinical_data |>
-  rename(id = "Complete TCGA ID", PAM50 = "PAM50 mRNA")
+# flip
+cm <- pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
+  pivot_wider(names_from = id, values_from = value) |>
+  rename(id = variable)
 ```
 
 ```{r}
 #| label: define PCA
 
 #Create a PCA object scaling the data
-pca <- t_count |>
+pca <- cm |>
         scale() |>
         prcomp()
 
@@ -57,8 +49,8 @@ pca_plot <- pca |>
   augment(clinical_data) |>
    ggplot(aes(x=.fittedPC1, 
               y=.fittedPC2, 
-              color = PAM50,
-              fill = PAM50)) +
+              color = pam50,
+              fill = pam50)) +
    geom_point(shape = 21,
              size = 2,
              alpha = 0.5) +
@@ -69,7 +61,7 @@ pca_plot <- pca |>
    ylab(paste('PC2,', pc2var, '% explained variance')) +
    labs(
      title = "Initial PCA on entire proteomics dataset",
-     color = "PAM50"
+     color = "pam50"
         )
   
 pca_plot
