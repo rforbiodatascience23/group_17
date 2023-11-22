@@ -42,3 +42,19 @@ Luminal_B <- Luminal_B |>
   ))
 ```
 
+
+Load and join clinical and protein data
+```{r}
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+
+protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T)
+#pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |> 
+ # pivot_wider(names_from = id, values_from = value) |> 
+ # rename(id = variable)
+
+full_data <- clinical_data |> 
+  left_join(protein_data, by = "id")
+```
+
+
+
