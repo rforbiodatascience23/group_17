@@ -4,4 +4,41 @@ format: html
 editor: visual
 ---
 
-## 
+## Load differential expression data
+
+```{r}
+HER2 <- read_table("../data/diff_exp_HER2.tsv")
+Luminal_A <- read_table("../data/diff_exp_Luminal_A.tsv")
+Luminal_B <- read_table("../data/diff_exp_Luminal_B.tsv")
+Basal_like <- read_table("../data/diff_exp_Basal_like.tsv")
+```
+```{r}
+HER2 <- HER2 |>
+  mutate(color_col = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+
+Basal_like <- Basal_like |>
+  mutate(color_col = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+
+Luminal_A <- Luminal_A |>
+  mutate(color_col = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+
+Luminal_B <- Luminal_B |>
+  mutate(color_col = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+```
+
