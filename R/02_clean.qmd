@@ -13,10 +13,3 @@ curl::curl_download(url = target_url,
                     destfile = output_file)
 readRDS("Proteomics_data.RData")
 ```
-
-```{r}
-target_url <- "https://github.com/ramhiser/datamicroarray/raw/master/data/gravier.RData"
-output_file <- "gravier.RData"
-curl::curl_download(url = target_url,
-                    destfile = output_file)
-```
