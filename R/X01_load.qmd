@@ -69,13 +69,13 @@ count_matrix_1 <- protein_data |>
 
 ```{r}
 
-count_matrix_2 <- protein_data %>% 
-  select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>% # We remove all meta data from the "protein_data" dataset
-  select(all_of(samples_without_control)) %>% # we remove the negative controls 
-  `colnames<-`(true_sample_names) %>%  # We rename the column names to fit the clinical_data dataset
-  replace(is.na(.), 0) # replace all NA values in the matrix with 0. 
-
-# With this method, we ned up with 80 columns, as 3 of them are meta data and 3 of them are controls. 
+# count_matrix_2 <- protein_data %>% 
+#   select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>% # We remove all meta data from the "protein_data" dataset
+#   select(all_of(samples_without_control)) %>% # we remove the negative controls 
+#   `colnames<-`(true_sample_names) %>%  # We rename the column names to fit the clinical_data dataset
+#   replace(is.na(.), 0) # replace all NA values in the matrix with 0. 
+# 
+# # With this method, we ned up with 80 columns, as 3 of them are meta data and 3 of them are controls. 
 ```
 
 ```{r}
@@ -97,7 +97,7 @@ write_tsv(clinical_data_final, "../data/clinical_data.tsv")
 
 write_tsv(count_matrix_1, "../data/count_matrix_1_77.tsv")
 
-write_tsv(count_matrix_2, "../data/count_matrix_2_80.tsv")
+#write_tsv(count_matrix_2, "../data/count_matrix_2_80.tsv")
 
 write_tsv(PAM50_file, "../data/PAM50_file.tsv")
 ```
