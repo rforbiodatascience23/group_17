@@ -111,7 +111,7 @@ Luminal_B <- full_data |>
 
 
 #Basal like
-DGEA_Basal_like <- full_data |>
+Basal_like <- full_data |>
   select(c(DGEA_Basal_like, starts_with("NP"))) |>
   pivot_longer(cols = starts_with("NP"),
                names_to = "protein",
@@ -131,6 +131,15 @@ DGEA_Basal_like <- full_data |>
   mutate(adjusted_BH = p.adjust(p.value, n = 12554, method = "BH"), 
          adjusted_fdr = p.adjust(p.value, n = 12554, method = "fdr")) |>
   arrange(p.value)
+```
+
+Save:
+
+```{r}
+write_tsv(HER2, "../data/diff_exp_HER2.tsv")
+write_tsv(Luminal_A, "../data/diff_exp_Luminal_A.tsv")
+write_tsv(Luminal_B, "../data/diff_exp_Luminal_B.tsv")
+write_tsv(Basal_like, "../data/diff_exp_Basal_like.tsv")
 ```
 
 For Carina, a template for volcano plots:
