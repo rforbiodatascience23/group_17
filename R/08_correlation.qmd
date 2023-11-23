@@ -8,7 +8,8 @@ library(tidyverse)
 library(corrr)
 library(ggcorrplot)
 library(ggplot2)
-table(clinical_data$er_status)
+install.packages("reshape")
+library(reshape)
 ```
 
 
@@ -68,14 +69,57 @@ corr_kendall <- clinical_corr |>
 
 Visualize
 ```{r}
-corr_kendall |> 
-ggcorrplot(aes(ggtheme = ggplot2::theme_light(),
-           lab = TRUE,
-           ))
 
-ggcorrplot(corr_kendall, 
-           ggtheme = theme_light(),
-           lab = TRUE)
+matrix <- corr_kendall |> 
+  column_to_rownames(var = "term") |> 
+  as.matrix()
+
+ggcorrplot(matrix, 
+           ggtheme = ggplot2::theme_light(),
+           lab = TRUE,
+           title = "Correlation matrix of tumor subclasses and her2, progesteron and estrogen status",
+           legend.title = "Correlation",
+           colors = c("blue", "white", "red"))
+
+print(corr_kendall)
+
+c<- corr_kendall |> 
+  dplyr::rename(subclass = term) |>  
+  pivot_longer(ends_with("status"), 
+               names_to = "status", 
+               values_to = "corr") |> 
+  mutate(
+    subclass = recode(subclass, 
+                      "DGEA_HER2" = "HER2", 
+                      "DGEA_Luminal_A" = "Luminal A",
+                      "DGEA_Luminal_B" = "Luminal B",
+                      "DGEA_Basal_like" = "Basal-like"),
+    status = recode(status, 
+                    "er_status" = "Estrogen", 
+                    "pr_status" = "Progesteron",
+                    "her2_final_status" = "her2")
+  ) |> 
+  arrange(desc(corr))
+
+c_sorted$subclass <- factor(c_sorted$subclass, levels = unique(c_sorted$subclass))
+c_sorted$status <- factor(c_sorted$status, levels = unique(c_sorted$status))
+
+
+
+  ggplot(c, aes(x = subclass, y = status, fill = corr)) +
+  geom_tile(height=0.8, width=0.8) +
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+  coord_equal() +
+  labs(title = "Correlation matrix of tumor subclasses and ER, PR and her2 status", x = "Subclass Label", y = "Status Label", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 12),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+
+           
+
 ```
 
 
