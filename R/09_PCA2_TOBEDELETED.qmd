@@ -4,13 +4,13 @@ format: html
 editor: visual
 ---
 
-# Clustering analysis with all proteomics data
+# Clustering analysis with only significant proteomics data
 
 ## Principal component analysis (PCA)
 
-It was investigated if the data set would show any clustering resembling that of the PAM50 criteria, based on the entire proteomics data set. First a PCA analysis was conducted.
+The same PCA analysis and code as before, now just with the reduced data set.
 
-First, required packages were loaded.
+First , required packages were loaded.
 
 ```{r}
 #| echo: false
@@ -27,7 +27,7 @@ Next, the required data was loaded. For this analysis it was the count matrix, w
 ```{r}
 #| label: load data (and augment)
 
-cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
+cm_sig <- read.table("../data/count_significant_proteins.tsv", header = T) |>
   pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
   pivot_wider(names_from = id, values_from = value) |>
   rename(id = variable) |>
