@@ -4,85 +4,97 @@ format: html
 editor: visual
 ---
 
-# Heat map based on hierachial clustering
+# Clustering analysis with all proteomics data
 
-I believe this should be changed so we use tidyverse e.g. geom_tile to create the plot -\
-However, then we need to cluster it ourselves. I attempted that at the bottom
+## Hierachial clustering visualised in a heatmap
 
 ```{r}
 #| echo: false
 #| label: load packages
 
-if (!require('pheatmap', character.only = TRUE)) {
-  # If not installed, install the package
-  install.packages('pheatmap')
-}
-library(pheatmap)
-
-if (!require('tidyclust', character.only = TRUE)) {
-  # If not installed, install the package
-  install.packages('tidyclust')
-}
-library(tidyclust)
-
-if (!require('tidymodels', character.only = TRUE)) {
-  # If not installed, install the package
-  install.packages('tidymodels')
-}
-library(tidymodels)
-
 library(tidyverse)
+
+if (!require('ggendro', character.only = TRUE)) {
+  # If not installed, install the package
+  install.packages('ggdendro')
+}
+library(ggdendro)
+library(grid)
 ```
 
 ```{r}
-#| label: heatmap
+#| label: load data (and augment)
 
+cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
+  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
+  pivot_wider(names_from = id, values_from = value) |>
+  rename(id = variable)
 
-cm |> #cm = countmatrix2 as defined in 05_PCA1.qmd
-  pheatmap(
-         clustering_method = "ward.D2", # use hierachial clustering method
-         scale = "row",
-         show_rownames = FALSE,
-         main = "TEST PLOT",
-         treeheight_row = 0 #do not display row tree as we're interested in the grouping of the columns.
-          )
+# define long data structure based on the count matrix
+cm_long <- tidyr::gather(cm, key = "protein", value="value", -id)
+
+cm <- cm |>
+  column_to_rownames('id')
+
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 ```
 
-An unsuccesful attempt to color the branches
-
-```{r}
-#| label: heatmap v2
-
-# Sample clinical_data
-clinical_subset <- data.frame(id = colnames(cm), PAM50 = c("HER2-enriched", "Basal-like", "Luminal A", "Luminal B"))
-
-# Merge clinical_data with the count matrix based on 'id'
-merged_data <- merge(clinical_data, data.frame(id = colnames(cm)), by = "id", all.x = TRUE)
-
-# Extract PAM50 classifications
-pam50_colors <- merged_data$PAM50
-
-# Create the heatmap with PAM50 colors
-heatmap <- cm |>
-  pheatmap(
-    clustering_method = "ward.D2",
-    scale = "row",
-    show_rownames = FALSE,
-    main = "TEST PLOT",
-    treeheight_row = 0,
-    annotation_col = data.frame(PAM50 = pam50_colors),
-    annotation_colors = list(PAM50 = c("HER2-enriched" = "red", "Basal-like" = "blue", "Luminal A" = "green", "Luminal B" = "yellow"))
-  )
-
-heatmap
-```
-
-Attempt to do hierachial clustering manually:
+Hierachial clustering and dendogramming
 
 ```{r}
 #| label: hierachial clustering
 
-dist_matrix <- dist(cm)
-hc_fit <- tidyclust::hier_clust(dist_matrix, num_clusters = 4, linkage_method = "ward.D2")
-#this method seemed too computationally intense. 
+# create distance matrix (scaled)
+dist_matrix <- cm |>
+  scale() |>
+  dist()
+
+# perform hierachial clustering
+hc <- hclust(dist_matrix, method = "complete")
+
+# save clustering as dendogram
+ddg <- as.dendrogram(hc)
+  
+# extract dendogram order
+ddg_order <- order.dendrogram(ddg)
+  
+# create dendogram plot based on hierachial clustering
+ddg_plot <- ggdendrogram(data = hc, rotate=T) +
+  theme(axis.text.y = element_text(size = 5))
+ddg_plot
+```
+
+heatmapping by order of clustering
+
+```{r}
+#| label: visualization
+
+# First scale the long data structure
+cm_long_scaled <- cm_long
+cm_long_scaled[,3] <- scale(cm_long_scaled[,3])
+
+# Then order the datastructure according to the hierachial clustering:
+cm_long_scaled$id <- factor(x = cm_long$id,
+                               levels = cm_long_scaled$id[ddg_order], 
+                               ordered = TRUE)
+
+
+# heatmap on scaled data:
+hm <- ggplot(data = cm_long_scaled, mapping = aes(x = protein, y = id)) +
+        geom_tile(aes(fill=value)) +
+        scale_fill_gradient(low = "white", high = "blue") +
+        theme_minimal() +
+        theme(axis.text.x = element_blank(),
+              axis.text.y = element_text(size = 5))
+hm
+```
+
+Print the two plots side-by-side
+
+```{r}
+grid.newpage()
+print(hm, 
+      vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
+print(ddg_plot, 
+      vp = viewport(x = 0.90, y = 0.43, width = 0.2, height = 1.0))
 ```
