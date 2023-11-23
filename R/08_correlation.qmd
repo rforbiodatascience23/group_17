@@ -122,7 +122,7 @@ c<- corr_kendall |>
 ```
 
 
-
+##Correlation matrix for sign. protein expression vs. HER2, PR, Er
 Load differential expression data
 
 ```{r}
@@ -138,9 +138,9 @@ Load and join clinical and protein data
 ```{r}
 
 protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
-pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
+  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
   pivot_wider(names_from = id, values_from = value) |> 
-  rename(id = variable)
+  dplyr::rename(id = variable)
 
 
 full_data <- clinical_data |> 
