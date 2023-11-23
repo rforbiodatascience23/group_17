@@ -9,6 +9,7 @@ library(corrr)
 library(ggcorrplot)
 library(ggplot2)
 library(reshape)
+library(purrr)
 ```
 
 
@@ -148,63 +149,102 @@ full_data <- clinical_data |>
 ```
 
 
-Recode ER, PR, HER2
-```{r}
-full_data <- full_data |>
-  mutate(significance = case_when(
-    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
-    TRUE ~"Not significant"
-  ))
-
-
-summarize(mean = mean(Sale_Price),
-            std_err = sd(Sale_Price) / sqrt(length(Sale_Price)))
-```
-
-
-
-```{r}
-HER2 <- HER2 |>
-  mutate(significance = case_when(
-    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
-    TRUE ~"Not significant"
-  ))
-
-Basal_like <- Basal_like |>
-  mutate(significance = case_when(
-    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
-    TRUE ~"Not significant"
-  ))
-
-Luminal_A <- Luminal_A |>
-  mutate(significance = case_when(
-    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
-    TRUE ~"Not significant"
-  ))
-
-Luminal_B <- Luminal_B |>
-  mutate(significance = case_when(
-    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-    adjusted_fdr < 0.05 & estimate < 0~ "Significant negative influence",
-    TRUE ~"Not significant"
-  ))
-```
 
 
 Extract significant proteins
 ```{r}
+HER2_sign <- HER2 |>
+  filter(adjusted_fdr < 0.05) |> 
+  pull(var = 1)
 
+Basal_like_sign <- Basal_like |>
+  filter(adjusted_fdr < 0.05) |> 
+  pull(var = 1)
 
+Luminal_A_sign <- Luminal_A |>
+  filter(adjusted_fdr < 0.05) |> 
+  pull(var = 1)
 
+Luminal_B_sign <- Luminal_B |>
+  filter(adjusted_fdr < 0.05) |> 
+  pull(var = 1)
 
-full_data |> 
-  pivot_longer(cols = starts_with, names_to = 'variable', values_to = 'value'))
-  filter ()
+Sign_proteins <- reduce(list(HER2_sign, Basal_like_sign, Luminal_A_sign, Luminal_B_sign), union)
+
+length(Sign_proteins)
 ```
+
+Recode ER, PR, HER2
+```{r}
+full_data <- full_data |>
+  select(c(id, er_status, pr_status, her2_final_status, DGEA_HER2, DGEA_Luminal_A, DGEA_Luminal_B, DGEA_Basal_like, Sign_proteins)) |> 
+  drop_na()
+
+
+Sign_protein_corr <- correlate(full_data, method = "kendall") |>
+  focus(er_status, pr_status, her2_final_status, DGEA_HER2, DGEA_Luminal_A, DGEA_Luminal_B, DGEA_Basal_like)
+
+
+```
+
+
+Visualize
+```{r}
+
+c2 <- Sign_protein_corr |> 
+  dplyr::rename(Protein = term) |>   
+  pivot_longer(cols = c(ends_with("status"),starts_with("DGEA")),
+               names_to = "category", 
+               values_to = "corr") |> 
+  mutate(
+    category = recode(category, 
+                      "DGEA_HER2" = "HER2", 
+                      "DGEA_Luminal_A" = "Luminal A",
+                      "DGEA_Luminal_B" = "Luminal B",
+                      "DGEA_Basal_like" = "Basal-like",
+                      "er_status" = "Estrogen", 
+                      "pr_status" = "Progesteron",
+                      "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    category = factor(category, levels = unique(category)))
+
+
+
+
+
+
+
+#Try to do it class-wise
+corr_protein_kendall <- map(full_data, ~ .x |>  select(where(is.numeric)) |>   # Select only numeric columns
+  select_if(~ sd(.x, na.rm = TRUE) != 0) |> 
+                             correlate(method = "kendall") |> 
+                                  rearrange())
+
+  tatus))
+  )
+
+
+```
+
+
+Plot corr matrix with proteins
+```{r}
+  ggplot(c2, aes(x = category, y = Protein, fill = corr)) +
+  geom_tile(height = 0.8, width = 30) +
+    #geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+  labs(x = "category", y = "Protein", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 5),
+        axis.text.x = element_text(size = 3, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+       axis.text.y = element_text(size = 3, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+```
+
+
+
+
 
 
 Create long protein table with ids and expressions
