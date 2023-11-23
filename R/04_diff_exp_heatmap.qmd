@@ -93,5 +93,5 @@ heatmap <- ggplot(combined_long, aes(x =pam50 , y = protein, fill = estimate))+
 
 heatmap
 
-ggsave("../plots/heatmap_diif_exp_analysis.png", heatmap, height = 20, width = 4)
+ggsave("../plots/heatmap_diif_exp_analysis.png", heatmap, height = 20, width = 4, dpi = 300)
 ```

@@ -13,11 +13,26 @@ format:
     transition: none
     transition-speed: fast
 editor: visual
+figures: fig-responsive
 ---
 
 ## About the data
 
-About the data
+-   Breast cancer proteome data
+
+### On PAM50
+
+-   
+
+Types:
+
+-   HER2
+
+-   Luminal A
+
+-   Luminal B
+
+-   Basal like
 
 ## PCA on whole data set
 
@@ -29,9 +44,9 @@ Messy hierarchical
 
 ## Differential gene expression analysis
 
--   Faceted by PAM50 
+Differential gene expression analysis using linear models: $lm(PAM50 \sim protein)$
 
--   4 volcano plots
+![](plots/volcano_plots.png){fig-align="center"}
 
 ## Results from differential gene expression analysis
 
