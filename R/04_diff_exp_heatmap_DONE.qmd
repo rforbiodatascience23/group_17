@@ -220,5 +220,5 @@ heatmap <- (heatmap1 + heatmap2)/(heatmap3 +heatmap4)+
   
 heatmap
 
-ggsave()
+ggsave("../plots/heatmap_combined.png", heatmap, width = 12, height = 10, dpi = 300)
 ```

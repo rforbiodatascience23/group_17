@@ -44,12 +44,12 @@ count_matrix_reduced <- protein_data |>
   pivot_wider(names_from = id, values_from = value) |>
   column_to_rownames("id2")
 
-# count_matrix_reduced_save <- count_matrix_reduced |> rownames_to_column("id")
-# 
-# write_tsv(count_matrix_reduced_save, "../data/count_matrix_significant_proteins.tsv")
-# 
-# rm(count_matrix_reduced_save)
-# 
+count_matrix_reduced_save <- count_matrix_reduced |> rownames_to_column("id")
+ 
+write_tsv(count_matrix_reduced_save, "../data/count_matrix_significant_proteins.tsv")
+ 
+#rm(count_matrix_reduced_save)
+ 
 # count_matrix_reduced <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) |>
 #   column_to_rownames("id")
 
@@ -124,8 +124,6 @@ clusters <- kmeans_analysis$cluster
 
 pca_aug_clust <- pca_aug |>
   mutate(clusters = clusters)
-
-
 
 kmeans_analysts_tidy <- kmeans_analysis |> map( ~ .x[["cluster"]])
 
