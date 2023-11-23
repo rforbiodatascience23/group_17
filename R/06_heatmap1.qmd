@@ -14,12 +14,13 @@ editor: visual
 
 library(tidyverse)
 
-if (!require('ggendro', character.only = TRUE)) {
+#if (!require('ggendro', character.only = TRUE)) {
   # If not installed, install the package
-  install.packages('ggdendro')
-}
+#  install.packages('ggdendro')
+#}
 library(ggdendro)
 library(grid)
+library(patchwork)
 ```
 
 ```{r}
@@ -58,10 +59,28 @@ ddg <- as.dendrogram(hc)
 # extract dendogram order
 ddg_order <- order.dendrogram(ddg)
   
+# extract all dendro information
+ddg_data <- dendro_data(ddg)
+
+# add pam50 information to ddg_data
+ddg_label <- label(ddg_data)
+ddg_label <- ddg_label |>
+  rename(id = label) |> 
+  left_join(clinical_data, by = c("id")) |> 
+  select(x,y, id, pam50)
+
+
 # create dendogram plot based on hierachial clustering
 ddg_plot <- ggdendrogram(data = hc, rotate=T) +
-  theme(axis.text.y = element_text(size = 5))
+  theme(axis.text.y = element_text(size=5),
+        axis.text.x = element_blank()) +
+  geom_text(data=ddg_data,
+            aes(label=label, x=ddg_label$x, y=0, colour=ddg_label$pam50),
+            size = 2)
+
 ddg_plot
+
+
 ```
 
 heatmapping by order of clustering
@@ -82,19 +101,46 @@ cm_long_scaled$id <- factor(x = cm_long$id,
 # heatmap on scaled data:
 hm <- ggplot(data = cm_long_scaled, mapping = aes(x = protein, y = id)) +
         geom_tile(aes(fill=value)) +
-        scale_fill_gradient(low = "white", high = "blue") +
+        scale_fill_gradient2(low = "red", high = "blue") +
         theme_minimal() +
         theme(axis.text.x = element_blank(),
-              axis.text.y = element_text(size = 5))
+              axis.text.y = element_text(size = 5),
+              legend.position = "left")
 hm
+
+
+# Extract relevant columns from clinical_data
+selected_data <- clinical_data[, c("id", "pam50")]
+
+# Define color mapping for pam50 values
+color_mapping <- data.frame(
+  pam50 = c("Basal-like", "HER2-enriched", "Luminal A", "Luminal B"),
+  color = c("red", "blue", "green", "purple")
+)
+
+# Merge selected_data with color_mapping
+merged_color_data <- merge(selected_data, color_mapping, by = "pam50", all.x = TRUE)
+merged_color_data$id <- factor(merged_color_data$id, levels = unique(merged_color_data$id))
+
+
+
+hm <- ggplot(data = cm_long_scaled, mapping = aes(x = protein, y = id)) +
+  geom_tile(aes(fill = value)) +
+  scale_fill_gradient2(low = "red", high = "blue") +
+  scale_y_discrete(labels = merged_color_data$id) +  # Set y-axis labels
+  scale_fill_manual(values = merged_color_data$color) +  # Set fill colors
+  theme(
+    axis.text.x = element_blank(),
+    axis.text.y = element_text(size = 5),
+    legend.position = "left"
+  )
+
+hm
+
 ```
 
-Print the two plots side-by-side
+Print the two plots side-by-side using patchwork:
 
 ```{r}
-grid.newpage()
-print(hm, 
-      vp = viewport(x = 0.4, y = 0.5, width = 0.8, height = 1.0))
-print(ddg_plot, 
-      vp = viewport(x = 0.90, y = 0.43, width = 0.2, height = 1.0))
+hm + ddg_plot
 ```
