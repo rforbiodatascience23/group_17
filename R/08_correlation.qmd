@@ -1,0 +1,216 @@
+---
+title: "08_correlation"
+format: html
+editor: visual
+---
+```{r}
+library(tidyverse)
+library(corrr)
+library(ggcorrplot)
+library(ggplot2)
+library(reshape)
+```
+
+
+## Correlation of 4 subgroups with ER, PR and HER2
+
+Load clinical data 
+```{r}
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+```
+
+
+One-out-of-k encoding for the 4 subgroups
+```{r}
+clinical_data <- clinical_data |>
+  mutate(
+    DGEA_HER2 = case_when(
+      pam50 == "HER2-enriched" ~ 1, 
+      TRUE ~ 0
+    ), 
+    DGEA_Luminal_A = case_when(
+      pam50 == "Luminal A" ~ 1, 
+      TRUE ~ 0
+  ), 
+    DGEA_Luminal_B = case_when(
+      pam50 == "Luminal B" ~ 1, 
+      TRUE ~ 0
+      ),
+    DGEA_Basal_like = case_when(
+      pam50 == "Basal-like" ~ 1, 
+      TRUE ~ 0)) |> 
+  mutate(er_status = as.factor(er_status),  
+    er_status = fct_recode(er_status, "0" = "Negative", "1" = "Positive"),  # Recode
+    er_status = as.numeric(as.character(er_status))) |> 
+  mutate(pr_status = as.factor(pr_status),  
+    pr_status = fct_recode(pr_status, "0" = "Negative", "1" = "Positive"),  # Recode
+    pr_status = as.numeric(as.character(pr_status))) |> 
+  mutate(her2_final_status = as.factor(her2_final_status),  
+    her2_final_status = fct_recode(her2_final_status, "0" = "Negative", "1" = "Positive"),  # Recode
+    her2_final_status = as.numeric(as.character(her2_final_status)))
+
+clinical_corr <- clinical_data |> 
+  select(c("er_status","pr_status", "her2_final_status", "DGEA_HER2", "DGEA_Luminal_A", "DGEA_Luminal_B", "DGEA_Basal_like"))
+
+
+corr_pearson <- clinical_corr |> 
+  correlate() |> 
+  focus(er_status, pr_status, her2_final_status)
+  
+  
+corr_kendall <- clinical_corr |> 
+  correlate(method = "kendall") |>
+  focus(er_status, pr_status, her2_final_status)
+
+  
+```
+
+
+Visualize
+```{r}
+
+#matrix <- corr_kendall |> 
+#  column_to_rownames(var = "term") |> 
+#  as.matrix()
+
+#ggcorrplot(matrix, 
+#           ggtheme = ggplot2::theme_light(),
+#           lab = TRUE,
+#           title = "Correlation matrix of tumor subclasses and her2, progesteron and estrogen status",
+#           legend.title = "Correlation",
+#           colors = c("blue", "white", "red"))
+
+#print(corr_kendall)
+
+c<- corr_kendall |> 
+  dplyr::rename(subclass = term) |>  
+  pivot_longer(ends_with("status"), 
+               names_to = "status", 
+               values_to = "corr") |> 
+  mutate(
+    subclass = recode(subclass, 
+                      "DGEA_HER2" = "HER2", 
+                      "DGEA_Luminal_A" = "Luminal A",
+                      "DGEA_Luminal_B" = "Luminal B",
+                      "DGEA_Basal_like" = "Basal-like"),
+    status = recode(status, 
+                    "er_status" = "Estrogen", 
+                    "pr_status" = "Progesteron",
+                    "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    subclass = factor(subclass, levels = unique(subclass)),
+    status = factor(status, levels = unique(status))
+  )
+
+
+
+  ggplot(c, aes(x = subclass, y = status, fill = corr)) +
+  geom_tile(height=0.8, width=0.8) +
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+  coord_equal() +
+  labs(title = "Correlation matrix of tumor subclasses and ER, PR and her2 status", x = "Subclass", y = "Status", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 12),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+
+           
+
+```
+
+
+
+Load differential expression data
+
+```{r}
+HER2 <- read_table("../data/diff_exp_HER2.tsv")
+Luminal_A <- read_table("../data/diff_exp_Luminal_A.tsv")
+Luminal_B <- read_table("../data/diff_exp_Luminal_B.tsv")
+Basal_like <- read_table("../data/diff_exp_Basal_like.tsv")
+
+```
+
+
+Load and join clinical and protein data
+```{r}
+
+protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
+pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
+  pivot_wider(names_from = id, values_from = value) |> 
+  rename(id = variable)
+
+
+full_data <- clinical_data |> 
+  left_join(protein_data, by = "id")
+```
+
+
+Recode ER, PR, HER2
+```{r}
+full_data <- full_data |>
+  mutate(significance = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+
+
+summarize(mean = mean(Sale_Price),
+            std_err = sd(Sale_Price) / sqrt(length(Sale_Price)))
+```
+
+
+
+```{r}
+HER2 <- HER2 |>
+  mutate(significance = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+
+Basal_like <- Basal_like |>
+  mutate(significance = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+
+Luminal_A <- Luminal_A |>
+  mutate(significance = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+
+Luminal_B <- Luminal_B |>
+  mutate(significance = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+```
+
+
+Extract significant proteins
+```{r}
+
+
+
+
+full_data |> 
+  pivot_longer(cols = starts_with, names_to = 'variable', values_to = 'value'))
+  filter ()
+```
+
+
+Create long protein table with ids and expressions
+```{r}
+protein_long <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
+pivot_longer(cols = -id, names_to = 'Proteins', values_to = 'Expression') 
+```
+
+

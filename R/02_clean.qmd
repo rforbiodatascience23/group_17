@@ -13,7 +13,7 @@ samples <- protein_data |>
           # Remove columns with the names: "RefSeq_accession_number,gene_symbo
           # ,gene_name"
   colnames() |>
-          #R eturns all colnames in a list
+          # Returns all colnames in a list
   str_subset(pattern = regex("TCGA$"))
           # Removes all columns that does not contain TCGA as their last letters. THis is because the dataset have 3 controls, named: "263d3f-I.CPTAC" "blcdb9-I.CPTAC" "c4155b-C.CPTAC"
 
@@ -32,20 +32,23 @@ count_matrix_1 <- protein_data |>
          name = str_replace(name, "-", "_"),
          name = str_c("TCGA", name, sep = "_")) |>
            # Removing everyting after the first "." in the name column. 
-           # "C8-A130.02TCGA"
-         #`bliver til "C8-A130" a "-"
+           # "C8-A130.02TCGA" becomes "C8-A130", a "-" becomes a "_"
   pivot_wider(names_from = name, values_from = value, values_fn = {list}) |>
          # Transforms the dataset back to a pivot wider with columns as sample ID 
          # and values as expression counts
   unnest(cols = -c("RefSeq_accession_number")) |> 
         # We unnest the dataset
   distinct(RefSeq_accession_number,.keep_all = TRUE) |>
-  rename(id = RefSeq_accession_number)
+  rename(id = "RefSeq_accession_number")
 
+```
 
+Define list of patients that are in the count matrix (we have proteomics data from)
 
-
-## This method is a bit weird, as we have columns that are going missing, and i do not really know why. It happens during mutate with the use of str_detect. We're returned with 77 columns, but we need 80, as 3 of them are negative controls and 3 of them are meta data (See column names of protein_data)
+```{r}
+list_of_patients <- count_matrix_1 |>
+  colnames() |>
+  str_subset(pattern = regex("TCGA"))
 ```
 
 ```{r}
@@ -66,10 +69,11 @@ clinical_data_final <- clinical_data |>
   mutate(id = str_replace_all(id, "-", "_")) |>
           # mutates the ids to having to -, but only _
   rename_with( ~ str_to_lower(str_replace_all(.x, " ", "_"))) |> 
-          # makes everything to camel case
-  rename(pam50 = pam50_mrna) %>%  # rename for the same of ease later on
-  filter(id %in% colnames(count_matrix_1)) # include only Id that are in our count matrix
-          
+  rename(pam50 = pam50_mrna)|> #rename for the same of ease later on
+  filter(id %in% colnames(count_matrix_1))# include only Id that are in our count matrix
+  
+clinical_data_final <- clinical_data_final |>
+  filter(id %in% list_of_patients)
 ```
 
 ```{r}

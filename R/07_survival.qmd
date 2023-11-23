@@ -3,3 +3,79 @@ title: "07_survival"
 format: html
 editor: visual
 ---
+
+Load data:
+
+```{r}
+library(tidyverse)
+
+HER2 <- read.table("../data/diff_exp_HER2.tsv", header = T, sep = "\t") |>
+  select(c())
+lumA <- read.table("../data/diff_exp_Luminal_A.tsv", header = T, sep = "\t")
+lumB <- read.table("../data/diff_exp_Luminal_B.tsv", header = T, sep = "\t")
+basal_like <- read.table("../data/diff_exp_Basal_like.tsv", header = T, sep = "\t")
+
+protein_data <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) 
+
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+
+full_data <- left_join(protein_data, clinical_data, by = "id")
+
+rm(clinical_data, protein_data)
+```
+
+Survival analysis:
+
+```{r}
+library(survival)
+library(ggsurvfit)
+
+full_data_censor <- full_data |>
+  mutate(
+    censor = case_when(
+      days_to_date_of_death > 0 ~ days_to_date_of_death, 
+      is.na(days_to_date_of_death) ~ days_to_date_of_last_contact), 
+    status = case_when(
+      vital_status == "LIVING" ~ 0, 
+      vital_status == "DECEASED" ~ 1, 
+    )
+    )
+
+
+```
+
+```{r}
+
+survfit2(Surv(censor, status) ~ 1, data = full_data_censor) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Days",
+    y = "Overall survival probability"
+  )+ 
+  add_confidence_interval()+
+  add_risktable()
+
+survfit2(Surv(censor, status) ~ her2_final_status, data = full_data_censor) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Days",
+    y = "Overall survival probability"
+  )+ 
+  add_confidence_interval()+
+  add_risktable()
+```
+
+```{r}
+library(gtsummary)
+survfit(Surv(censor, status) ~ 1, data = full_data_censor) %>% 
+  tbl_survfit(
+    times = 365.25,
+    label_header = "**1-year survival (95% CI)**"
+  )
+```
+
+# Predicting stage from proteins
+
+```{r}
+
+```

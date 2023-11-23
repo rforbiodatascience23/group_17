@@ -9,7 +9,8 @@ Load data:
 ```{r}
 
 protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
-  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value')%>%
+  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
+  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |> 
   pivot_wider(names_from = id, values_from = value) |>
   rename(id = variable)
 
@@ -19,7 +20,6 @@ clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 Wrangling
 
 ```{r}
-library(stats)
 
 full_data <- clinical_data |>
   mutate(
