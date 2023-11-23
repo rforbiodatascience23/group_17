@@ -7,9 +7,7 @@ editor: visual
 ## Cleaning of data
 
 ```{r}
-
 # Removal of negative controls
-
 samples <- protein_data |>
   select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>%  
           # Remove columns with the names: "RefSeq_accession_number,gene_symbo
@@ -69,8 +67,9 @@ clinical_data_final <- clinical_data |>
           # mutates the ids to having to -, but only _
   rename_with( ~ str_to_lower(str_replace_all(.x, " ", "_"))) |> 
           # makes everything to camel case
-  rename(pam50 = pam50_mrna) 
-          # rename for the same of ease later on
+  rename(pam50 = pam50_mrna) %>%  # rename for the same of ease later on
+  filter(id %in% colnames(count_matrix_1)) # include only Id that are in our count matrix
+          
 ```
 
 ```{r}
@@ -85,12 +84,4 @@ write_tsv(PAM50_file, "../data/PAM50_file.tsv")
 
 ```{r}
 rm(list = ls())
-```
-
-```{r}
-target_url <- "https://github.com/rforbiodatascience23/group17/blob/main/_raw/"
-output_file <- "Proteomics_data.RData"
-curl::curl_download(url = target_url,
-                    destfile = output_file)
-readRDS("Proteomics_data.RData")
 ```

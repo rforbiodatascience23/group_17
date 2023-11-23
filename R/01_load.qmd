@@ -12,13 +12,9 @@ editor: visual
 
 ```{r}
 rm(list = ls())
-
 library(curl)
 library(tidyverse)
-
 protein_data <- read_csv("../_raw/77_cancer_proteomes_CPTAC_itraq.csv")
-
 clinical_data <- read_csv("../_raw/clinical_data_breast_cancer.csv") 
-
 PAM50_file <- read_csv("../_raw/PAM50_proteins.csv")
 ```
