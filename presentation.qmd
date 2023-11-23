@@ -1,0 +1,40 @@
+---
+title: "Group 17"
+format: 
+  revealjs:
+    slide-number: c/t
+    width: 1600
+    height: 900
+    logo: "https://www.rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-Flat.png"
+    footer: "Group 17, R for Bio Data Science"
+    css: ["theme/theme.css"]
+    theme: simple
+    echo: true
+    transition: none
+    transition-speed: fast
+editor: visual
+---
+
+## About the data
+
+About the data
+
+## PCA on whole data set
+
+Messy PCA
+
+## Hierarchical clustering
+
+Messy hierarchical
+
+## Differential gene expression analysis
+
+-   Faceted by PAM50 
+
+-   4 volcano plots
+
+## Results from differential gene expression analysis
+
+![](plots/heatmap_diif_exp_analysis.png){fig-align="center"}
+
+## 
