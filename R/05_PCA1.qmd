@@ -75,12 +75,16 @@ pca_plot <- pca |>
    xlab(paste('PC1,', pc1var, '% explained variance')) + 
    ylab(paste('PC2,', pc2var, '% explained variance')) +
    labs(
-     title = "Initial PCA on entire proteomics dataset",
+     title = "PCA on entire proteomics dataset",
      color = "pam50"
         )
 
+
+ggsave("../plots/PCA1.png", pca_plot, height = 4, width = 6)
+
 # print PCA plot
 pca_plot
+
 ```
 
 In this PCA based on all the proteomics data, we see no obvious clustering.
