@@ -27,10 +27,7 @@ Next, the required data was loaded. For this analysis it was the count matrix, w
 ```{r}
 #| label: load data (and augment)
 
-cm_sig <- read.table("../data/count_significant_proteins.tsv", header = T) |>
-  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
-  pivot_wider(names_from = id, values_from = value) |>
-  rename(id = variable) |>
+cm_sig <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) |>
   column_to_rownames('id')
 
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
@@ -42,7 +39,7 @@ Next, the PCA was done by first scaling the count matrix, and then the doing the
 #| label: define PCA
 
 #Create a PCA object scaling the data
-pca <- cm |>
+pca <- cm_sig |>
         scale() |>
         stats::prcomp()
 
@@ -61,8 +58,10 @@ These variables, were used for creating a visual presentation of the principal c
 
 # Create PCA plot
 pca_plot <- pca |> 
-  augment(clinical_data) |>
-   ggplot(aes(x=.fittedPC1, 
+  augment(cm_sig)|>
+  rename(id = ".rownames") |>
+  left_join(clinical_data |> select(c(id, pam50)), by = "id")|>
+  ggplot(aes(x=.fittedPC1, 
               y=.fittedPC2, 
               color = pam50,
               fill = pam50)) +
@@ -78,6 +77,8 @@ pca_plot <- pca |>
      title = "PCA on entire proteomics dataset",
      color = "pam50"
         )
+
+pca_plot
 
 
 ggsave("../plots/PCA1.png", pca_plot, height = 4, width = 6)
