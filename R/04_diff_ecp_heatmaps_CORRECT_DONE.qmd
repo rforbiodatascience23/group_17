@@ -44,6 +44,17 @@ rm(signif_fdr_prots)
 ```
 
 ```{r}
+
+#Adding the name key - from refSeq number to gene name
+name_key <- read.csv("../NP_to_gene_dictionary/protein_IDs.csv") |>
+  distinct(Gene.Names,.keep_all = TRUE) |>
+      # Filter for only unique rows
+  rename(protein = RefSeq_accession_number, gene = Gene.Names) |>
+      # Rename for easier use
+  select(c(protein, gene))
+      # Select only gene and refSeq
+
+
 combined <- left_join(HER2, lumA, by = "protein") |>
       #Combine results dataframes
   left_join(lumB, by = "protein") |>
@@ -52,8 +63,9 @@ combined <- left_join(HER2, lumA, by = "protein") |>
       #Combine results dataframes
   filter(protein %in% signif_fdr_prots_unique) |>
       # Filter for only the significant protiens
-  arrange(desc(adjustedfdr_bl))
+  arrange(desc(adjustedfdr_bl)) |>
       # Arrange according to p-values for basal like - for use in later 
+  left_join(name_key, by = "protein")
   
 rm(basal_like, lumA, lumB, HER2, signif_fdr_prots_unique)
       # Remove unneccesary stuff from enviroenment
