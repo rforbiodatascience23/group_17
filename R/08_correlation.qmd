@@ -11,6 +11,7 @@ library(ggplot2)
 library(reshape)
 library(purrr)
 library(rcompanion)
+library(patchwork)
 ```
 
 
@@ -107,17 +108,20 @@ c<- corr_kendall |>
 
 
 
-  ggplot(c, aes(x = subclass, y = status, fill = corr)) +
+  Corr_subclasses <- ggplot(c, aes(x = subclass, y = status, fill = corr)) +
   geom_tile(height=0.8, width=0.8) +
     geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
   scale_fill_gradient2(low="blue", mid="white", high="red") +
   theme_minimal() +
   coord_equal() +
   labs(title = "Correlation matrix of tumor subclasses and ER, PR and her2 status", x = "Subclass", y = "Status", fill = "Correlation") +
-  theme(plot.title = element_text(hjust = 0.4, size = 12),
+  theme(plot.title = element_text(hjust = 0.4, size = 13),
         axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
         axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
         panel.grid.major = element_blank())
+  
+
+ggsave("../plots/Corr_subclasses.png", Corr_subclasses , height = 4, width = 6)
 
            
 
@@ -329,10 +333,10 @@ Her2_corr <- Her2_corr |>
 Her2_plot <- ggplot(Her2_corr, aes(x = status, y = Protein, fill = corr)) +
   geom_tile(height=0.8, width=0.8) +
     geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
-  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
   theme_minimal() +
   coord_equal() +
-  labs(title = "HER2-positive", subtitle = "Correlation of status and protein expression" , x = "Status", y = "Protein", fill = "Correlation") +
+  labs(title = "HER2-positive", x = "Status", y = "Protein", fill = "Correlation") +
   theme(plot.title = element_text(hjust = 0.4, size = 12),
         axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
         axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
@@ -378,10 +382,10 @@ Luminal_A_corr <- Luminal_A_corr |>
 Luminal_A_plot <- ggplot(Luminal_A_corr, aes(x = status, y = Protein, fill = corr)) +
   geom_tile(height = 0.8, width = 0.8) +
     geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
-  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
   theme_minimal() +
   coord_equal() +
-  labs(title = "Luminal A", subtitle = "Correlation of status and protein expression" , x = "Status", y = "Protein", fill = "Correlation") +
+  labs(title = "Luminal A", x = "Status", y = "Protein", fill = "Correlation") +
   theme(plot.title = element_text(hjust = 0.4, size = 12),
         plot.subtitle = element_text(hjust = 0.4),
         axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
@@ -426,9 +430,10 @@ Luminal_B_corr <- Luminal_B_corr |>
 Luminal_B_plot <- ggplot(Luminal_B_corr, aes(x = status, y = Protein, fill = corr)) +
   geom_tile(height = 0.8, width = 0.8) +
     geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
-  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
   theme_minimal() +
-  labs(title = "Luminal B", subtitle = "Correlation of status and protein expression" , x = "Status", y = "Protein", fill = "Correlation") +
+  coord_equal()+
+  labs(title = "Luminal B", x = "Status", y = "Protein", fill = "Correlation") +
   theme(plot.title = element_text(hjust = 0.4, size = 12),
         plot.subtitle = element_text(hjust = 0.4),
         axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
@@ -475,10 +480,16 @@ Basal_like_corr <- Basal_like_corr |>
 Basal_like_plot <- ggplot(Basal_like_corr, aes(x = status, y = Protein, fill = corr)) +
   geom_tile(height = 0.8, width = 0.8) +
     geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
-  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  #scale_fill_gradientn(colours=c( "blue",  
+  #                               "white",
+   #                              "red"),
+    #                   values=(c( -1,
+     ##                                  1)),
+       #                guide="colorbar")+
+  scale_fill_gradient2(midpoint = 0, low="blue", mid="white", high="red", limits = c(-1,1)) +
   theme_minimal() +
   coord_equal()+
-  labs(title = "Basal-like", subtitle = "Correlation of status and protein expression" , x = "Status", y = "Protein", fill = "Correlation") +
+  labs(title = "Basal-like", x = "Status", y = "Protein", fill = "Correlation") +
   theme(plot.title = element_text(hjust = 0.4, size = 12),
         plot.subtitle = element_text(hjust = 0.4),
         axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
@@ -491,6 +502,21 @@ Basal_like_plot
 
 ggsave("../plots/corr_Basal_like.png", Basal_like_plot, height = 8, width = 6)
 
+```
+
+
+
+```{r}
+p4 <-(Basal_like_plot + Her2_plot) / (Luminal_A_plot + Luminal_B_plot)+
+  plot_layout(guides = 'collect') +
+  plot_annotation(title = "Correlation of PR, ER and her2 status with significant proteins", 
+        subtitle = "Using top 5 most significant proteins for each PAM50 classification")&
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5), # Adjust title size and horizontal position
+    plot.subtitle = element_text(size = 14, hjust = 0.5) # Adjust subtitle size and horizontal position
+  )
+
+ggsave("../plots/Protein_corr_4p.png", p4 , height = 8, width = 10)
 ```
 
 
