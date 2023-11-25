@@ -8,6 +8,7 @@ Load data
 
 ```{r}
 library(tidyverse)
+library(patchwork)
 
 HER2 <- read.table("../data/diff_exp_HER2.tsv", header = T, sep = "\t") |>
       # Loads the results from the differential gene expression analysis - here the 
@@ -58,30 +59,41 @@ rm(basal_like, lumA, lumB, HER2, signif_fdr_prots_unique)
       # Remove unneccesary stuff from enviroenment
 ```
 
-Next, the data frames used for the heatmaps are made. Becasue we had so many significant proteis, a vizualisation of them all in the plot was un-informational. Therefore, we chose to only select the top 20 most significant proteins for each subgroup to display.
+Next, the data frames used for the heat-maps are made. Because we had so many significant proteins, a visualization of them all in the plot was un-informational. Therefore, we chose to only select the top 20 most significant proteins for each subgroup to display.
 
 ```{r}
 combined_long_bl <- combined |>
   arrange(adjustedfdr_bl) |>
+      # Arrange according to significance (this is for use later on in vizualisation)
   slice(1:20) |>
+      # Select only the top 20 most significant proteins
   pivot_longer(cols = -protein,
                names_to = c(".value", "pam50"),
                names_sep = "_") |>
+      # Pivot longer - because this is how geom_heatmap() reads the data
   mutate(
     pam50 = case_when(
       pam50 == "HER2" ~ "HER2 enriched", 
       pam50 == "lumA" ~ "Luminal A", 
       pam50 == "lumB" ~ "Luminal B", 
       pam50 == "bl" ~ "Basal like"),
+        # Mutatet the pam50 column to whole sentences. 
+        # Makes the heatmap more readable and prettier
     significance = case_when(
       adjustedfdr < 0.001 ~ "***", 
       adjustedfdr < 0.01 ~ "**",
       adjustedfdr < 0.05 ~ "*",
       TRUE ~ ""
     )
+        # Add a column of asterisks showing significance. Also to be used in vizualisarion
   ) |>
   mutate(protein = factor(protein), 
          protein = fct_reorder(protein, adjustedfdr))
+    # Make sure protein is a factor varaible + make the levels the order in 
+    # which each prtein appears. This is for vizualization: if levels are not specified,
+    # the heatmap plots the proteins in alphabetical order. We want to plot
+    # them in order of significance, and thus, determining the levels overrules the 
+    # alphabetical order. 
 
 combined_long_lumA <- combined |>
   arrange(adjustedfdr_lumA) |>
@@ -153,25 +165,37 @@ combined_long_HER2 <- combined |>
 
 ```
 
+Create the actual heatmaps - one for each test.
+
 ```{r}
 
 heatmap1 <- ggplot(combined_long_bl, aes(x =pam50 , y = protein, fill = estimate))+
+      # Make plot with pam50 subtypes on x-axis and proteins on y-axis, 
+      # Color for the estimate (slope)
   geom_tile() +
+      # Add tiles
   scale_fill_gradient2(midpoint = 0, low = "blue", high = "red", mid = "white") +
+      # Specify colouring: midpoint (neutral) should be white, and upregulated 
+      # protein rea, and downregulated blue
   labs(
     title = "Basal like", 
     y = "", 
     x = "", 
     fill = "Estimate"
   ) +
+      # Enter labels 
   geom_text(aes(x =pam50 , y = protein, label = significance), size = 4, vjust = 0.8) +
+      # Add asterisks describing the significane. This uses the 'significance' column
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5), 
         axis.text.y = element_text(size = 5), 
         panel.background = element_blank(),
         legend.position="none",
         plot.title = element_text(size=12))
+      # Small adjustements of size, angles and positioning of the text elements in the
+      # plot, as well as removal of the grey background. 
 
 heatmap1
+#display
 
 
 heatmap2 <- ggplot(combined_long_HER2, aes(x =pam50 , y = protein, fill = estimate))+
@@ -228,6 +252,7 @@ heatmap4 <- ggplot(combined_long_lumB, aes(x =pam50 , y = protein, fill = estima
 
 heatmap4
 
+#Combine all heatmaps using 'patchwork'
 heatmap <- (heatmap1 + heatmap2)/(heatmap3 +heatmap4)+
   plot_layout(guides = 'collect') +
   plot_annotation(title = "Vizualisation of results from differential gene expression analysis", 
@@ -236,4 +261,5 @@ heatmap <- (heatmap1 + heatmap2)/(heatmap3 +heatmap4)+
 heatmap
 
 ggsave("../plots/heatmap_combined.png", heatmap, width = 12, height = 10, dpi = 300)
+#Save
 ```
