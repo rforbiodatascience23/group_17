@@ -98,7 +98,7 @@ HER2 <- full_data |>
   select(-c(data, LM, term)) |>
       # Deselect the column storing the raw protein data to only have the results left
   mutate(adjusted_BH = p.adjust(p.value, n = 12554, method = "BH"), 
-            # Benjamini hichberg adjustment for multiple comparisons
+            # Benjamini hochberg adjustment for multiple comparisons
          adjusted_fdr = p.adjust(p.value, n = 12554, method = "fdr"), 
             # False discrovery rate adjustment for multiple comparisons
          log2 = -log2(p.value)) |>
