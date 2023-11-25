@@ -71,7 +71,6 @@ pca  |>
         panel.grid.major.x = element_blank()) +
   labs(title = "Scree Plot of PCA of significant proteins")
 
-
 ```
 
 ```{r}
@@ -101,8 +100,6 @@ pca_plot <- pca_aug |>
   geom_point(shape = 21,
              size = 6,
              alpha = 0.5) +
-  theme_bw(base_size = 20,
-           base_family = "avenir") +
   labs(
     title = "PCA",
     x = pluck(pca_plot_axes_labels, 1),
@@ -115,19 +112,31 @@ pca_plot
 Now, we run the k-means algorithm using n = 4, as we have 4 groups we want to determine:
 
 ```{r}
+count_matrix_reduced
 k_means_data <- pca_aug |>
   select(c(.fittedPC1, .fittedPC2)) 
 
-kmeans_analysis <- kmeans(k_means_data, centers = 4)
+kmeans_analysis <- kmeans(k_means_data, centers = 4) %>% 
+  pluck("cluster") %>% 
+  as.factor()
 
-clusters <- kmeans_analysis$cluster
-
-pca_aug_clust <- pca_aug |>
-  mutate(clusters = clusters)
-
-
-
-kmeans_analysts_tidy <- kmeans_analysis |> map( ~ .x[["cluster"]])
-
-broom::augment(kmeans_analysis)
+PCA_kmeans <- pca_aug %>% mutate(cluster = kmeans_analysis ) %>% 
+    ggplot(aes(x = .fittedPC1,
+             y = .fittedPC2,
+             colour = kmeans_analysis,
+             fill = kmeans_analysis)) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  geom_point(shape = 21,
+             size = 6,
+             alpha = 0.5) +
+  labs(
+    title = "PCA",
+    x = pluck(pca_plot_axes_labels, 1),
+    y = pluck(pca_plot_axes_labels, 2),
+    colour = "Cluster factor",
+    fill = "Cluster factor") + 
+  theme_bw()
+  
+PCA_kmeans
 ```
