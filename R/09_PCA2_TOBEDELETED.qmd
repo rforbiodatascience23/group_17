@@ -4,13 +4,13 @@ format: html
 editor: visual
 ---
 
-# Clustering analysis with all proteomics data
+# Clustering analysis with only significant proteomics data
 
 ## Principal component analysis (PCA)
 
-It was investigated if the data set would show any clustering resembling that of the PAM50 criteria, based on the entire proteomics data set. First a PCA analysis was conducted.
+The same PCA analysis and code as before, now just with the reduced data set.
 
-First, required packages were loaded.
+First , required packages were loaded.
 
 ```{r}
 #| echo: false
@@ -27,10 +27,7 @@ Next, the required data was loaded. For this analysis it was the count matrix, w
 ```{r}
 #| label: load data (and augment)
 
-cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
-  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
-  pivot_wider(names_from = id, values_from = value) |>
-  rename(id = variable) |>
+cm_sig <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) |>
   column_to_rownames('id')
 
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
@@ -42,7 +39,7 @@ Next, the PCA was done by first scaling the count matrix, and then the doing the
 #| label: define PCA
 
 #Create a PCA object scaling the data
-pca <- cm |>
+pca <- cm_sig |>
         scale() |>
         stats::prcomp()
 
@@ -61,8 +58,10 @@ These variables, were used for creating a visual presentation of the principal c
 
 # Create PCA plot
 pca_plot <- pca |> 
-  augment(clinical_data) |>
-   ggplot(aes(x=.fittedPC1, 
+  augment(cm_sig)|>
+  rename(id = ".rownames") |>
+  left_join(clinical_data |> select(c(id, pam50)), by = "id")|>
+  ggplot(aes(x=.fittedPC1, 
               y=.fittedPC2, 
               color = pam50,
               fill = pam50)) +
@@ -75,12 +74,18 @@ pca_plot <- pca |>
    xlab(paste('PC1,', pc1var, '% explained variance')) + 
    ylab(paste('PC2,', pc2var, '% explained variance')) +
    labs(
-     title = "Initial PCA on entire proteomics dataset",
+     title = "PCA on entire proteomics dataset",
      color = "pam50"
         )
 
+pca_plot
+
+
+ggsave("../plots/PCA1.png", pca_plot, height = 4, width = 6)
+
 # print PCA plot
 pca_plot
+
 ```
 
 In this PCA based on all the proteomics data, we see no obvious clustering.

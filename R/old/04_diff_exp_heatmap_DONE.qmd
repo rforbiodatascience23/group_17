@@ -1,0 +1,239 @@
+---
+title: "Vizualisation of results from differential gene expression analysis using heatmaps"
+format: html
+editor: visual
+---
+
+Load data
+
+```{r}
+library(tidyverse)
+
+HER2 <- read.table("../data/diff_exp_HER2.tsv", header = T, sep = "\t") |>
+      # Loads the results from the differential gene expression analysis - here the 
+      # results from HER2 versus all other individuals. 
+  select(c(protein, estimate, adjusted_fdr)) |>
+      # Select only the variables of interest: protein, estimate and adjusted p-value
+  rename(estimate_HER2 = estimate, adjustedfdr_HER2 = adjusted_fdr)
+      # Rename for easier joining later on
+
+lumA <- read.table("../data/diff_exp_Luminal_A.tsv", header = T, sep = "\t")|>
+  select(c(protein, estimate, adjusted_fdr)) |>
+  rename(estimate_lumA = estimate, adjustedfdr_lumA = adjusted_fdr)
+
+lumB <- read.table("../data/diff_exp_Luminal_B.tsv", header = T, sep = "\t")|>
+  select(c(protein, estimate, adjusted_fdr)) |>
+  rename(estimate_lumB = estimate, adjustedfdr_lumB = adjusted_fdr)
+
+basal_like <- read.table("../data/diff_exp_Basal_like.tsv", header = T, sep = "\t")|>
+  select(c(protein, estimate, adjusted_fdr))|>
+  rename(estimate_bl = estimate, adjustedfdr_bl = adjusted_fdr)
+
+# Find only the significant proteins:
+signif_fdr_prots <- c(HER2 |> filter(adjustedfdr_HER2 <= 0.05) |> pull(protein),
+                  lumA |> filter(adjustedfdr_lumA <= 0.05) |> pull(protein), 
+                  lumB |> filter(adjustedfdr_lumB <= 0.05) |> pull(protein), 
+                  basal_like |> filter(adjustedfdr_bl <= 0.05) |> pull(protein))
+    # Make a vector of the significant proteins
+
+signif_fdr_prots_unique <- unique(signif_fdr_prots)
+    # Select eah protein inly once.  
+
+rm(signif_fdr_prots)
+```
+
+```{r}
+combined <- left_join(HER2, lumA, by = "protein") |>
+      #Combine results dataframes
+  left_join(lumB, by = "protein") |>
+      #Combine results dataframes
+  left_join(basal_like, by = "protein") |>
+      #Combine results dataframes
+  filter(protein %in% signif_fdr_prots_unique) |>
+      # Filter for only the significant protiens
+  arrange(desc(adjustedfdr_bl))
+      # Arrange according to p-values for basal like - for use in later 
+  
+rm(basal_like, lumA, lumB, HER2, signif_fdr_prots_unique)
+      # Remove unneccesary stuff from enviroenment
+```
+
+Next, the data frames used for the heatmaps are made. Becasue we had so many significant proteis, a vizualisation of them all in the plot was un-informational. Therefore, we chose to only select the top 20 most significant proteins for each subgroup to display.
+
+```{r}
+combined_long_bl <- combined |>
+  arrange(adjustedfdr_bl) |>
+  slice(1:20) |>
+  pivot_longer(cols = -protein,
+               names_to = c(".value", "pam50"),
+               names_sep = "_") |>
+  mutate(
+    pam50 = case_when(
+      pam50 == "HER2" ~ "HER2 enriched", 
+      pam50 == "lumA" ~ "Luminal A", 
+      pam50 == "lumB" ~ "Luminal B", 
+      pam50 == "bl" ~ "Basal like"),
+    significance = case_when(
+      adjustedfdr < 0.001 ~ "***", 
+      adjustedfdr < 0.01 ~ "**",
+      adjustedfdr < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  ) |>
+  mutate(protein = factor(protein), 
+         protein = fct_reorder(protein, adjustedfdr))
+
+combined_long_lumA <- combined |>
+  arrange(adjustedfdr_lumA) |>
+  slice(1:20) |>
+  mutate(protein = factor(protein), 
+         protein = fct_reorder(protein, adjustedfdr_lumA))|>
+  pivot_longer(cols = -protein,
+               names_to = c(".value", "pam50"),
+               names_sep = "_") |>
+  mutate(
+    pam50 = case_when(
+      pam50 == "HER2" ~ "HER2 enriched", 
+      pam50 == "lumA" ~ "Luminal A", 
+      pam50 == "lumB" ~ "Luminal B", 
+      pam50 == "bl" ~ "Basal like"),
+    significance = case_when(
+      adjustedfdr < 0.001 ~ "***", 
+      adjustedfdr < 0.01 ~ "**",
+      adjustedfdr < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  ) 
+
+combined_long_lumB <- combined |>
+  arrange(adjustedfdr_lumB) |>
+  slice(1:20) |>
+  mutate(protein = factor(protein), 
+         protein = fct_reorder(protein, adjustedfdr_lumB))|>
+  pivot_longer(cols = -protein,
+               names_to = c(".value", "pam50"),
+               names_sep = "_") |>
+  mutate(
+    pam50 = case_when(
+      pam50 == "HER2" ~ "HER2 enriched", 
+      pam50 == "lumA" ~ "Luminal A", 
+      pam50 == "lumB" ~ "Luminal B", 
+      pam50 == "bl" ~ "Basal like"),
+    significance = case_when(
+      adjustedfdr < 0.001 ~ "***", 
+      adjustedfdr < 0.01 ~ "**",
+      adjustedfdr < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  ) 
+
+combined_long_HER2 <- combined |>
+  arrange(adjustedfdr_HER2) |>
+  slice(1:20) |>
+  mutate(protein = factor(protein), 
+         protein = fct_reorder(protein, adjustedfdr_HER2))|>
+  pivot_longer(cols = -protein,
+               names_to = c(".value", "pam50"),
+               names_sep = "_") |>
+  mutate(
+    pam50 = case_when(
+      pam50 == "HER2" ~ "HER2 enriched", 
+      pam50 == "lumA" ~ "Luminal A", 
+      pam50 == "lumB" ~ "Luminal B", 
+      pam50 == "bl" ~ "Basal like"),
+    significance = case_when(
+      adjustedfdr < 0.001 ~ "***", 
+      adjustedfdr < 0.01 ~ "**",
+      adjustedfdr < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  ) 
+
+
+
+```
+
+```{r}
+
+heatmap1 <- ggplot(combined_long_bl, aes(x =pam50 , y = protein, fill = estimate))+
+  geom_tile() +
+  scale_fill_gradient2(midpoint = 0, low = "blue", high = "red", mid = "white") +
+  labs(
+    title = "Basal like", 
+    y = "", 
+    x = "", 
+    fill = "Estimate"
+  ) +
+  geom_text(aes(x =pam50 , y = protein, label = significance), size = 4, vjust = 0.8) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5), 
+        axis.text.y = element_text(size = 5), 
+        panel.background = element_blank(),
+        legend.position="none",
+        plot.title = element_text(size=12))
+
+heatmap1
+
+
+heatmap2 <- ggplot(combined_long_HER2, aes(x =pam50 , y = protein, fill = estimate))+
+  geom_tile() +
+  scale_fill_gradient2(midpoint = 0, low = "blue", high = "red", mid = "white") +
+  labs(
+    title = "HER2", 
+    y = "", 
+    x = "", 
+    fill = "Estimate"
+  ) +
+  geom_text(aes(x =pam50 , y = protein, label = significance), size = 4, vjust = 0.8) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5), 
+        axis.text.y = element_text(size = 5), 
+        panel.background = element_blank(),
+        legend.position="none",
+        plot.title = element_text(size=12))
+
+heatmap2
+
+heatmap3 <- ggplot(combined_long_lumA, aes(x =pam50 , y = protein, fill = estimate))+
+  geom_tile() +
+  scale_fill_gradient2(midpoint = 0, low = "blue", high = "red", mid = "white") +
+  labs(
+    title = "Luminal A", 
+    y = "", 
+    x = "", 
+    fill = "Estimate"
+  ) +
+  geom_text(aes(x =pam50 , y = protein, label = significance), size = 4, vjust = 0.8) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5), 
+        axis.text.y = element_text(size = 5), 
+        panel.background = element_blank(),
+        legend.position="bottom",
+        plot.title = element_text(size=12))
+
+heatmap3
+
+heatmap4 <- ggplot(combined_long_lumB, aes(x =pam50 , y = protein, fill = estimate))+
+  geom_tile() +
+  scale_fill_gradient2(midpoint = 0, low = "blue", high = "red", mid = "white") +
+  labs(
+    title = "Luminal B", 
+    y = "", 
+    x = "", 
+    fill = "Estimate"
+  ) +
+  geom_text(aes(x =pam50 , y = protein, label = significance), size = 4, vjust = 0.8) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5), 
+        axis.text.y = element_text(size = 5), 
+        panel.background = element_blank(),
+        legend.position="none",
+        plot.title = element_text(size=12))
+
+heatmap4
+
+heatmap <- (heatmap1 + heatmap2)/(heatmap3 +heatmap4)+
+  plot_layout(guides = 'collect') +
+  plot_annotation(title = "Vizualisation of results from differential gene expression analysis", 
+        subtitle = "Using top 20 most significant proteins for each PAM50 classification")
+  
+heatmap
+
+ggsave("../plots/heatmap_combined.png", heatmap, width = 12, height = 10, dpi = 300)
+```
