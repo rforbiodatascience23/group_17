@@ -1,44 +1,36 @@
 ---
-title: "06_heatmap1"
+title: "06_hc_dendro"
 format: html
 editor: visual
 ---
 
 # Clustering analysis with all proteomics data
 
-## Hierachial clustering visualised in a heatmap
+## Hierachial clustering visualised with dendrograms
+
+To investigate if the clinically assigned pam50 categories display in the proteomics dataset, we also wanted to do a hierachial clustering analysis. This was visualised using dendrograms.
+
+First, packages and data were loaded.
 
 ```{r}
 #| echo: false
 #| label: load packages and data
 
+# Packages
 library(tidyverse)
 
-#if (!require('ggendro', character.only = TRUE)) {
-  # If not installed, install the package
-#  install.packages('ggdendro')
-#}
+if (!require('ggendro', character.only = TRUE)) {
+# If not installed, install the package
+ install.packages('ggdendro')
+}
 library(ggdendro)
-library(grid)
-library(patchwork)
 
+# data
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 cm <- read.table("../data/count_matrix_1_77.tsv", header = T)
 ```
 
-```{r}
-#| label: augment data
-
-cm <- cm |>
-  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |> # Converting ot pivot_longer
-  pivot_wider(names_from = id, values_from = value) |> # Converting the longer data to a wider data with names from id, and values from value
-  rename(id = variable) |> # renaming variable to id
-  column_to_rownames('id') # Converting the id column to rownames
-
-
-```
-
-Hierachial clustering and dendogramming
+Next, the hierachial clustering was done.
 
 ```{r}
 #| label: hierachial clustering
@@ -63,6 +55,12 @@ ddg_label <- label(ddg_data) |>
   left_join(clinical_data, by = c("id")) |> 
   select(x,y, id, pam50)
 
+```
+
+This was followed by visualisation in the form of a dendrogram using the ggdendro package.
+
+```{r}
+#| label: dendrogram
 
 # create dendogram plot based on hierachial clustering
 ddg_plot <- ggdendrogram(data = hc, rotate=TRUE) +
@@ -76,11 +74,11 @@ ddg_plot <- ggdendrogram(data = hc, rotate=TRUE) +
 
 ddg_plot
 
-#save plot
+# save dendrogram plot
 ggsave("../plots/hc_dendro.png", ddg_plot, height = 4, width = 7)
 ```
 
-From the colored labels, it is apparent, that the samples - other than perhaps the Basal-like - don't group by pam50 categories when a hierachial clustering is made on the entire proteomics dataset.
+**Conclusion**: From the colored labels, it is apparent, that the samples don't group by pam50 categories when a hierachial clustering is made on the entire proteomics dataset.
 
 ### Alternative method
 
@@ -137,5 +135,6 @@ hm
 Print the two plots side-by-side using patchwork:
 
 ```{r}
+library(patchwork)
 hm + ddg_plot 
 ```
