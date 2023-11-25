@@ -15,6 +15,8 @@ When you click the **Render** button a document will be generated that includes 
 
 ```{r}
 library(tidyverse)
+library(patchwork)
+library(ggrepel)
 HER2 <- read_table("../data/diff_exp_HER2.tsv")
 lumA <- read_table("../data/diff_exp_Luminal_A.tsv")
 lumB <- read_table("../data/diff_exp_Luminal_B.tsv")
@@ -25,6 +27,7 @@ You can add options to executable code like this
 
 ```{r}
 #HER2 <- read.table()
+library(ggrepel)
 
 HER2 <- HER2 |>
   mutate(color_col = case_when(
@@ -32,8 +35,6 @@ HER2 <- HER2 |>
     adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
     TRUE ~"Not significant"
   ))
-
-library(ggrepel)
 
 plot1 <- ggplot(HER2, aes(x = estimate, y = log2)) +
   geom_point(aes(color = color_col)) +
@@ -48,10 +49,12 @@ plot1 <- ggplot(HER2, aes(x = estimate, y = log2)) +
   geom_text_repel(data = HER2 |>filter(adjusted_fdr < 0.05),
                   aes(label = protein), hjust = 0, vjust = 0, size = 3, 
                   color = "black") +
-  theme_bw()
+  theme_bw() + 
+  labs(title = "volcano plot of HER2",
+       color = "Significance level ")
 
 
-print(plot1)
+plot1
 
 ```
 
@@ -64,7 +67,6 @@ lumA <- lumA |>
     TRUE ~"Not significant"
   ), log2 = -log2(p.value))
 
-library(ggrepel)
 
 plot2 <- ggplot(lumA, aes(x = estimate, y = log2)) +
   geom_point(aes(color = color_col)) +
@@ -79,10 +81,12 @@ plot2 <- ggplot(lumA, aes(x = estimate, y = log2)) +
   geom_text_repel(data = lumA |>filter(adjusted_fdr < 0.05),
                   aes(label = protein), hjust = 0, vjust = 0, size = 3, 
                   color = "black") +
-  theme_bw()
+  theme_bw() + 
+  labs(title = "volcano plot of Luminal A",
+       color = "Significance level ")
 
 
-print(plot2)
+plot2
 
 ```
 
@@ -93,8 +97,6 @@ lumB <- lumB |>
     adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
     TRUE ~"Not significant"
   ), log2 = -log2(p.value))
-
-library(ggrepel)
 
 plot3 <- ggplot(lumB, aes(x = estimate, y = log2)) +
   geom_point(aes(color = color_col)) +
@@ -110,9 +112,11 @@ plot3 <- ggplot(lumB, aes(x = estimate, y = log2)) +
                   aes(label = protein), hjust = 0, vjust = 0, size = 3, 
                   color = "black") +
   theme_bw() +
-  theme(legend.position = "none")
+  theme(legend.position = "none") + 
+    labs(title = "volcano plot of Luminal A",
+       color = "Significance level ")
 
-print(plot3)
+plot3
 ```
 
 ```{r}
@@ -122,8 +126,6 @@ basal_like <- basal_like |>
     adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
     TRUE ~"Not significant"
   ), log2 = -log2(p.value))
-
-library(ggrepel)
 
 plot4 <- ggplot(basal_like, aes(x = estimate, y = log2)) +
   geom_point(aes(color = color_col)) +
@@ -138,14 +140,16 @@ plot4 <- ggplot(basal_like, aes(x = estimate, y = log2)) +
   geom_text_repel(data = basal_like |>filter(adjusted_fdr < 0.05),
                   aes(label = protein), hjust = 0, vjust = 0, size = 3, 
                   color = "black") +
-  theme_bw()
+  theme_bw() +
+    labs(title = "volcano plot of Basal like",
+       color = "Significance level ")
 
 
-print(plot4)
+plot4
 ```
 
 ```{r}
-library(patchwork)
+
 (plot1 + plot2)/(plot3 + plot4) +
   plot_layout(guides = "collect")
 
