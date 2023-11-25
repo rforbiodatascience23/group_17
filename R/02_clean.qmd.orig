@@ -9,7 +9,7 @@ editor: visual
 ```{r}
 # Removal of negative controls
 samples <- protein_data |>
-  select(-c(RefSeq_accession_number,gene_symbol,gene_name)) |>  
+  select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>%  
           # Remove columns with the names: "RefSeq_accession_number,gene_symbo
           # ,gene_name"
   colnames() |>
@@ -25,7 +25,7 @@ count_matrix_1 <- protein_data |>
   mutate(
     across(everything(), ~replace_na(.x, 0)))|>
           # replace all NA values in the count-matrix with 0
-  pivot_longer(cols = -c("RefSeq_accession_number")) |> 
+  pivot_longer(cols = -c("RefSeq_accession_number")) %>% 
           # Transfroms the dataset to a pivot longer with sample ID as names and
           # values as expression counts
   mutate(name = str_extract(name, "[^.]+"),
@@ -51,7 +51,16 @@ list_of_patients <- count_matrix_1 |>
   str_subset(pattern = regex("TCGA"))
 ```
 
-Renaming the clincal data set and filtering for only the patent ID's that are in the count matrix.
+```{r}
+
+# count_matrix_2 <- protein_data %>% 
+#   select(-c(RefSeq_accession_number,gene_symbol,gene_name)) %>% # We remove all meta data from the "protein_data" dataset
+#   select(all_of(samples_without_control)) %>% # we remove the negative controls 
+#   `colnames<-`(true_sample_names) %>%  # We rename the column names to fit the clinical_data dataset
+#   replace(is.na(.), 0) # replace all NA values in the matrix with 0. 
+# 
+# # With this method, we ned up with 80 columns, as 3 of them are meta data and 3 of them are controls. 
+```
 
 ```{r}
 clinical_data_final <- clinical_data |>

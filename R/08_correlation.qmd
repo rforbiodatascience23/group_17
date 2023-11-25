@@ -3,6 +3,7 @@ title: "08_correlation"
 format: html
 editor: visual
 ---
+
 ```{r}
 library(tidyverse)
 library(corrr)
@@ -13,16 +14,16 @@ library(purrr)
 library(rcompanion)
 ```
 
-
 ## Correlation of 4 subgroups with ER, PR and HER2
 
-Load clinical data 
+Load clinical data
+
 ```{r}
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 ```
 
-
 One-out-of-k encoding for the 4 subgroups
+
 ```{r}
 clinical_data <- clinical_data |>
   mutate(
@@ -67,8 +68,8 @@ corr_kendall <- clinical_corr |>
   
 ```
 
-
 Visualize
+
 ```{r}
 
 #matrix <- corr_kendall |> 
@@ -123,10 +124,6 @@ c<- corr_kendall |>
 
 ```
 
-
-
-
-
 Try corr matrix with Cramer's V
 
 ```{r}
@@ -169,11 +166,7 @@ cramerscorr <- cramers_overview |>
         panel.grid.major = element_blank())
 ```
 
-
-
-
-##Correlation matrix for sign. protein expression vs. HER2, PR, Er
-Load differential expression data
+##Correlation matrix for sign. protein expression vs. HER2, PR, Er Load differential expression data
 
 ```{r}
 HER2 <- read_table("../data/diff_exp_HER2.tsv")
@@ -183,8 +176,8 @@ Basal_like <- read_table("../data/diff_exp_Basal_like.tsv")
 
 ```
 
-
 Load and join clinical and protein data
+
 ```{r}
 
 protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
@@ -197,10 +190,8 @@ full_data <- clinical_data |>
   left_join(protein_data, by = "id")
 ```
 
-
-
-
 Extract significant proteins
+
 ```{r}
 HER2_sign <- HER2 |>
   filter(adjusted_fdr < 0.05) |> 
@@ -223,7 +214,6 @@ Sign_proteins <- reduce(list(HER2_sign, Basal_like_sign, Luminal_A_sign, Luminal
 length(Sign_proteins)
 ```
 
-
 ```{r}
 full_data <- full_data |>
   select(c(id, er_status, pr_status, her2_final_status, DGEA_HER2, DGEA_Luminal_A, DGEA_Luminal_B, DGEA_Basal_like, all_of(Sign_proteins))) |>
@@ -236,11 +226,8 @@ Sign_protein_corr <- correlate(full_data, method = "kendall") |>
 
 ```
 
-
-
-
-
 Visualize
+
 ```{r}
 
 c2 <- Sign_protein_corr |> 
@@ -268,8 +255,8 @@ c2 <- Sign_protein_corr |>
 
 ```
 
-
 Plot corr matrix with proteins
+
 ```{r}
   c2plot <- ggplot(c2, aes(x = category, y = Protein, fill = corr)) +
   geom_tile() +
@@ -285,24 +272,17 @@ Plot corr matrix with proteins
 ggsave("../plots/corr_mat_ful.png", c2plot, height = 20, width = 4)
 ```
 
-
-
-
-
-
 Create long protein table with ids and expressions
+
 ```{r}
 protein_long <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
 pivot_longer(cols = -id, names_to = 'Proteins', values_to = 'Expression') 
 ```
 
-
-
-
-
 ##Create separate corr matrices
 
 Her2 class
+
 ```{r}
 Her2_prot <- full_data |>
   select(c(id, er_status, pr_status, her2_final_status, HER2_sign)) |> 
@@ -346,10 +326,8 @@ ggsave("../plots/corr_Her2.png", Her2_plot, height = 6, width = 5)
 
 ```
 
-
-
-
 Luminal A
+
 ```{r}
 length(Luminal_A_sign)
 Luminal_A_sign[c(1:5)]
@@ -396,9 +374,8 @@ ggsave("../plots/corr_LumA.png", Luminal_A_plot, height = 5, width = 8)
 
 ```
 
-
-
 Luminal B
+
 ```{r}
 length(Luminal_B_sign)
 
@@ -443,10 +420,8 @@ ggsave("../plots/corr_LumB.png", Luminal_B_plot, height = 5, width = 8)
 
 ```
 
-
-
-
 Basal-like
+
 ```{r}
 length(Basal_like_sign)
 Basal_like_sign[c(1:5)]
@@ -493,16 +468,8 @@ ggsave("../plots/corr_Basal_like.png", Basal_like_plot, height = 8, width = 6)
 
 ```
 
-
-
-
-
-
-
-
-
-
 Do correlation with Cramers V
+
 ```{r}
 cramers_protein_corr <- colpair_map(full_data,cramerV) |> 
   focus(er_status, pr_status, her2_final_status, DGEA_HER2, DGEA_Luminal_A, DGEA_Luminal_B, DGEA_Basal_like) |> 
@@ -531,11 +498,10 @@ cramers_protein_corr <- cramers_protein_corr |>
   
 ```
 
-
-
 ##Create separate corr matrices with Cramers V
 
 Her2 class
+
 ```{r}
 
 

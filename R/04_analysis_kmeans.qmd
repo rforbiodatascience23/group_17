@@ -11,98 +11,89 @@ Here, we want to see if we can determine the PAM50 groups using only the signifi
 First, we make a PCA using the
 
 ```{r}
-# signif_fdr_prots <- c(HER2 |> filter(adjusted_fdr <= 0.05) |> pull(protein),
-#                   Luminal_A |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
-#                   Luminal_B |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
-#                   Basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
 
 library(tidyverse)
-HER2 <- read.table("../data/diff_exp_HER2.tsv", header = T, sep = "\t") 
+HER2 <- read.table("../data/diff_exp_HER2.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing HER2 condition based on count matrix
+lumA <- read.table("../data/diff_exp_Luminal_A.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing luminal A condition based on count matrix
+lumB <- read.table("../data/diff_exp_Luminal_B.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing Luminal B condition based on count matrix
 
-lumA <- read.table("../data/diff_exp_Luminal_A.tsv", header = T, sep = "\t")
+basal_like <- read.table("../data/diff_exp_Basal_like.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing Basal like condition based on count matrix
 
-lumB <- read.table("../data/diff_exp_Luminal_B.tsv", header = T, sep = "\t")
+protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T, sep = "\t") # loading the count matrix
 
-basal_like <- read.table("../data/diff_exp_Basal_like.tsv", header = T, sep = "\t")
 signif_fdr_prots <- c(HER2 |> filter(adjusted_fdr <= 0.05) |> pull(protein),
                   lumA |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
                   lumB |> filter(adjusted_fdr <= 0.05) |> pull(protein), 
-                  basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein))
+                  basal_like |> filter(adjusted_fdr <= 0.05) |> pull(protein)) # Extracting only significant hits from differential expression analysis. Significant hits are defined at genes that have an adjusted P-value under 0.05. 
 
-protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T, sep = "\t")
-
-signif_fdr_prots_unique <- unique(signif_fdr_prots)
-
-length(signif_fdr_prots_unique)
+signif_fdr_prots_unique <- unique(signif_fdr_prots) # extracting only unique gene names from significant hits 
+#length(signif_fdr_prots_unique)
 ```
+
+We can now isolate only significant hits form our count matrix.
 
 ```{r}
 count_matrix_reduced <- protein_data |>
-  filter(id %in% signif_fdr_prots_unique) |>
-  pivot_longer(cols = -id, names_to = "id2", values_to = "value")|>
-  pivot_wider(names_from = id, values_from = value) |>
+  filter(id %in% signif_fdr_prots_unique) |> # Filtering so only differential expressed genes are present. 
+  pivot_longer(cols = -id, names_to = "id2", values_to = "value")|> # Transforming to pivot_longer
+  pivot_wider(names_from = id, values_from = value) |> # transforming it again to pivot_wider. to have the correct structure - gene names as columns and samples as rows
   column_to_rownames("id2")
 
-count_matrix_reduced_save <- count_matrix_reduced |> rownames_to_column("id")
- 
-write_tsv(count_matrix_reduced_save, "../data/count_matrix_significant_proteins.tsv")
- 
-#rm(count_matrix_reduced_save)
- 
-# count_matrix_reduced <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) |>
-#   column_to_rownames("id")
+count_matrix_reduced |> rownames_to_column("id") |> write_tsv("../data/count_matrix_significant_proteins.tsv") # saving results as a tsv file. 
 
+```
+
+PCA analysis of count matrix with only differentially expressed genes.
+
+```{r}
 pca <- count_matrix_reduced |>
   prcomp(center = TRUE,
-         scale = TRUE) 
+         scale = TRUE) # prcomp is a function in R to transform the data into principal components. 
 
 #Scree
 pca  |>
-  broom::tidy("pcs")|> 
-  mutate(percent = percent * 100) |> 
-  ggplot(aes(x = PC,
+  broom::tidy("pcs")|>  # From broom, we're using the tidy function to extract the nested list "pcs"
+  mutate(percent = percent * 100) |>  # Overriding the column Percent by multiplying current value with 100
+  ggplot(aes(x = PC, 
              y = percent)) +
-  geom_hline(yintercept = 0) +
   geom_col(colour = "black",
-           alpha = 0.5) +
-  theme_bw(base_size = 20) +
-  theme(panel.grid.minor.x = element_blank(),
-        panel.grid.major.x = element_blank()) +
+           alpha = 0.5) + # geom_Col function creates a barplot from the global values X as the princial compoennts and "Y" as the results form Principal components.
+  theme_bw(base_size = 20) + # base_size = font size of the text 
   labs(title = "Scree Plot of PCA of significant proteins")
 
 ```
 
 ```{r}
 pca_plot_axes_labels <- pca |>
-  broom::tidy("eigenvalues") |>
-  mutate(lbl = str_c("PC", PC, ", VE = ", round(percent*100,2), "%")) |> 
-  pull("lbl")
+  broom::tidy("eigenvalues") |> # extracting tidy function from broom package
+  mutate(lbl = str_c("PC", PC, ", VE = ", round(percent*100,2), "%")) |> # Creating a new variable called lbl where values are created by concatenating the principal compoennts and its respective variance into a character string
+  pull("lbl") # pulling the lbl value out
 ```
 
 ```{r}
 
-clinical_data <- read_delim("../data/clinical_data.tsv")
+clinical_data <- read_delim("../data/clinical_data.tsv") # Loading the clinical data.
 
 pca_aug <- pca |>
-  broom::augment(count_matrix_reduced) |>
-  rename(id = ".rownames") |>
-  left_join(clinical_data |>  select(c(id, pam50)),
+  broom::augment(count_matrix_reduced) |> # Using the augment function from broom to extend the pca dataset with our count matrix of differentially expressed genes
+  rename(id = ".rownames") |> # renaming the .rownames column to id
+  left_join(clinical_data |>  select(c(id, pam50)), # appending the pam50 columns from the clinical dataset to the pca dataset, based on id. 
             by = "id") 
 
 pca_plot <- pca_aug |> 
-  ggplot(aes(x = .fittedPC1,
-             y = .fittedPC2,
-             colour = pam50,
-             fill = pam50)) +
-  geom_vline(xintercept = 0) +
-  geom_hline(yintercept = 0) +
-  geom_point(shape = 21,
+  ggplot(aes(x = .fittedPC1, # PC1 on x axis
+             y = .fittedPC2, # PC2 on y axis
+             colour = pam50, # color based on pam50 
+             fill = pam50)) + # fill based on pam50
+  geom_vline(xintercept = 0) + # creating a vertical line that interceps at x = 0
+  geom_hline(yintercept = 0) + # creating a horizontal line that intercepts at y = 0
+  geom_point(shape = 21, # global are already given above and we not just apply design for the dots 
              size = 6,
-             alpha = 0.5) +
+             alpha = 0.5) + # transparency of the dots is set to 0.5
   labs(
-    title = "PCA",
-    x = pluck(pca_plot_axes_labels, 1),
-    y = pluck(pca_plot_axes_labels, 2))
+    title = "PCA", # title of the data
+    x = pluck(pca_plot_axes_labels, 1), #name of x axis is extracted through the first value of pca_plot_axes_labels variable
+    y = pluck(pca_plot_axes_labels, 2)) #name of y axis is extracted through the second value of pca_plot_axes_labels variable
 
 pca_plot
 
@@ -112,25 +103,25 @@ Now, we run the k-means algorithm using n = 4, as we have 4 groups we want to de
 
 ```{r}
 
-k_means_data <- pca_aug |>
-  select(c(.fittedPC1, .fittedPC2)) 
+k_means_clusters <- pca_aug |>
+  select(c(.fittedPC1, .fittedPC2)) |> # selecting PC1 and PC2
+  kmeans(centers = 4) |> # initializing Kmeans clustering with 4 clusters
+  pluck("cluster") |> # extracting "cluster" list.
+  as.factor() # converting the results to a factor for coloring and filling of PCA plot. 
 
-kmeans_analysis <- kmeans(k_means_data, centers = 4) %>% 
-  pluck("cluster") %>% 
-  as.factor()
-
-PCA_kmeans <- pca_aug %>% mutate(cluster = kmeans_analysis ) %>% 
+PCA_kmeans <- pca_aug |>
+  mutate(cluster = k_means_clusters)|> #Creating a new column called Cluster with results from the K_means clustering analysis. 
     ggplot(aes(x = .fittedPC1,
              y = .fittedPC2,
-             colour = kmeans_analysis,
-             fill = kmeans_analysis)) +
+             colour = k_means_clusters, # Coloring by the clusters
+             fill = k_means_clusters)) + # Filling by the clusters
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
   geom_point(shape = 21,
              size = 6,
              alpha = 0.5) +
   labs(
-    title = "PCA",
+    title = "PCA catagorized through clusters",
     x = pluck(pca_plot_axes_labels, 1),
     y = pluck(pca_plot_axes_labels, 2),
     colour = "Cluster factor",
