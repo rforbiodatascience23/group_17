@@ -228,6 +228,36 @@ length(Sign_proteins)
 ```
 
 
+
+Retrieve names of sign proteins (Mapping)
+
+```{r}
+library(readr)
+protein_IDs <- read_csv("/NP_to_gene_dictionary/protein_IDs.csv")
+View(protein_IDs)
+protein_mapping <- protein_IDs |> 
+  select(RefSeq_accession_number, Protein.names, Gene.Names)
+
+
+HER2_mapping <- HER2_sign |> 
+  data.frame() |> 
+  left_join(protein_mapping, by = c("HER2_sign" = "RefSeq_accession_number"))
+
+Basal_like_mapping <- Basal_like_sign |> 
+  data.frame() |> 
+  left_join(protein_mapping, by = c("Basal_like_sign" = "RefSeq_accession_number"))
+
+Luminal_A_mapping <- Luminal_A_sign |> 
+  data.frame() |> 
+  left_join(protein_mapping, by = c("Luminal_A_sign" = "RefSeq_accession_number"))
+
+Luminal_B_mapping <- Luminal_B_sign |> 
+  data.frame() |> 
+  left_join(protein_mapping, by = c("Luminal_B_sign" = "RefSeq_accession_number"))
+```
+
+
+
 ```{r}
 full_data <- full_data |>
   select(c(id, er_status, pr_status, her2_final_status, DGEA_HER2, DGEA_Luminal_A, DGEA_Luminal_B, DGEA_Basal_like, all_of(Sign_proteins))) |>
