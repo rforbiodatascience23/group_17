@@ -81,7 +81,7 @@ pca_plot <- pca |>
 pca_plot
 
 #save the plot
-ggsave("../plots/PCA1.png", pca_plot, height = 4, width = 6)
+ggsave("../results/PCA1.png", pca_plot, height = 4, width = 6)
 
 ```
 

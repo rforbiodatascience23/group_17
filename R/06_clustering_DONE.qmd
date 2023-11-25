@@ -81,7 +81,7 @@ ddg_plot <- ggdendrogram(data = hc, rotate=TRUE) +
 ddg_plot
 
 # save dendrogram plot
-ggsave("../plots/hc_dendro.png", ddg_plot, height = 4, width = 7)
+ggsave("../results/hc_dendro_all.png", ddg_plot, height = 4, width = 7)
 ```
 
 **Conclusion**: From the colored labels, it is apparent, that the samples don't group by pam50 categories when a hierachial clustering is made on the entire proteomics dataset.
@@ -144,7 +144,7 @@ ddg_plot2 <- ggdendrogram(data = hc, rotate=TRUE) +
 ddg_plot2
 
 # save dendrogram plot
-ggsave("../plots/hc_dendro2.png", ddg_plot2, height = 4, width = 7)
+ggsave("../results/hc_dendro_sig.png", ddg_plot2, height = 4, width = 7)
 ```
 
 **Conclusion**: After filtering the dataset on only the significant proteins based on our differential expression analysis, we see a much better agreement between the hierachial clustering of proteomics data and the clinical pam50 assignments.
