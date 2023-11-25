@@ -10,7 +10,7 @@ editor: visual
 
 ```{r}
 #| echo: false
-#| label: load packages
+#| label: load packages and data
 
 library(tidyverse)
 
@@ -21,12 +21,13 @@ library(tidyverse)
 library(ggdendro)
 library(grid)
 library(patchwork)
+
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 cm <- read.table("../data/count_matrix_1_77.tsv", header = T)
 ```
 
 ```{r}
-#| label: load data (and augment)
+#| label: augment data
 
 cm <- cm |>
   pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |> # Converting ot pivot_longer
@@ -45,7 +46,7 @@ Hierachial clustering and dendogramming
 # create distance matrix (scaled) and perform hierachial clustering
 hc <- cm |>
   dist() |> # calculating the distance for each value
-  hclust(method = "complete")  # applying the hierachial clustering algorithm to the data 
+  hclust(method = "ward.D2")  # applying the hierachial clustering algorithm to the data 
 
 # save clustering as dendogram
 ddg <- as.dendrogram(hc)
@@ -64,17 +65,48 @@ ddg_label <- label(ddg_data) |>
 
 
 # create dendogram plot based on hierachial clustering
-ddg_plot <- ggdendrogram(data = hc, rotate=T) +
+ddg_plot <- ggdendrogram(data = hc, rotate=TRUE) +
   theme(axis.text.y = element_blank(), # removing labels on x axis
-        axis.text.x = element_blank()) + # removing labels on Y axis
+        axis.text.x = element_blank(), # removing labels on Y axis
+        plot.title = element_text(hjust = 0.5, vjust = 0)) +  
   geom_text(data=ddg_label,
-            aes(label=id, x=x, y=-15, colour=pam50), # labels on y axis colored by pam50. 
-            size = 2)
+            aes(label=id, x=x, y=-45, colour=pam50), # labels on y axis colored by pam50. 
+            size = 1.5) +
+  labs(title = "Hierachial clustering based on full proteomics dataset")
 
 ddg_plot
+
+#save plot
+ggsave("../plots/hc_dendro.png", ddg_plot, height = 4, width = 7)
 ```
 
-heatmapping by order of clustering
+From the colored labels, it is apparent, that the samples - other than perhaps the Basal-like - don't group by pam50 categories when a hierachial clustering is made on the entire proteomics dataset.
+
+### Alternative method
+
+By using the pheatmap package, we can couple the hierachial clustering analysis and visualisation in a dendogram (as done above) with that in a heatmap in very few steps of code:
+
+```{r}
+library(pheatmap)
+
+cm2 <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
+  column_to_rownames('id')
+
+pheatmap(
+  mat = cm2,
+  clustering_method = "ward.D2", # use hierachial clustering method
+  scale = "row",
+  show_rownames = FALSE,
+  main = "Hierachial clustering analysis, all proteomics data",
+  treeheight_row = 0, #do not display row tree
+  fontsize_col= 3
+  )
+```
+
+\
+\
+\
+\*\*\* I suggest to delete below because I can't figure out how to order the rows like in the dendogram \*\*\*\
 
 ```{r}
 #| label: visualization
@@ -83,44 +115,22 @@ heatmapping by order of clustering
 # define long data structure based on the count matrix
 cm_long <- cm |> 
   rownames_to_column(var = "id") |> # setting rownames to a column named id
-  pivot_longer(cols = -c("id"), names_to = "protein") |>  # converting to pivot longer
+  pivot_longer(cols = -c("id"), names_to = "protein")  # converting to pivot longer
   mutate(id = factor(x = id, levels = unique(id) |> reorder(ddg_order), ordered = T)) # Factorize the id column based on unique values from id ordered by the ddg_order
 
 # heatmap on scaled data:
-hm <- ggplot(data = cm_long, mapping = aes(x = protein, y = id)) +
+hm <- ggplot(data = cm_long, mapping = aes(x = protein)) +
         geom_tile(aes(fill=value)) + # heatmap function
         scale_fill_gradient2(low = "red", high = "blue") + # scale color (high values are blue, low values are red)
         theme_minimal() + 
         theme(axis.text.x = element_blank(), # remove label on x axis
-              axis.text.y = element_text(size = 5),
-              legend.position = "left") # position of the legend on the left
+              axis.text.y = element_blank(),
+              legend.position = "left") +
+        geom_text(data=ddg_label,
+            aes(label=id, x=x, y=-175 colour=pam50), # labels on y axis colored by pam50. 
+            size = 1.5)# position of the legend on the left
 hm
 
-
-# Extract relevant columns from clinical_data
-selected_data <- clnical_data |> 
-  select("id", "pam50") # id and pam50 from the clinical data. 
-
-# Define color mapping for pam50 values
-color_mapping <- data.frame(
-  pam50 = c("Basal-like", "HER2-enriched", "Luminal A", "Luminal B"),
-  color = c("red", "blue", "green", "purple") # each element in the pam50 has been given a color
-)
-
-# Merge selected_data with color_mapping
-merged_color_data <- left_join(selected_data, color_mapping, by = "pam50") |>  #mergning the selected_data and color_mapping dataset by pam50
-  mutate(id = factor(merged_color_data |> pull(id), # converting the ID column to factor
-                     levels = unique(merged_color_data |> pull(id))))
-
-hm <- ggplot(data = cm_long, mapping = aes(x = protein, y = id)) +
-  geom_tile(aes(fill = value)) + # heatmap function
-  scale_fill_gradient2(low = "red", high = "blue")+ # low values are red, high values are blue
-  scale_y_discrete(labels = merged_color_data |> pull("id")) +  # Set y-axis labels
-  theme(
-    axis.text.x = element_blank(),# remove x-axis
-    axis.text.y = element_text(size = 5),
-    legend.position = "left"
-  )
 
 ```
 
