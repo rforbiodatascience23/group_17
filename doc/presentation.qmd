@@ -19,6 +19,8 @@ figures: fig-responsive
 
 -   Breast cancer proteome data
 
+![](../results/pam50distribution.png){fig-align="right" width="600"}
+
 ### On PAM50
 
 -   
