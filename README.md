@@ -13,8 +13,7 @@ editor_options:
 | Eszter Toldi      | EszterToldi     | s232970        |
 | John Tran         | gwq445          | s230339        |
 | Josefine Meineche | JosefineTM      | s233776        |
-
-: Project contributors
+Project contributors
 
 # Data retrieval
 
