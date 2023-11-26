@@ -46,7 +46,7 @@ rm(signif_fdr_prots)
 ```{r}
 
 #Adding the name key - from refSeq number to gene name
-name_key <- read.csv("../NP_to_gene_dictionary/protein_IDs.csv") |>
+name_key <- read.csv("../_raw/NP_to_gene_dictionary/protein_IDs.csv") |>
   distinct(Gene.Names,.keep_all = TRUE) |>
       # Filter for only unique rows
   rename(protein = RefSeq_accession_number, gene = Gene.Names) |>
