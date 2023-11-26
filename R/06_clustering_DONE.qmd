@@ -178,24 +178,23 @@ pheatmap(
 ```{r}
 #| label: visualization
 
-
 # define long data structure based on the count matrix
 cm_long <- cm |> 
   rownames_to_column(var = "id") |> # setting rownames to a column named id
-  pivot_longer(cols = -c("id"), names_to = "protein")  # converting to pivot longer
-  mutate(id = factor(x = id, levels = unique(id) |> reorder(ddg_order), ordered = T)) # Factorize the id column based on unique values from id ordered by the ddg_order
+  pivot_longer(cols = -c("id"), names_to = "protein") |> # converting to pivot longer
+  mutate(id = factor(id, levels = unique(id))) # Factorize the id column based on unique values from id ordered by the ddg_order
 
 # heatmap on scaled data:
-hm <- ggplot(data = cm_long, mapping = aes(x = protein)) +
+hm <- ggplot(data = cm_long, mapping = aes(x = protein, y = value)) +
         geom_tile(aes(fill=value)) + # heatmap function
         scale_fill_gradient2(low = "red", high = "blue") + # scale color (high values are blue, low values are red)
-        theme_minimal() + 
         theme(axis.text.x = element_blank(), # remove label on x axis
               axis.text.y = element_blank(),
               legend.position = "left") +
         geom_text(data=ddg_label,
-            aes(label=id, x=x, y=-175 colour=pam50), # labels on y axis colored by pam50. 
-            size = 1.5)# position of the legend on the left
+            aes(label=id, x=x, y=-20 ,colour=pam50), # labels on y axis colored by pam50. 
+            size = 1.5) + 
+  theme_minimal() + # position of the legend on the left
 hm
 
 
