@@ -27,7 +27,7 @@ In the present study, iTRAQ proteome profiling was performed on 77 breast cancer
 In this project, we wanted to see how well the proteome profiling relates to the PAM50 classification.
 
 \
-To show the distribution of how the 77 samples in the datam set were classified by the PAM50 a simple plot was made.
+To show the distribution of how the 77 samples in the data set were classified by the PAM50 a simple plot was made.
 
 ```{r}
 #| label: load packages and data
