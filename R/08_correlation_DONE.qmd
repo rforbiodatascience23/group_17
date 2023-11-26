@@ -236,7 +236,7 @@ We can also obtain a list of the protein names by transforming the protein ID ve
 This knowledge can be used later to interpret the correlations of the proteins.
 ```{r}
 library(readr)
-protein_IDs <- read_csv("/NP_to_gene_dictionary/protein_IDs.csv")
+protein_IDs <- read_csv("../_raw/NP_to_gene_dictionary/protein_IDs.csv")
 View(protein_IDs)
 protein_mapping <- protein_IDs |> 
   select(RefSeq_accession_number, Protein.names, Gene.Names)
