@@ -42,12 +42,12 @@ Next, the PCA was done by first scaling the count matrix, and then the doing the
 #| label: define PCA
 
 pca <- cm |> 
-  prcomp(center=T, scale=T) # transform data with to principal components
+  stats::prcomp(center=TRUE, scale=TRUE) # transform data to principal components
 
 #Extract variance explained by the PCs
 pca_results <- pca |>
   broom::tidy("pcs") |> # Using broom::tidy to extract results
-  pluck("percent") # extracting the expained varaince of each PC
+  purrr::pluck("percent") # extracting the explained varaince of each PC
 
   
 ```
@@ -63,8 +63,8 @@ pca_plot <- pca |>
   data.frame() |> 
    ggplot(aes(x=PC1, 
               y=PC2, 
-              color = clinical_data |> pull("pam50"), # color by pam50 from clinical_data
-              fill = clinical_data |> pull("pam50"))) +
+              color = clinical_data |> dplyr::pull("pam50"), # color by pam50 from clinical_data
+              fill = clinical_data |> dplyr::pull("pam50"))) +
    geom_point(shape = 21,
              size = 3, 
              alpha = 0.5) +
