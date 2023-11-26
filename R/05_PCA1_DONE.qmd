@@ -18,7 +18,7 @@ First, required packages were loaded.
 
 library(tidyverse)
 library(broom)
-library(cowplot)
+library(cowplot) # only used for some aesthetics
 
 ```
 
@@ -46,7 +46,7 @@ pca <- cm |>
 
 #Extract variance explained by the PCs
 pca_results <- pca |>
-  broom::tidy("pcs") |> # Using the tidy function from the broom package to extract results
+  broom::tidy("pcs") |> # Using broom::tidy to extract results
   pluck("percent") # extracting the expained varaince of each PC
 
   
@@ -63,25 +63,25 @@ pca_plot <- pca |>
   data.frame() |> 
    ggplot(aes(x=PC1, 
               y=PC2, 
-              color = clinical_data |> pull("pam50"), # color by pam50 column from cli clinical dataset
-              fill = clinical_data |> pull("pam50"))) + # filling by pam50 column from cli clinical dataset
+              color = clinical_data |> pull("pam50"), # color by pam50 from clinical_data
+              fill = clinical_data |> pull("pam50"))) +
    geom_point(shape = 21,
              size = 3, 
              alpha = 0.5) +
    theme_bw(base_size = 12) + # font size of text
    background_grid() +
-   xlab(str_c('PC1 ', pluck(pc_var,1)*100, '% explained variance')) + 
-   ylab(str_c('PC2 ', pluck(pc_var,2)*100, '% explained variance')) +
+   xlab(str_c('PC1,  ', round(pca_results[1]*100, digits=1), '% VE')) + 
+   ylab(str_c('PC2,  ', round(pca_results[2]*100, digits=1), '% VE')) +
    labs(
      title = "PCA on entire proteomics dataset",
      color = "pam50",
      fill = "pam50"
         )
+#print the plot
 pca_plot
-ggsave("../plots/PCA1.png", pca_plot, height = 4, width = 6)
 
-# print PCA plot
-
+#save the plot
+ggsave("../results/PCA1.png", pca_plot, height = 4, width = 6)
 
 ```
 
