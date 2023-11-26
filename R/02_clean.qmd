@@ -7,9 +7,12 @@ editor: visual
 ## Cleaning of data
 
 ```{r}
-protein_data <- read_table("../data/protein_load.tsv")
-clinical_data <- read_table("../data/clinical_load.tsv") 
-PAM50_file <- read_table("../data/PAM50_load.tsv")
+library(readr)
+library(stringr)
+library(tidyverse)
+protein_data <- read_tsv("../data/protein_load.tsv")
+clinical_data <- read_tsv("../data/clinical_load.tsv") 
+PAM50_file <- read_tsv("../data/PAM50_load.tsv")
 ```
 
 ```{r}
