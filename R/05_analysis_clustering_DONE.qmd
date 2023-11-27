@@ -1,0 +1,53 @@
+---
+title: "Cluster analysis with all proteomic data"
+format: html
+editor: visual
+---
+
+# Clustering analysis with all proteomics data
+
+## Hierachial clustering visualised with dendrograms
+
+To investigate if the clinically assigned pam50 categories display in the proteomics dataset, we also wanted to do a hierachial clustering analysis. This was visualised using dendrograms.
+
+First, packages and data are loaded.
+
+```{r}
+#| echo: false
+#| label: load packages and data
+
+# Packages
+library(tidyverse)
+source("99_proj_func.R")
+
+if (!require('ggendro', character.only = TRUE)) {
+# If not installed, install the package
+ install.packages('ggdendro')
+}
+library(ggdendro)
+
+# data
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
+  pivot_longer(cols = -id, names_to = "id2", values_to = "value")|> # Transforming to pivot_longer
+  pivot_wider(names_from = id, values_from = value) |>
+  column_to_rownames("id2")
+
+```
+
+### Analysis based on entire proteomics data set
+
+Here, the hierachial clustering is done and plotted as a dendrogram using the `hc_dendro_plot` fundtion from the `99_proj_func.R` file. The function first takes the count matrix and calculates the hierarchical clustering. Hereafter, it plots the results as a dendrogram while colouring for pam50-subtypes
+
+```{r}
+
+ddg_plot <- hc_dendro_plot(count_matrix = cm, data_type = "full proteomics dataset")
+ddg_plot
+
+# save dendrogram plot
+ggsave("../results/hc_dendro_all.png", ddg_plot, height = 4, width = 7)
+```
+
+**Conclusion**: From the colored labels, it is apparent, that the samples don't group by pam50 categories when a hierachial clustering is made on the entire proteomics dataset.
+
+### 

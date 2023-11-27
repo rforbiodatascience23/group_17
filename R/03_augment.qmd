@@ -1,15 +1,22 @@
 ---
-title: "Differential gene expression analysis"
+title: "3. Augment"
 format: html
 editor: visual
 ---
 
-```{r}
-library(tidyverse)
-source("99_proj_func.R")
-```
+In this file, all different kinds of data that we need is made.
 
-Load data:
+Summary of data-sets used for this project (saved in the `data` folder)
+
+-   A clean, simple count matrix with just protein-values and subjects
+
+-   A dataset of just the clinical data
+
+-   A combined dataset of the protein data and clinical data
+
+### Making the full data set:
+
+First, the count matrix is transposed using `pivor_longer` and `pivot_wider`. This is done to get the subjects as rows and proteins as columns.
 
 ```{r}
 
@@ -22,13 +29,14 @@ protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T)|>
   dplyr::rename(id = variable)
       #Rename the column 'variable' to 'id'
 
-clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
-      #Read the clinial data
+
 ```
 
-Wrangling the data into something which we can use in
+Now, the clinical data is loaded and joined to the protein data in a dataset called `full_data`. Additionally, new columns are made, storing binary information of which subgroup (pam50-classification) each person is in.
 
 ```{r}
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+      #Read the clinial data
 
 full_data <- clinical_data |>
   mutate( 
@@ -55,39 +63,8 @@ full_data <- clinical_data |>
   left_join(protein_data, by = "id")
         # Leftjoin the protein expression data to make a big dataframe with everything
 
+write.table(full_data, "../data/full_data.tsv")
 
-
-```
-
-In the following, the actual gene expression analysis takes place. 4 analyses are made - one for each subtype of PAM50. Each subtype is compared to all the rest of the data. Thus, almost the same code is used 4 times. For HER2, each step is described.
-
-The function for making the linar predictions are made in the `99_proj_func.R` file and are called to this file using `source()`.
-
-```{r}
-source('99_proj_func.R')
-
-# Her 2
-HER2 <- linear_model_deg(data = full_data, test = "DGEA_HER2")
-
-#Luminal A
-Luminal_A <- linear_model_deg((data = full_data,test = "DGEA_Luminal_A")
-
-#Luminal B
-Luminal_B <- linear_model_deg((data = full_data,test = "DGEA_Luminal_B")
-
-#Basal like
-Basal_like <- linear_model_deg((data = full_data,test = "DGEA_Basal_like")
-
-```
-
-Save:
-
-```{r}
-# Save the results for easy import into next steps of the analysis.
-write_tsv(HER2, "../data/diff_exp_HER2.tsv")
-write_tsv(Luminal_A, "../data/diff_exp_Luminal_A.tsv")
-write_tsv(Luminal_B, "../data/diff_exp_Luminal_B.tsv")
-write_tsv(Basal_like, "../data/diff_exp_Basal_like.tsv")
 ```
 
 ```{r}

@@ -7,7 +7,6 @@ editor: visual
 ```{r}
 library(tidyverse)
 library(corrr)
-library(ggcorrplot)
 library(ggplot2)
 library(reshape)
 library(purrr)

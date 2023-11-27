@@ -3,92 +3,10 @@
 ```
 
 ---
-title: "06_hc_dendro"
+title: "Cluster analysis with all proteomic data"
 format: html
 editor: visual
 ---
-
-# Clustering analysis with all proteomics data
-
-## Hierachial clustering visualised with dendrograms
-
-To investigate if the clinically assigned pam50 categories display in the proteomics dataset, we also wanted to do a hierachial clustering analysis. This was visualised using dendrograms.
-
-First, packages and data were loaded.
-
-```{r}
-#| echo: false
-#| label: load packages and data
-
-# Packages
-library(tidyverse)
-
-if (!require('ggendro', character.only = TRUE)) {
-# If not installed, install the package
- install.packages('ggdendro')
-}
-library(ggdendro)
-
-# data
-clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
-cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
-  pivot_longer(cols = -id, names_to = "id2", values_to = "value")|> # Transforming to pivot_longer
-  pivot_wider(names_from = id, values_from = value) |>
-  column_to_rownames("id2")
-
-```
-
-### Analysis based on entire proteomics data set
-
-Next, the hierachial clustering was done.
-
-```{r}
-#| label: hierachial clustering
-
-# create distance matrix (scaled) and perform hierachial clustering
-hc <- cm |>
-  stats::dist() |> # calculating the distance for each value
-  stats::hclust(method = "ward.D2")  # applying the hierachial clustering algorithm to the data 
-
-# save clustering as dendogram
-ddg <- stats::as.dendrogram(hc)
-  
-# extract dendogram order
-ddg_order <- stats::order.dendrogram(ddg)
-  
-# extract all dendro information
-ddg_data <- ggdendro::dendro_data(ddg)
-
-# add pam50 information to ddg_data
-ddg_label <- ggdendro::label(ddg_data) |>
-  dplyr::rename(id = label) |> 
-  dplyr::left_join(clinical_data, by = c("id")) |> 
-  dplyr::select(x,y, id, pam50)
-
-```
-
-This was followed by visualisation in the form of a dendrogram using the ggdendro package.
-
-```{r}
-#| label: dendrogram
-
-# create dendogram plot based on hierachial clustering
-ddg_plot <- ggdendro::ggdendrogram(data = hc, rotate=TRUE) +
-  theme(axis.text.y = element_blank(), # removing labels on x axis
-        axis.text.x = element_blank(), # removing labels on Y axis
-        plot.title = element_text(hjust = 0.5, vjust = 0)) +  
-  geom_text(data=ddg_label,
-            aes(label=id, x=x, y=-45, colour=pam50), # labels on y axis colored by pam50. 
-            size = 1.5) +
-  labs(title = "Hierachial clustering based on full proteomics dataset")
-
-ddg_plot
-
-# save dendrogram plot
-ggsave("../results/hc_dendro_all.png", ddg_plot, height = 4, width = 7)
-```
-
-**Conclusion**: From the colored labels, it is apparent, that the samples don't group by pam50 categories when a hierachial clustering is made on the entire proteomics dataset.
 
 ### Analysis based on significant proteins
 
@@ -177,7 +95,7 @@ pheatmap(
 \
 \
 \
-\*\*\* I suggest to delete below because I can't figure out how to order the rows like in the dendogram \*\*\*\
+\*\*\* I suggest to delete below because I can't figure out how to order the rows like in the dendogram \*\*\*
 
 ```{r}
 #| label: visualization

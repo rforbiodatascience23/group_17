@@ -1,0 +1,53 @@
+---
+title: "Volcanoplots of results from differential gene expression analysis"
+format: html
+editor: visual
+---
+
+```{r}
+#loading packages.
+library(tidyverse)
+library(patchwork)
+library(ggrepel)
+source("99_proj_func.R")
+
+#read files.
+HER2 <- read_table("../data/diff_exp_HER2.tsv")
+lumA <- read_table("../data/diff_exp_Luminal_A.tsv")
+lumB <- read_table("../data/diff_exp_Luminal_B.tsv")
+basal_like <- read_table("../data/diff_exp_Basal_like.tsv")
+```
+
+You can add options to executable code like this
+
+```{r}
+plot1 <- volcano_plot(data = HER2, subtype = "HER2")
+plot1
+
+plot2 <- volcano_plot(data = lumA, subtype = "Luminal A")
+plot2
+
+plot3 <- volcano_plot(data = lumB, subtype = "Luminal A")
+plot3
+
+plot4 <- volcano_plot(data = basal_like, subtype = "Basal like")
+plot4
+
+
+
+```
+
+```{r}
+#loads patchwork library to combine the four volcanoplots where / creates to row #and two columns, and collect ensures that legends are shared.
+#the file with combined plot is saved as png file in "/results/ directory with specified dimentions.
+
+library(patchwork)
+
+volcano_plots <- (plot1 + plot2)/(plot3 + plot4) +
+  plot_layout(guides = "collect")
+
+volcano_plots
+  
+ggsave("../results/volcano_plots.png", volcano_plots, height = 8, width = 16, dpi = 300)
+
+```
