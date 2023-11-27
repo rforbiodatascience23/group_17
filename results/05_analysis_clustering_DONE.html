@@ -116,7 +116,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ✖ dplyr::filter() masks stats::filter()
 ✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+
+── Column specification ────────────────────────────────────────────────────────
+cols(
+  .default = col_double(),
+  id = col_character()
+)
+ℹ Use `spec()` for the full column specifications.</code></pre>
 </div>
 </div>
 <section id="analysis-based-on-entire-proteomics-data-set" class="level3">

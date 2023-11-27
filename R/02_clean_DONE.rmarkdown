@@ -1,0 +1,105 @@
+---
+title: "02 Cleaning of data"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
+---
+
+
+## Cleaning of data
+
+
+```{r}
+#| label: load packages and data
+library(readr)
+library(stringr)
+library(tidyverse)
+protein_data <- read_csv2("../data/protein_load.csv")
+clinical_data <- read_delim("../data/clinical_load.csv") 
+PAM50_file <- read_delim("../data/PAM50_load.csv") 
+```
+
+```{r}
+#| label: cleaning of data
+# Removal of negative controls
+samples <- protein_data |>
+  select(-c(RefSeq_accession_number,gene_symbol,gene_name)) |>  
+          # Remove columns with the names: "RefSeq_accession_number,gene_symbo
+          # ,gene_name"
+  colnames() |>
+          # Returns all colnames in a list
+  str_subset(pattern = regex("TCGA$"))
+          # Removes all columns that does not contain TCGA as their last letters. THis is because the dataset have 3 controls, 
+          # named: "263d3f-I.CPTAC" "blcdb9-I.CPTAC" "c4155b-C.CPTAC"
+
+#Creation of the count_matrix
+count_matrix_1 <- protein_data |>
+  select(RefSeq_accession_number, all_of(samples)) |>
+          # Creating a subset with  RefSeq_accession_number and all samples,
+          # excluding the control samples
+  mutate(
+    across(everything(), ~replace_na(.x, 0)))|>
+          # replace all NA values in the count-matrix with 0
+  pivot_longer(cols = -c("RefSeq_accession_number")) |> 
+          # Transfroms the dataset to a pivot longer with sample ID as names and
+          # values as expression counts
+  mutate(name = str_extract(name, "[^.]+"),
+         name = str_replace(name, "-", "_"),
+         name = str_c("TCGA", name, sep = "_")) |>
+           # Removing everyting after the first "." in the name column. 
+           # "C8-A130.02TCGA" becomes "C8-A130", a "-" becomes a "_"
+  pivot_wider(names_from = name, values_from = value, values_fn = {list}) |>
+         # Transforms the dataset back to a pivot wider with columns as sample ID 
+         # and values as expression counts
+  unnest(cols = -c("RefSeq_accession_number")) |> 
+        # We unnest the dataset
+  distinct(RefSeq_accession_number,.keep_all = TRUE) |>
+  dplyr::rename(id = "RefSeq_accession_number")
+
+```
+
+
+Define list of patients that are in the count matrix (we have proteomics data from)
+
+
+```{r}
+#| label: define count matrix
+list_of_patients <- count_matrix_1 |>
+  colnames() |>
+  str_subset(pattern = regex("TCGA"))
+```
+
+
+Renaming the clincal data set and filtering for only the patent ID's that are in the count matrix.
+
+
+```{r}
+#| label: filtering count matrix
+clinical_data_final <- clinical_data |>
+  dplyr::rename(id = "Complete TCGA ID") |>
+          # renames "Complete TCGA ID" to id
+  mutate(id = str_replace_all(id, "-", "_")) |>
+          # mutates the ids to having to -, but only _
+  dplyr::rename_with( ~ str_to_lower(str_replace_all(.x, " ", "_"))) |> 
+  dplyr::rename(pam50 = pam50_mrna)|> #rename for the same of ease later on
+  filter(id %in% colnames(count_matrix_1))# include only Id that are in our count matrix
+  
+clinical_data_final <- clinical_data_final |>
+  filter(id %in% list_of_patients)
+```
+
+```{r}
+#| label: write data
+write_tsv(clinical_data_final, "../data/clinical_data.tsv")
+
+write_tsv(count_matrix_1, "../data/count_matrix_1_77.tsv")
+
+write_tsv(PAM50_file, "../data/PAM50_file.tsv")
+```
+
+```{r}
+rm(list = ls())
+```
+

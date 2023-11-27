@@ -130,18 +130,18 @@ dbl (84): ...1, AO-A12D.01TCGA, C8-A131.01TCGA, AO-A12B.01TCGA, BH-A18Q.02TC...
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>clinical_data <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"../data/clinical_load.csv"</span>,<span class="at">delim =</span> <span class="st">","</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>clinical_data <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"../data/clinical_load.csv"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 105 Columns: 30
 ── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
+Delimiter: ";"
 chr (17): Complete TCGA ID, Gender, ER Status, PR Status, HER2 Final Status,...
 dbl (13): Age at Initial Pathologic Diagnosis, Days to Date of Last Contact,...
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>PAM50_file <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"../data/PAM50_load.csv"</span>, <span class="at">delim =</span> <span class="st">","</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>PAM50_file <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"../data/PAM50_load.csv"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
 e.g.:
@@ -149,10 +149,10 @@ e.g.:
   problems(dat)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Rows: 100 Columns: 4
+<pre><code>Rows: 100 Columns: 2
 ── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (4): GeneSymbol, RefSeqProteinID, Species, Gene Name
+Delimiter: " "
+chr (2): GeneSymbol;RefSeqProteinID;Species;Gene, Name
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>

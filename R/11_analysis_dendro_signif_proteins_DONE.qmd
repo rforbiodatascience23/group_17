@@ -17,7 +17,14 @@ library(tidyverse)
 source("99_proj_func.R")
 library("ggdendro")
 
-cm_sig <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) |>
+HER2 <- read_table(file = "../data/diff_exp_HER2.tsv")
+Basal_like <- read_table(file = "../data/diff_exp_Basal_like.tsv")
+Luminal_A <- read_table(file = "../data/diff_exp_Luminal_A.tsv")
+Luminal_B <- read_table(file = "../data/diff_exp_Luminal_B.tsv")
+
+cm <- read_table("../data/count_matrix_1_77.tsv") 
+
+cm_sig <- read_table("../data/count_matrix_significant_proteins.tsv") |>
   column_to_rownames('id')
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 ```

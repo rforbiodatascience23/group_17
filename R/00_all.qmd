@@ -1,13 +1,17 @@
 ---
-title: "Do all scripts file"
+title: "Gene expression analysis of breast cancer proteome"
 format:
   html:
-    toc: true
-    html-math-method: katex
-    css: styles.css
+    embed-resources: true
+editor: visual
 ---
 
 ```{r}
+# Run all documents
+
+#| label: 00_Load packages
+#| message: false
+#| output: false
 library(quarto)
 ```
 
@@ -69,7 +73,7 @@ file.rename(from = "06_analysis_PCA_cluster_DONE_files",
             to = "../results/06_analysis_PCA_cluster_DONE_files")
 
 ###### FILE 07
-quarto::quarto_render("07_analysis_diff_exp_DONE.qmd",
+quarto::quarto_render("07_analysis_diff_exp_DONE.qmd.qmd",
                       output_format = "html",
                       execute = T)
 file.rename(from = "07_analysis_diff_exp_DONE.html",
@@ -78,42 +82,42 @@ file.rename(from = "07_analysis_diff_exp_DONE_files/",
             to = "../results/07_analysis_diff_exp_DONE_files")
 
 ###### FILE 08
-quarto::quarto_render("08_analysis_volcano_plots_DONE.qmd",
+quarto::quarto_render("08_analysis_kmeans_DONE.qmd",
                       output_format = "html",
                       execute = T)
-file.rename(from = "08_analysis_volcano_plots_DONE.html",
-            to = "../results/08_analysis_volcano_plots_DONE.html")
-file.rename(from = "08_analysis_volcano_plots_DONE_files/",
-            to = "../results/08_analysis_volcano_plots_DONE_files")
+file.rename(from = "08_analysis_kmeans_DONE.html",
+            to = "../results/08_analysis_kmeans_DONE.qmd.html")
+file.rename(from = "08_analysis_kmeans_DONE_files/",
+            to = "../results/08_analysis_kmeans_DONE_files")
 
 ###### FILE 09
-quarto::quarto_render("09_analysis_heatmaps_diff_exp_DONE.qmd",
+quarto::quarto_render("09_analysis_volcano_plots_DONE.qmd",
                       output_format = "html",
                       execute = T)
-file.rename(from = "09_analysis_heatmaps_diff_exp_DONE.html",
-            to = "../results/09_analysis_heatmaps_diff_exp_DONE.html")
-file.rename(from = "09_analysis_heatmaps_diff_exp_DONE_files/",
-            to = "../results/09_analysis_heatmaps_diff_exp_DONE_files")
+file.rename(from = "09_analysis_volcano_plots_DONE.html",
+            to = "../results/09_analysis_volcano_plots_DONE.html")
+file.rename(from = "09_analysis_volcano_plots_DONE_files/",
+            to = "../results/09_analysis_volcano_plots_DONE_files")
 
 
 ###### FILE 10
-quarto::quarto_render("10_analysis_dendro_signif_proteins_DONE.qmd",
+quarto::quarto_render("10_analysis_heatmaps_diff_exp_DONE.qmd",
                       output_format = "html",
                       execute = T)
-file.rename(from = "10_analysis_dendro_signif_proteins_DONE.html",
-            to = "../results/10_analysis_dendro_signif_proteins_DONE.html")
-file.rename(from = "10_analysis_dendro_signif_proteins_DONE_files/",
-            to = "../results/10_analysis_dendro_signif_proteins_DONE_files")
+file.rename(from = "10_analysis_heatmaps_diff_exp_DONE.html",
+            to = "../results/10_analysis_heatmaps_diff_exp_DONE.html")
+file.rename(from = "10_analysis_heatmaps_diff_exp_DONE_files/",
+            to = "../results/10_analysis_heatmaps_diff_exp_DONE_files")
 
 
 ###### FILE 11
-quarto::quarto_render("11_analysis_kmeans_DONE.qmd",
+quarto::quarto_render("11_analysis_dendro_signif_proteins_DONE.qmd",
                       output_format = "html",
                       execute = T)
-file.rename(from = "11_analysis_kmeans_DONE.html",
-            to = "../results/11_analysis_kmeans_DONE.html")
-file.rename(from = "11_analysis_kmeans_DONE_files/",
-            to = "../results/11_analysis_kmeans_DONE_files")
+file.rename(from = "11_analysis_dendro_signif_proteins_DONE.html",
+            to = "../results/11_analysis_dendro_signif_proteins_DONE.html")
+file.rename(from = "11_analysis_dendro_signif_proteins_DONE_files/",
+            to = "../results/11_analysis_dendro_signif_proteins_DONE_files")
 
 ###### FILE 12
 quarto::quarto_render("12_correlation_DONE.qmd",
@@ -143,12 +147,16 @@ file.rename(from = "12_correlation_DONE_files/",
 
 {{< include 07_analysis_diff_exp_DONE.qmd >}}
 
-{{< include 08_analysis_volcano_plots_DONE.qmd >}}
+{{< include 08_analysis_kmeans_DONE.qmd >}}
 
-{{< include 09_analysis_heatmaps_diff_exp_DONE.qmd >}}
+{{< include 09_analysis_volcano_plots_DONE.qmd >}}
 
-{{< include 10_analysis_dendro_signif_proteins_DONE.qmd >}}
+{{< include 10_analysis_heatmaps_diff_exp_DONE.qmd >}}
 
-{{< include 11_analysis_kmeans_DONE.qmd >}}
+{{< include 11_analysis_dendro_signif_proteins_DONE.qmd >}}
 
 {{< include 12_correlation_DONE.qmd >}}
+
+```{r}
+
+```

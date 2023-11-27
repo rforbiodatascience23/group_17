@@ -196,7 +196,7 @@ corr_plot <- function(data,test){
 subset_rename_data <- function(data, subtype) {
   cols = c("estimate", "adjustedfdr")
   data <- data |>
-    rename(adjustedfdr = "adjusted_fdr") |>
+    dplyr::rename("adjustedfdr" = "adjusted_fdr") |>
     select(c("protein", "estimate", "adjustedfdr")) |>
     dplyr::rename_with(.fn = ~paste0(.,"_",subtype), any_of(cols))
 }

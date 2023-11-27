@@ -20,7 +20,7 @@ library(readr)
 source("99_proj_func.R")
 
 full_data <- read.table("../data/full_data.tsv", header = T)
-clinical_data <- read_delim("../data/clinical_load.tsv")
+clinical_data <- read_delim("../data/clinical_load.csv")
 HER2 <- read_table("../data/diff_exp_HER2.tsv")
 Luminal_A <- read_table("../data/diff_exp_Luminal_A.tsv")
 Luminal_B <- read_table("../data/diff_exp_Luminal_B.tsv")

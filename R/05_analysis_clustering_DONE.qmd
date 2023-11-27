@@ -22,7 +22,7 @@ source("99_proj_func.R")
 
 # data
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
-cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
+cm <- read_table("../data/count_matrix_1_77.tsv") |>
   pivot_longer(cols = -id, names_to = "id2", values_to = "value")|> # Transforming to pivot_longer
   pivot_wider(names_from = id, values_from = value) |>
   column_to_rownames("id2")

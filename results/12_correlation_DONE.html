@@ -154,11 +154,11 @@ The following objects are masked from 'package:tidyr':
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"99_proj_func.R"</span>)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>full_data <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"../data/full_data.tsv"</span>, <span class="at">header =</span> T)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>clinical_data <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"../data/clinical_load.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>clinical_data <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"../data/clinical_load.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 105 Columns: 30
 ── Column specification ────────────────────────────────────────────────────────
-Delimiter: "\t"
+Delimiter: ";"
 chr (17): Complete TCGA ID, Gender, ER Status, PR Status, HER2 Final Status,...
 dbl (13): Age at Initial Pathologic Diagnosis, Days to Date of Last Contact,...
 

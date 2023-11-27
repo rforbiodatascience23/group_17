@@ -14,9 +14,9 @@ format:
 library(readr)
 library(stringr)
 library(tidyverse)
-protein_data <- read_delim("../data/protein_load.csv",delim = ",")
-clinical_data <- read_delim("../data/clinical_load.csv",delim = ",") 
-PAM50_file <- read_delim("../data/PAM50_load.csv", delim = ",") 
+protein_data <- read_csv2("../data/protein_load.csv")
+clinical_data <- read_delim("../data/clinical_load.csv") 
+PAM50_file <- read_delim("../data/PAM50_load.csv") 
 ```
 
 ```{r}

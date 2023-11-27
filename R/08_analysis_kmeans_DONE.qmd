@@ -14,6 +14,8 @@ First, we make a PCA using the
 ```{r}
 #| label: load packages and data
 library(tidyverse)
+clinical_data <- read_delim("../data/clinical_data.tsv")
+
 HER2 <- read.table("../data/diff_exp_HER2.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing HER2 condition based on count matrix
 lumA <- read.table("../data/diff_exp_Luminal_A.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing luminal A condition based on count matrix
 lumB <- read.table("../data/diff_exp_Luminal_B.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing Luminal B condition based on count matrix
@@ -76,13 +78,13 @@ pca_plot_axes_labels <- pca |>
 
 ```{r}
 #| label: analysis 4
-clinical_data <- read_delim("../data/clinical_data.tsv") # Loading the clinical data.
+ # Loading the clinical data.
 
 pca_aug <- pca |>
-  broom::augment(count_matrix_reduced) |> # Using the augment function from broom to extend the pca dataset with our count matrix of differentially expressed genes
-  rename(id = ".rownames") |> # renaming the .rownames column to id
+  broom::augment(count_matrix_reduced)|> # Using the augment function from broom to extend the pca dataset with our count matrix of differentially expressed genes
+  dplyr::rename(id = .rownames) |> # renaming the .rownames column to id
   left_join(clinical_data |>  select(c(id, pam50)), # appending the pam50 columns from the clinical dataset to the pca dataset, based on id. 
-            by = "id") 
+            by = "id")
 
 ```
 

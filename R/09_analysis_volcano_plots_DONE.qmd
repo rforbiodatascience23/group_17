@@ -43,8 +43,5 @@ ggsave("../results/volcano_plots.png", volcano_plots, height = 8, width = 16, dp
 ```
 
 ```{r}
-#| label: quarto rendering
-#quarto::quarto_render("08_analysis_volcano_plot_DONE.qmd",output_format = "html",execute = T)
-#file.rename(from = "08_analysis_volcano_plot_DONE.html",
-#            to = "../results/08_analysis_volcano_plot_DONE.html")
+rm(list = ls())
 ```

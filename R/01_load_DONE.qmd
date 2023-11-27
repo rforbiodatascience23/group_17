@@ -14,8 +14,8 @@ library(curl)
 library(tidyverse)
 library("quarto")
 protein_data <- read_csv2("../_raw/77_cancer_proteomes_CPTAC_itraq.csv")
-clinical_data <- read_csv2("../_raw/clinical_data_breast_cancer.csv")
-PAM50_file <- read_csv2("../_raw/PAM50_proteins.csv")
+clinical_data <- read_csv("../_raw/clinical_data_breast_cancer.csv")
+PAM50_file <- read_csv("../_raw/PAM50_proteins.csv")
 ```
 
 ```{r}

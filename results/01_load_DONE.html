@@ -101,7 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(curl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Using libcurl 7.88.1 with LibreSSL/3.3.6</code></pre>
+<pre><code>Using libcurl 7.84.0 with LibreSSL/3.3.6</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -123,46 +123,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>protein_data <span class="ot">&lt;-</span> <span class="fu">read_csv2</span>(<span class="st">"../_raw/77_cancer_proteomes_CPTAC_itraq.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ Using "','" as decimal and "'.'" as grouping mark. Use `read_delim()` for more control.
-Rows: 12553 Columns: 1── Column specification ────────────────────────────────────────────────────────
+New names:Rows: 12553 Columns: 87── Column specification ────────────────────────────────────────────────────────
 Delimiter: ";"
-chr (1): RefSeq_accession_number,gene_symbol,gene_name,AO-A12D.01TCGA,C8-A13...
+chr  (3): RefSeq_accession_number, gene_symbol, gene_name
+dbl (84): ...1, AO-A12D.01TCGA, C8-A131.01TCGA, AO-A12B.01TCGA, BH-A18Q.02TC...
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>clinical_data <span class="ot">&lt;-</span> <span class="fu">read_csv2</span>(<span class="st">"../_raw/clinical_data_breast_cancer.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>clinical_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../_raw/clinical_data_breast_cancer.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Using "','" as decimal and "'.'" as grouping mark. Use `read_delim()` for more control.
-Rows: 105 Columns: 1── Column specification ────────────────────────────────────────────────────────
-Delimiter: ";"
-chr (1): Complete TCGA ID,Gender,Age at Initial Pathologic Diagnosis,ER Stat...
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>PAM50_file <span class="ot">&lt;-</span> <span class="fu">read_csv2</span>(<span class="st">"../_raw/PAM50_proteins.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>ℹ Using "','" as decimal and "'.'" as grouping mark. Use `read_delim()` for more control.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
-e.g.:
-  dat &lt;- vroom(...)
-  problems(dat)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 100 Columns: 1
+<pre><code>Rows: 105 Columns: 30
 ── Column specification ────────────────────────────────────────────────────────
-Delimiter: ";"
-chr (1): GeneSymbol,RefSeqProteinID,Species,Gene Name
+Delimiter: ","
+chr (17): Complete TCGA ID, Gender, ER Status, PR Status, HER2 Final Status,...
+dbl (13): Age at Initial Pathologic Diagnosis, Days to Date of Last Contact,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>PAM50_file <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../_raw/PAM50_proteins.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 100 Columns: 4
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (4): GeneSymbol, RefSeqProteinID, Species, Gene Name
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#write_csv2 converts the count matrix to a variable of characters</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv2</span>(protein_data, <span class="st">"../data/protein_load.csv"</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv2</span>(clinical_data, <span class="st">"../data/clinical_load.csv"</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv2</span>(PAM50_file, <span class="st">"../data/PAM50_load.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#write_csv2 converts the count matrix to a variable of characters</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv2</span>(protein_data, <span class="st">"../data/protein_load.csv"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv2</span>(clinical_data, <span class="st">"../data/clinical_load.csv"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv2</span>(PAM50_file, <span class="st">"../data/PAM50_load.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 </main>
