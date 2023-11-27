@@ -18,10 +18,10 @@ figures: fig-responsive
 
 ## Introduction {.smaller}
 
-:::: {columns}
-
+::: {columns}
 ::: {.column width="49%"}
 ### PAM50 classification
+
 Based on microarray or RNA-seq data, looking at 50 representative genes to classify breast-cancer tissues, classify samples into four categories:
 
 -   HER2-enriched
@@ -30,67 +30,63 @@ Based on microarray or RNA-seq data, looking at 50 representative genes to class
 -   Basal like
 :::
 
-
 ::: {.column width="-51%"}
 ### Our data
 
 iTRAQ-based mass spectrometry proteome profiling data from 77 breast cancer tissues[^1]
 
-![](../results/pam50distribution.png){width=500 height=300 fig-align="center"}
+![](../results/pam50distribution.png){width="500" height="300" fig-align="center"}
 
 Tumor receptor status for:
 
-- Oestrogen (ER)
-- Progesterone (PR)
-- Human epidermal growth factor receptor 2 (HER2)
+-   Oestrogen (ER)
+-   Progesterone (PR)
+-   Human epidermal growth factor receptor 2 (HER2)
+:::
 :::
 
 [^1]: Mertins, Philipp, et al. "Proteogenomics connects somatic mutations to signalling in breast cancer." Nature 534.7605 (2016): 55-62.
-
-::::
 
 ## Methods and strategy
 
 Some text about our approach, or a flow chart
 
-- bullet point 1
-- bullet point 2
-
+-   Obtained Data from kaggle dataset
+-   Dataset contains 77 breast cancer samples with \~12.000 proteins for each sample.
+-   Differential expression through a Linear Model
+-   Analysis of deferentially expressed genes through Volcano plot, Heatmaps, hierarchical Clustering, PCA & K-means clustering, and Correlations.
 
 # Results
 
-
 ## Clustering based on entire data set {.center}
 
-::: {layout-ncol=2}
-
+::: {layout-ncol="2"}
 ![](../results/PCA1.png)
 
 ![](../results/hc_dendro_all.png)
 :::
 
-## Differential gene expression analysis{.nostretch}
+## Differential gene expression analysis {.nostretch}
 
 Differential gene expression analysis using linear models: $lm(PAM50 \sim protein)$
 
 ![](../results/volcano_plots.png){fig-align="center"}
-
 
 ## Results from differential gene expression analysis
 
 ![](../results/heatmap_combined.png){fig-align="center"}
 
 ## PCA with significant proteins
-::: {layout-ncol=2}
 
+::: {layout-ncol="2"}
 ![](../results/PCA1.png)
 
 ![](../results/PCA_with_clusters.png)
 :::
 
-## Hierachial clustering with significant proteins 
-::: {layout-ncol=2}
+## Hierachial clustering with significant proteins
 
+::: {layout-ncol="2"}
 ![](../results/hc_dendro_all.png)
 
 ![](../results/ddg_plot_significant_genes.png)
@@ -101,20 +97,19 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 ![](../results/Corr_subclasses.png){fig-align="center"}
 
 ## Proteomics data correlation
-:::{layout-ncol=2}
-- What did we do
-- What did we see
-- This is nice
-- We can also leave out the bullet list
+
+::: {layout-ncol="2"}
+-   What did we do
+-   What did we see
+-   This is nice
+-   We can also leave out the bullet list
 
 ![](../results/Protein_corr_4p.png)
 :::
 
-
 ## Discussion
 
-- We were able to see some clustering of samples with the same PAM50 classification when only considering the DE genes.  
-- PAM50 is used for risk stratification - and not perfect.
-- 
-
-- In addition, we investigated correlations [...]
+-   We were able to see some clustering of samples with the same PAM50 classification when only considering the DE genes.\
+-   PAM50 is used for risk stratification - and not perfect.
+-   
+-   In addition, we investigated correlations \[...\]
