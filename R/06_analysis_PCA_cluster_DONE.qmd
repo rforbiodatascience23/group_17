@@ -30,7 +30,7 @@ Next, the required data was loaded. For this analysis it was the count matrix, w
 cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
   pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
   pivot_wider(names_from = id, values_from = value) |>
-  rename(id = variable) |>
+  dplyr::rename(id = variable) |>
   column_to_rownames('id')
 
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
@@ -89,9 +89,11 @@ In this PCA based on all the proteomics data, we see no obvious clustering.
 
 ```{r}
 #| label: quarto rendering
-quarto::quarto_render("06_analysis_PCA_cluster.qmd",output_format = "html",execute = T)
-file.rename(from = "06_analysis_PCA_cluster.html",
-            to = "../results/06_analysis_PCA_cluster.html")
+#quarto::quarto_render("06_analysis_PCA_cluster.qmd",
+#                      output_format = "html",
+#                      execute = T)
+#file.rename(from = "06_analysis_PCA_cluster.html",
+#            to = "../results/06_analysis_PCA_cluster.html")
 ```
 
 ```{r}

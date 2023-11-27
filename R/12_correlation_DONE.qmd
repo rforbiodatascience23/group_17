@@ -41,12 +41,14 @@ corr_kendall <- full_data |>
   focus(er_status, pr_status, her2_final_status)
 ```
 
-Visualize the correlation in a correlation matrix
+Visualize the correlation matrix
 
 For the geom tile function in ggplot2 a long data table is needed, so ER, PR and her2 status are pivoted to the single column status.
 
+Thereafter, we can create the correlation plot for only differentially expressed genes using the function `corr_plot()` from the `99_proj_func.R` file.
+
 ```{r}
-#| label: analysis
+#| label: plots and save results
 c<- corr_kendall |> 
   dplyr::rename(subclass = term) |>  
   pivot_longer(ends_with("status"), 
@@ -69,29 +71,10 @@ c<- corr_kendall |>
   )
 
 
-#Creating the plot from the correlation of the clinical data about the subclasses
-  Corr_subclasses <- ggplot(c, aes(x = subclass, y = status, fill = corr)) +
-   geom_tile(height=0.8, width=0.8) +
-#adding the correlation (corr) values to the plot as a label aesthetic, printing the values as strings with two decimal places (sprintf("%2.f").
-    geom_text(aes(label = str_c(round(corr,2))), color = "black", size = 3) +
-  scale_fill_gradient2(low="blue", mid="white", high="red") +
-  theme_minimal() +
-#the aspect  ratio of the tiles is set to 1 by coord_equal, so both sides have the same length
-  coord_equal() +
-  labs(title = "Correlation matrix of tumor subclasses and ER, PR and her2 status", x = "Subclass", y = "Status", fill = "Correlation") +
-#size the title and the texts at the x and y axis, adjust them vertically and horizontally, display them in a 45 degree angle
-  theme(plot.title = element_text(hjust = 0.4, size = 13),
-        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
-        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
-#remove grid lines
-        panel.grid.major = element_blank())
-  
-Corr_subclasses
-  
+res_corr_subclasses <- Corr_subclasses(c)
 
-ggsave("../results/Corr_subclasses.png", Corr_subclasses , height = 4, width = 6)
+ggsave("../results/Corr_subclasses.png", res_corr_subclasses , height = 4, width = 6)
 
-           
 
 ```
 
@@ -166,61 +149,17 @@ Luminal_B_mapping <- Luminal_B_sign |>
 
 ## Create separate correlation matrices for the 4 pam50 classes' significant proteins with the PR, ER and her2 status
 
-Her2 class
-
 From the full dataset with all significant protein expressions and the clinical data we extract only the columns with ER, PR, her2 and the HER2-class's significant proteins.
+
+Thereafter, we can create the correlation plot for only differentially expressed genes using the function `corr_plot()` from the `99_proj_func.R` file.
 
 ```{r}
 #| label: results and save plots
-Her2_prot <- cts |>
-  select(c("id", "er_status", "pr_status", "her2_final_status",HER2_sign)) |> 
-  drop_na()
-
-#Do the correlation on these columns, set the focus on the 3 statuses. This means that we dont need to correlate everything with everything, but everything else (in this case the proteins) with the statuses.
-Her2_corr <- correlate(Her2_prot, method = "kendall") |>
-  focus(er_status, pr_status, her2_final_status)
-
-#Rename the automatically named column term to protein.
-#For the tile plot we need the long format, so the statuses are pivoted into one column, and their correlation values are put into the "corr" column. The statuses are renamed so that they will be nicer to read in the plot. Finally, the statuses are transformed to levels.
-Her2_corr <- Her2_corr |> 
-  dplyr::rename(Protein = term) |>   
-  pivot_longer(cols = ends_with("status"),
-               names_to = "status", 
-               values_to = "corr") |> 
-  mutate(
-    status = recode(status, 
-                      "er_status" = "Estrogen", 
-                      "pr_status" = "Progesteron",
-                      "her2_final_status" = "her2"),
-    status = factor(status, levels = unique(status)))
-
-#For the plot, see explanation in lines 106-120.
-Her2_plot <- Her2_corr |>
-  ggplot(aes(x = status, y = Protein, fill = corr)) +
-  geom_tile(height=0.8, width=0.8) +
-    geom_text(aes(label = round(corr,2)), color = "black", size = 3) +
-  scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
-  theme_minimal() +
-  coord_equal() +
-  labs(title = "HER2-positive", x = "Status", y = "Protein", fill = "Correlation") +
-  theme(plot.title = element_text(hjust = 0.4, size = 12),
-        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
-        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
-        panel.grid.major = element_blank())
-
-
-Her2_plot
-
-
-ggsave("../plots/corr_Her2.png", Her2_plot, height = 6, width = 5)
-
-```
-
-```{r}
-#| label: results save plots
 # To reduce redundancy, we will call the results correlation plot from the function file. The second input is all the genes that are significant for the respective test. 
 
-Luminal_A_plot <- corr_plot(cts, head(Basal_like_sign,5)) + 
+Her2_plot <- corr_plot(cts,HER2_sign) + 
+  labs(title = "HER2 positive", x = "Status", y = "Protein", fill = "Correlation")
+Luminal_A_plot <- corr_plot(cts, head(Luminal_A_sign,5)) + 
   labs(title = "Luminal A", x = "Status", y = "Protein", fill = "Correlation")
 Luminal_B_plot <- corr_plot(cts, Luminal_B_sign) + 
   labs(title = "Luminal B", x = "Status", y = "Protein", fill = "Correlation")
@@ -229,7 +168,7 @@ Basal_like_plot <- corr_plot(cts, head(Basal_like_sign,5)) +
 
 p4 <-(Basal_like_plot + Her2_plot) / (Luminal_A_plot + Luminal_B_plot)+
   plot_layout(guides = 'collect') +
-  plot_annotation(title = "Correlation of PR, ER and her2 status with significant proteins", 
+  plot_annotation(title = "Correlation of PR, ER and HER2 status with significant proteins", 
         subtitle = "Using top 5 most significant proteins for each PAM50 classification")&
   theme(
     plot.title = element_text(size = 16, hjust = 0.5), # Adjust title size and horizontal position

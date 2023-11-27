@@ -41,7 +41,6 @@ signif_fdr_prots <- c(HER2 |> filter(adjustedfdr_HER2 <= 0.05) |> pull(protein),
 
 signif_fdr_prots_unique <- unique(signif_fdr_prots)
     # Select eah protein inly once.  
-
 rm(signif_fdr_prots)
 ```
 

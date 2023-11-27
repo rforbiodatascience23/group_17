@@ -29,9 +29,10 @@ hc_dendro_plot <- function(count_matrix, data_type){
           axis.text.x = element_blank(), # removing labels on Y axis
           plot.title = element_text(hjust = 0.5, vjust = 0)) +  
     geom_text(data=ddg_label,
-              aes(label=id, x=x, y=-45, colour=pam50), # labels on y axis colored by pam50. 
+              aes(label=id, x=x, y=-45, colour=as.factor(pam50)), # labels on y axis colored by pam50. 
               size = 1.5) +
-    labs(title = str_c("Hierachial clustering based on", data_type, sep = " "))
+    labs(title = str_c("HC based on", data_type, sep = " ")) + 
+    theme(legend.position="none")
   
   return(ddg_plot)
 }
@@ -134,6 +135,22 @@ volcano_plot <- function(data,subtype) {
 #Correlation plots
 #####################
 
+
+Corr_subclasses <- function(data) {
+  data|>
+    ggplot(aes(x = subclass, y = status, fill = corr)) +
+    geom_tile(height=0.8, width=0.8) +
+    geom_text(aes(label = round(corr,2)), color = "black", size = 3) +
+    scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
+    theme_minimal() +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.4, size = 12),
+          axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+          axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+          panel.grid.major = element_blank())
+}
+
+
 corr_plot <- function(data,test){
   data_select <- data |>
     select(c("id", "er_status", "pr_status", "her2_final_status", test)) |> 
@@ -155,7 +172,7 @@ corr_plot <- function(data,test){
       status = factor(status, levels = unique(status)))
 
   data_corr|>
-  ggplot(aes(x = status, y = Protein, fill = corr)) +
+    ggplot(aes(x = status, y = Protein, fill = corr)) +
     geom_tile(height=0.8, width=0.8) +
     geom_text(aes(label = round(corr,2)), color = "black", size = 3) +
     scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
@@ -164,8 +181,13 @@ corr_plot <- function(data,test){
     theme(plot.title = element_text(hjust = 0.4, size = 12),
           axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
           axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
-          panel.grid.major = element_blank())
+          panel.grid.major = element_blank()) + 
+    labs(title = test)
 }
+
+
+
+
 
 
 ############################################
@@ -173,16 +195,13 @@ corr_plot <- function(data,test){
 ############################################
 
 # Small function for extracting the neccesary data from the differential expression analysis results and renaming:
-
 subset_rename_data <- function(data, subtype) {
+  cols = c("estimate", "adjustedfdr")
   data <- data |>
-    select(c(protein, estimate, adjusted_fdr)) |>
-       # Select only the variables of interest: protein, estimate and adjusted p-value
-    rename(!!str_c("estimate_", subtype) := estimate,
-           !!str_c("adjustedfdr_", subtype) := adjusted_fdr)
-      # Rename columns
-  }
-
+    rename(adjustedfdr = "adjusted_fdr") |>
+    select(c("protein", "estimate", "adjustedfdr")) |>
+    dplyr::rename_with(.fn = ~paste0(.,"_",subtype), any_of(cols))
+}
 
 # Heatmaps:
 

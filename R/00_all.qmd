@@ -5,16 +5,17 @@ editor: visual
 ---
 
 ```{r}
-source(file ="01_all.qmd")
-source(file ="02_clean.qmd")
-source(file ="03_data_intro_DONE.qmd")
-source(file ="04_analysis_diff_exp_DONE.qmd")
-source(file = "04_analysis_kmeans_DONE.qmd")
-source(file = "04_diff_ecp_heatmaps_CORRECT_DONE.qmd")
-source(file = "05_PCA1_DONE.qmd")
-source(file = "07_Volcanoplots.qmd")
-source(file = "08_correlation_DONE.qmd")
-
-
-
+source(file ="00_all.qmd")
+source(file ="01_load_DONE.qmd")
+source(file ="02_clean_DONE.qmd")
+source(file ="03_augment_DONE.qmd")
+source(file = "04_describe_DONE.qmd")
+source(file = "05_analysis_clustering_DONE.qmd")
+source(file = "06_analysis_PCA_cluster_DONE.qmd")
+source(file = "07_analysis_diff_exp_DONE.qmd")
+source(file = "08_analysis_volcano_plots_DONE.qmd")
+source(file = "09_analysis_heatmaps_diff_exp_DONE.qmd")
+source(file = "10_analysis_dendro_signif_proteins_DONE.qmd")
+source(file = "11_analysis_kmeans_DONE.qmd")
+source(file = "12_correlation_DONE.qmd")
 ```

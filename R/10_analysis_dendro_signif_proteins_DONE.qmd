@@ -16,8 +16,13 @@ A count matrix with a reduced dataset - with the proteomics data of only the sig
 
 ```{r}
 #| label: load data
+library(tidyverse)
+source("99_proj_func.R")
+library("ggdendro")
+
 cm_sig <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) |>
   column_to_rownames('id')
+clinical_data <- read_table(file = "../data/clinical_data.tsv")
 ```
 
 Next, the hierachial clustering was done exactly as above.
@@ -59,7 +64,7 @@ ddg_plot2 <- ggdendrogram(data = hc, rotate=TRUE) +
         axis.text.x = element_blank(), # removing labels on Y axis
         plot.title = element_text(hjust = 0.5, vjust = 0)) +  
   geom_text(data=ddg_label,
-            aes(label=id, x=x, y=-15, colour=pam50), # labels on y axis colored by pam50. 
+            aes(label=id, x=x, y=-15, colour=as.factor(pam50)), # labels on y axis colored by pam50. 
             size = 1.5) +
   labs(title = "Hierachial clustering based on significant proteins")
 
@@ -67,6 +72,8 @@ ddg_plot2
 
 # save dendrogram plot
 ggsave("../results/hc_dendro_sig.png", ddg_plot2, height = 4, width = 7)
+
+hc_dendro_plot(cm_sig,"test")
 ```
 
 **Conclusion**: After filtering the dataset on only the significant proteins based on our differential expression analysis, we see a much better agreement between the hierachial clustering of proteomics data and the clinical pam50 assignments.
