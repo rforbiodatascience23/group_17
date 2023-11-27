@@ -4,18 +4,28 @@ format: html
 editor: visual
 ---
 
-```{r}
-source(file ="00_all.qmd")
-source(file ="01_load_DONE.qmd")
-source(file ="02_clean_DONE.qmd")
-source(file ="03_augment_DONE.qmd")
-source(file = "04_describe_DONE.qmd")
-source(file = "05_analysis_clustering_DONE.qmd")
-source(file = "06_analysis_PCA_cluster_DONE.qmd")
-source(file = "07_analysis_diff_exp_DONE.qmd")
-source(file = "08_analysis_volcano_plots_DONE.qmd")
-source(file = "09_analysis_heatmaps_diff_exp_DONE.qmd")
-source(file = "10_analysis_dendro_signif_proteins_DONE.qmd")
-source(file = "11_analysis_kmeans_DONE.qmd")
-source(file = "12_correlation_DONE.qmd")
-```
+
+{{< include 01_load_DONE.qmd >}}
+
+{{< include 02_clean_DONE.qmd >}}
+
+{{< include 03_augment_DONE.qmd >}}
+
+{{< include 04_describe_DONE.qmd >}}
+
+{{< include 05_analysis_clustering_DONE.qmd >}}
+
+{{< include 06_analysis_PCA_cluster_DONE.qmd >}}
+
+{{< include 07_analysis_diff_exp_DONE.qmd >}}
+
+{{< include 08_analysis_volcano_plots_DONE.qmd >}}
+
+{{< include 09_analysis_heatmaps_diff_exp_DONE.qmd >}}
+
+{{< include 10_analysis_dendro_signif_proteins_DONE.qmd >}}
+
+{{< include 11_analysis_kmeans_DONE.qmd >}}
+
+{{< include 12_correlation_DONE.qmd >}}
+
