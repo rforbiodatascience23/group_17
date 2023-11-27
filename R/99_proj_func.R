@@ -1,3 +1,43 @@
+##########################################
+# Hierarchical clustering and dendrograms 
+##########################################
+
+hc_dendro_plot <- function(count_matrix, data_type){
+  # create distance matrix (scaled) and perform hierachial clustering
+  hc <- count_matrix |>
+    stats::dist() |> # calculating the distance for each value
+    stats::hclust(method = "ward.D2")  # applying the hierachial clustering algorithm to the data 
+  
+  # save clustering as dendogram
+  ddg <- stats::as.dendrogram(hc)
+  
+  # extract dendogram order
+  ddg_order <- stats::order.dendrogram(ddg)
+  
+  # extract all dendro information
+  ddg_data <- ggdendro::dendro_data(ddg)
+  
+  # add pam50 information to ddg_data
+  ddg_label <- ggdendro::label(ddg_data) |>
+    dplyr::rename(id = label) |> 
+    dplyr::left_join(clinical_data, by = c("id")) |> 
+    dplyr::select(x,y, id, pam50)
+  
+  # create dendogram plot based on hierachial clustering
+  ddg_plot <- ggdendro::ggdendrogram(data = hc, rotate=TRUE) +
+    theme(axis.text.y = element_blank(), # removing labels on x axis
+          axis.text.x = element_blank(), # removing labels on Y axis
+          plot.title = element_text(hjust = 0.5, vjust = 0)) +  
+    geom_text(data=ddg_label,
+              aes(label=id, x=x, y=-45, colour=pam50), # labels on y axis colored by pam50. 
+              size = 1.5) +
+    labs(title = str_c("Hierachial clustering based on", data_type, sep = " "))
+  
+  return(ddg_plot)
+}
+
+
+
 ########################################################
 # Linear model to identify differential expressed genes.
 ########################################################
@@ -46,7 +86,9 @@ linear_model_deg <- function(data, test) {
                # arrange data according to best adjusted p-values
 }
 
-#Volcano plot
+#################
+#Volcano plots
+#################
 
 volcano_plot <- function(data,subtype) {
   data <- data |>
@@ -69,7 +111,7 @@ volcano_plot <- function(data,subtype) {
     geom_text_repel(data = data |>filter(adjusted_fdr < 0.05),
                     aes(label = protein), hjust = 0, vjust = 0, size = 3, 
                     color = "black") +
-    annotate(geom="text", x=max(data |> pull(estimate)), y=18, label="FDR-adjusted significance level", color="darkgrey") +
+    annotate(geom="text", x=max(data |> pull(estimate)) - 0.09, y=18, label="FDR-adjusted significance level", color="black", size = 3, vjust = 1) +
     theme_bw()+
     labs(title = str_c("Volcano plot of ", subtype),
          color = "Significance level ",
@@ -88,8 +130,9 @@ volcano_plot <- function(data,subtype) {
 }
 
 
-
-#Coorrelation plot
+#####################
+#Correlation plots
+#####################
 
 corr_plot <- function(data,test){
   data_select <- data |>
@@ -125,5 +168,8 @@ corr_plot <- function(data,test){
 }
 
 
+############################################
+# Heatmap of results from diff exp analysis
+############################################
 
-# Heatmap of results from diff exp analysi
+
