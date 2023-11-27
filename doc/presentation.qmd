@@ -33,7 +33,7 @@ Based on microarray or RNA-seq data, looking at 50 representative genes to class
 ::: {.column width="-51%"}
 ### Our data
 
-iTRAQ-based mass spectrometry proteome profiling data from 77 breast cancer tissues[^1]
+iTRAQ-based mass spectrometry proteome profiling data from 77 breast cancer tissues with looking at \~12.000 proteins per sample.[^1]
 
 ![](../results/pam50distribution.png){width="500" height="300" fig-align="center"}
 
@@ -49,12 +49,9 @@ Tumor receptor status for:
 
 ## Methods and strategy
 
-Some text about our approach, or a flow chart
+![](../plots/Flowchart.jpeg)
 
--   Obtained Data from kaggle dataset
--   Dataset contains 77 breast cancer samples with \~12.000 proteins for each sample.
--   Differential expression through a Linear Model
--   Analysis of deferentially expressed genes through Volcano plot, Heatmaps, hierarchical Clustering, PCA & K-means clustering, and Correlations.
+- Data was obtained from kaggle
 
 # Results
 

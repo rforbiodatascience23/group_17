@@ -101,7 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(curl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Using libcurl 7.84.0 with LibreSSL/3.3.6</code></pre>
+<pre><code>Using libcurl 7.88.1 with LibreSSL/3.3.6</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -123,10 +123,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>protein_data <span class="ot">&lt;-</span> <span class="fu">read_csv2</span>(<span class="st">"../_raw/77_cancer_proteomes_CPTAC_itraq.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ Using "','" as decimal and "'.'" as grouping mark. Use `read_delim()` for more control.
-New names:Rows: 12553 Columns: 87── Column specification ────────────────────────────────────────────────────────
+Rows: 12553 Columns: 1── Column specification ────────────────────────────────────────────────────────
 Delimiter: ";"
-chr  (3): RefSeq_accession_number, gene_symbol, gene_name
-dbl (84): ...1, AO-A12D.01TCGA, C8-A131.01TCGA, AO-A12B.01TCGA, BH-A18Q.02TC...
+chr (1): RefSeq_accession_number,gene_symbol,gene_name,AO-A12D.01TCGA,C8-A13...
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
