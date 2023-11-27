@@ -66,7 +66,7 @@ ddg_plot2 <- ggdendrogram(data = hc, rotate=TRUE) +
 ddg_plot2
 
 # save dendrogram plot
-ggsave("../results/hc_dendro_sig.png", ddg_plot2, height = 4, width = 7)
+ggsave("../results/hc_dendro_sig.png", ddg_plot2, height = 5, width = 6)
 ```
 
 **Conclusion**: After filtering the dataset on only the significant proteins based on our differential expression analysis, we see a much better agreement between the hierachial clustering of proteomics data and the clinical pam50 assignments.
