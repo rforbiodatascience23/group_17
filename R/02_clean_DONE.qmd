@@ -11,9 +11,9 @@ editor: visual
 library(readr)
 library(stringr)
 library(tidyverse)
-protein_data <- read_delim("../data/protein_load.csv")
-clinical_data <- read_delim("../data/clinical_load.csv") 
-PAM50_file <- read_delim("../data/PAM50_load.csv") 
+protein_data <- read_csv2("../data/protein_load.csv")
+clinical_data <- read_delim("../data/clinical_load.csv",delim = ",") 
+PAM50_file <- read_delim("../data/PAM50_load.csv", delim = ",") 
 ```
 
 ```{r}
@@ -51,7 +51,7 @@ count_matrix_1 <- protein_data |>
   unnest(cols = -c("RefSeq_accession_number")) |> 
         # We unnest the dataset
   distinct(RefSeq_accession_number,.keep_all = TRUE) |>
-  rename(id = "RefSeq_accession_number")
+  dplyr::rename(id = "RefSeq_accession_number")
 
 ```
 
@@ -69,12 +69,12 @@ Renaming the clincal data set and filtering for only the patent ID's that are in
 ```{r}
 #| label: filtering count matrix
 clinical_data_final <- clinical_data |>
-  rename(id = "Complete TCGA ID") |>
+  dplyr::rename(id = "Complete TCGA ID") |>
           # renames "Complete TCGA ID" to id
   mutate(id = str_replace_all(id, "-", "_")) |>
           # mutates the ids to having to -, but only _
-  rename_with( ~ str_to_lower(str_replace_all(.x, " ", "_"))) |> 
-  rename(pam50 = pam50_mrna)|> #rename for the same of ease later on
+  dplyr::rename_with( ~ str_to_lower(str_replace_all(.x, " ", "_"))) |> 
+  dplyr::rename(pam50 = pam50_mrna)|> #rename for the same of ease later on
   filter(id %in% colnames(count_matrix_1))# include only Id that are in our count matrix
   
 clinical_data_final <- clinical_data_final |>
@@ -92,9 +92,9 @@ write_tsv(PAM50_file, "../data/PAM50_file.tsv")
 
 ```{r}
 #| label: quarto rendering
-quarto::quarto_render("02_clean_DONE.qmd",output_format = "html",execute = T)
-file.rename(from = "02_clean_DONE.html",
-            to = "../results/02_clean.html")
+#quarto::quarto_render("02_clean_DONE.qmd",output_format = "html",execute = T)
+#file.rename(from = "02_clean_DONE.html",
+#            to = "../results/02_clean.html")
 ```
 
 ```{r}

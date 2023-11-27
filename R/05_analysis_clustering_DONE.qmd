@@ -36,9 +36,9 @@ Here, the hierachial clustering is done and plotted as a dendrogram using the `h
 
 ```{r}
 #| label: Hierachial clustering 
-ddg_plot <- hc_dendro_plot(count_matrix = cm, data_type = "full proteomics dataset")
-ddg_plot + 
-  labs(colour = "pam50")
+ddg_plot <- hc_dendro_plot(count_matrix = cm, data_type = "full proteomics dataset") + labs(colour = "pam50")
+
+ddg_plot
 
 # save dendrogram plot
 ggsave("../results/hc_dendro_all.png", ddg_plot, height = 5, width = 6)

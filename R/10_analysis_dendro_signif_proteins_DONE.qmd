@@ -1,7 +1,3 @@
-```{r}
-
-```
-
 ---
 title: "Cluster analysis with all proteomic data"
 format: html
@@ -35,31 +31,4 @@ ddg_plot
 
 ggsave("../results/ddg_plot_significant_genes.png", ddg_plot, height = 5, width = 6)
 ```
-
-And the dendrogram visualised as above.
-
-```{r}
-
-#| label: save results
-
-# create dendogram plot based on hierachial clustering
-ddg_plot2 <- ggdendrogram(data = hc, rotate=TRUE) +
-  theme(axis.text.y = element_blank(), # removing labels on x axis
-        axis.text.x = element_blank(), # removing labels on Y axis
-        plot.title = element_text(hjust = 0.5, vjust = 0)) +  
-  geom_text(data=ddg_label,
-            aes(label=id, x=x, y=-15, colour=as.factor(pam50)), # labels on y axis colored by pam50. 
-            size = 1.5) +
-  labs(title = "Hierachial clustering based on significant proteins")
-
-ddg_plot2
-
-# save dendrogram plot
-ggsave("../results/hc_dendro_sig.png", ddg_plot2, height = 4, width = 7)
-
-hc_dendro_plot(cm_sig,"test")
-
-ggsave("../results/hc_dendro_sig.png", ddg_plot2, height = 5, width = 6)
-```
-
 **Conclusion**: After filtering the dataset on only the significant proteins based on our differential expression analysis, we see a much better agreement between the hierachial clustering of proteomics data and the clinical pam50 assignments.
