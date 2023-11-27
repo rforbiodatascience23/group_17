@@ -64,45 +64,6 @@ In the following, the actual gene expression analysis takes place. 4 analyses ar
 The function for making the linar predictions are made in the `99_proj_func.R` file and are called to this file using `source()`.
 
 ```{r}
-
-#HER2 positive
-HER2 <- full_data |>
-  select(c(DGEA_HER2, starts_with("NP"))) |>
-  pivot_longer(cols = starts_with("NP"),
-               names_to = "protein",
-               values_to = "value") |>
-
-  group_by(protein) |>
-
-  nest() |> 
-
-  mutate(LM = map(.x = data,
-                  .f = ~lm(formula = DGEA_HER2 ~ value,
-                            data = .x))) |>
-
-  mutate(LM_tidy = map(.x = LM,
-                          .f = ~broom::tidy(x = .x,
-                                     conf.int = TRUE,
-                                     conf.level = 0.95))) |>
-
-  unnest(LM_tidy) |>
-
-  filter(term == "value") |>
-
-  select(-c(data, LM, term)) |>
-
-  mutate(adjusted_BH = p.adjust(p.value, n = 12554, method = "BH"), 
-
-         adjusted_fdr = p.adjust(p.value, n = 12554, method = "fdr"), 
-
-         log2 = -log2(p.value)) |>
-
-    arrange(p.value)
-
-
-# DEG for Lum A, LumB and Basal Like has been identified using the self-made function linear_model_deg
-
-
 source('99_proj_func.R')
 
 # Her 2

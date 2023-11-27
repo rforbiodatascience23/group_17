@@ -1,5 +1,5 @@
 ########################################################
-# Linear model to identify differentially expressed genes.
+# Linear model to identify differential expressed genes.
 ########################################################
 
 linear_model_deg <- function(data, test) {

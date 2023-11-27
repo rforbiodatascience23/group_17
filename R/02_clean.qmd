@@ -24,7 +24,8 @@ samples <- protein_data |>
   colnames() |>
           # Returns all colnames in a list
   str_subset(pattern = regex("TCGA$"))
-          # Removes all columns that does not contain TCGA as their last letters. THis is because the dataset have 3 controls, named: "263d3f-I.CPTAC" "blcdb9-I.CPTAC" "c4155b-C.CPTAC"
+          # Removes all columns that does not contain TCGA as their last letters. THis is because the dataset have 3 controls, 
+          # named: "263d3f-I.CPTAC" "blcdb9-I.CPTAC" "c4155b-C.CPTAC"
 
 #Creation of the count_matrix
 count_matrix_1 <- protein_data |>
