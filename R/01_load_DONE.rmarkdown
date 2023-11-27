@@ -18,19 +18,17 @@ rm(list = ls())
 library(curl)
 library(tidyverse)
 library("quarto")
-protein_data <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/77_cancer_proteomes_CPTAC_itraq.csv")
-clinical_data <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/clinical_data_breast_cancer.csv")
-PAM50_file <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/PAM50_proteins.csv")
+protein_data <- read_csv2("../_raw/77_cancer_proteomes_CPTAC_itraq.csv")
+clinical_data <- read_csv2("../_raw/clinical_data_breast_cancer.csv")
+PAM50_file <- read_csv2("../_raw/PAM50_proteins.csv")
 ```
 
 ```{r}
 #| label: write data to csv file
 #write_csv2 converts the count matrix to a variable of characters
-write_csv(protein_data, "../data/protein_load.csv")
-
-write_csv(clinical_data, "../data/clinical_load.csv")
-
-write_csv(PAM50_file, "../data/PAM50_load.csv")
+write_csv2(protein_data, "../data/protein_load.csv")
+write_csv2(clinical_data, "../data/clinical_load.csv")
+write_csv2(PAM50_file, "../data/PAM50_load.csv")
 ```
 
 ```{r}
