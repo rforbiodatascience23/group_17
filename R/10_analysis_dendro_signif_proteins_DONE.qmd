@@ -31,4 +31,5 @@ ddg_plot
 
 ggsave("../results/ddg_plot_significant_genes.png", ddg_plot, height = 5, width = 6)
 ```
+
 **Conclusion**: After filtering the dataset on only the significant proteins based on our differential expression analysis, we see a much better agreement between the hierachial clustering of proteomics data and the clinical pam50 assignments.

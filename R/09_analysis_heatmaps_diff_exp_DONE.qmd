@@ -47,7 +47,7 @@ rm(signif_fdr_prots)
 Combine the datasets to the dataframe we will use:
 
 ```{r}
-#| label: analysis
+#| label: analysis 2
 combined <- left_join(HER2, lumA, by = "protein") |>
       #Combine results dataframes
   left_join(lumB, by = "protein") |>
@@ -70,7 +70,7 @@ Next, the heatmaps of the results are made using the `heat_map_plot` function fr
 -   Makes a heatmap colouring for estimate and indicating significance by the use of asterisks.
 
 ```{r}
-#| label: analysis
+#| label: analysis 3
 heatmap_bl <- heat_map_results(data = combined, fdr_col = adjustedfdr_bl, title = "Basal like") + theme(legend.position = 'none')
 
 heatmap_HER2 <- heat_map_results(data = combined, fdr_col = adjustedfdr_HER2, title = "HER2")
@@ -88,18 +88,8 @@ heatmap <- (heatmap_bl + heatmap_HER2)/(heatmap_lumA +heatmap_lumB)+
   plot_layout(guides = 'collect') +
   plot_annotation(title = "Vizualisation of results from differential gene expression analysis", 
         subtitle = "Using top 20 most significant proteins for each PAM50 classification")
-  
-heatmap
-
 ggsave("../results/heatmap_combined.png", heatmap, width = 12, height = 10, dpi = 300)
 #Save
-```
-
-```{r}
-#| label: quarto rendering
-#quarto::quarto_render("09_analysis_heatmaps_diff_expqmd.qmd",output_format = "html",execute = T)
-#file.rename(from = "09_analysis_heatmaps_diff_expqmd.html",
-#            to = "../results/09_analysis_heatmaps_diff_expqmd.html")
 ```
 
 ```{r}

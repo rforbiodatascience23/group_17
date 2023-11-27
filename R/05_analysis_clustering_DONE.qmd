@@ -47,11 +47,5 @@ ggsave("../results/hc_dendro_all.png", ddg_plot, height = 5, width = 6)
 **Conclusion**: From the colored labels, it is apparent, that the samples don't group by pam50 categories when a hierachial clustering is made on the entire proteomics dataset.
 
 ```{r}
-#quarto::quarto_render("05_analysis_clustering.qmd",output_format = "html",execute = T)
-#file.rename(from = "05_analysis_clustering.html",
-#            to = "../results/05_analysis_clustering.html")
-```
-
-```{r}
 rm(list = ls())
 ```

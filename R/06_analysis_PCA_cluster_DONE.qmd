@@ -88,14 +88,5 @@ ggsave("../results/PCA1.png", pca_plot, height = 4, width = 6)
 In this PCA based on all the proteomics data, we see no obvious clustering.
 
 ```{r}
-#| label: quarto rendering
-#quarto::quarto_render("06_analysis_PCA_cluster.qmd",
-#                      output_format = "html",
-#                      execute = T)
-#file.rename(from = "06_analysis_PCA_cluster.html",
-#            to = "../results/06_analysis_PCA_cluster.html")
-```
-
-```{r}
 rm(list = ls())
 ```
