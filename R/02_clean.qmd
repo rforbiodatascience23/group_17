@@ -10,9 +10,9 @@ editor: visual
 library(readr)
 library(stringr)
 library(tidyverse)
-protein_data <- read_tsv("../data/protein_load.tsv")
-clinical_data <- read_tsv("../data/clinical_load.tsv") 
-PAM50_file <- read_tsv("../data/PAM50_load.tsv")
+protein_data <- read_delim("../data/protein_load.tsv")
+clinical_data <- read_delim("../data/clinical_load.tsv") 
+PAM50_file <- read_delim("../data/PAM50_load.tsv") 
 ```
 
 ```{r}
@@ -84,6 +84,12 @@ write_tsv(count_matrix_1, "../data/count_matrix_1_77.tsv")
 #write_tsv(count_matrix_2, "../data/count_matrix_2_80.tsv")
 
 write_tsv(PAM50_file, "../data/PAM50_file.tsv")
+```
+
+```{r}
+quarto::quarto_render("02_clean.qmd",output_format = "html",execute = T)
+file.rename(from = "02_clean.html",
+            to = "../results/01_load.html")
 ```
 
 ```{r}

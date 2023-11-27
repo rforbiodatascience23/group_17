@@ -86,3 +86,7 @@ ggsave("../results/PCA1.png", pca_plot, height = 4, width = 6)
 ```
 
 In this PCA based on all the proteomics data, we see no obvious clustering.
+
+```{r}
+rm(list = ls())
+```

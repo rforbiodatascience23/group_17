@@ -279,3 +279,7 @@ heatmap
 ggsave("../plots/heatmap_combined.png", heatmap, width = 12, height = 10, dpi = 300)
 #Save
 ```
+
+```{r}
+rm(list = ls())
+```

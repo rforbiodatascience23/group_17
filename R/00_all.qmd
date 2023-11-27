@@ -5,5 +5,16 @@ editor: visual
 ---
 
 ```{r}
-source()
+source(file ="01_all.qmd")
+source(file ="02_clean.qmd")
+source(file ="03_data_intro_DONE.qmd")
+source(file ="04_analysis_diff_exp_DONE.qmd")
+source(file = "04_analysis_kmeans_DONE.qmd")
+source(file = "04_diff_ecp_heatmaps_CORRECT_DONE.qmd")
+source(file = "05_PCA1_DONE.qmd")
+source(file = "07_Volcanoplots.qmd")
+source(file = "08_correlation_DONE.qmd")
+
+
+
 ```

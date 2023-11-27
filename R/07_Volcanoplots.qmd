@@ -60,3 +60,7 @@ plot4 <- volcano_plot(basal_like,"basal_like")
 
 
 ```
+
+```{r}
+rm(list = ls())
+```

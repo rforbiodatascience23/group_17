@@ -1,3 +1,7 @@
+```{r}
+
+```
+
 ---
 title: "06_hc_dendro"
 format: html
@@ -205,4 +209,8 @@ Print the two plots side-by-side using patchwork:
 ```{r}
 library(patchwork)
 hm + ddg_plot 
+```
+
+```{r}
+rm(list = ls())
 ```

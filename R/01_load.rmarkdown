@@ -4,11 +4,13 @@ format: html
 editor: visual
 ---
 
+
 # Introduction to the dataset
 
 # Is the dataset tidy?
 
 ## Loading of dataset
+
 
 ```{r}
 rm(list = ls())
@@ -37,3 +39,4 @@ quarto::quarto_render("01_load.qmd",output_file = "01_load.html",execute = T)
 file.rename(from = "01_load.html",
             to = "../results/01_load.html")
 ```
+
