@@ -1,5 +1,5 @@
 ---
-title: "Loading of datasets"
+title: "K-means clustering and "
 format: html
 editor: visual
 ---
@@ -109,28 +109,35 @@ k_means_clusters <- pca_aug |>
   pluck("cluster") |> # extracting "cluster" list.
   as.factor() # converting the results to a factor for coloring and filling of PCA plot. 
 
+```
+
+```{r}
 PCA_kmeans <- pca_aug |>
-  mutate(cluster = k_means_clusters)|> #Creating a new column called Cluster with results from the K_means clustering analysis. 
-    ggplot(aes(x = .fittedPC1,
-             y = .fittedPC2,
-             colour = k_means_clusters, # Coloring by the clusters
-             fill = k_means_clusters)) + # Filling by the clusters
+  mutate(cluster = k_means_clusters) |>
+  ggplot(aes(x = .fittedPC1, y = .fittedPC2, color = factor(k_means_clusters), fill = factor(k_means_clusters))) +
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  geom_point(shape = 21,
-             size = 6,
-             alpha = 0.5) +
+  geom_point(shape = 21, size = 6, alpha = 0.7, aes(shape = pam50)) +
   labs(
-    title = "PCA catagorized through clusters",
+    title = "PCA categorized through clusters",
     x = pluck(pca_plot_axes_labels, 1),
     y = pluck(pca_plot_axes_labels, 2),
-    colour = "Cluster factor",
-    fill = "Cluster factor") + 
-  theme_bw()
-  
-PCA_kmeans
+    color = "Cluster factor",
+    fill = "Cluster factor"
+  ) +
+  theme_bw() + 
+  stat_ellipse(aes(fill = pam50, color = pam50), 
+               type = "t", 
+               geom = "polygon", 
+               alpha = 0.1) 
+
+print(PCA_kmeans)
+
+ggsave("../results/PCA_with_clusters.png", PCA_kmeans, width = 8, height = 6, dpi = 300)
+
 ```
 
 ```{r}
 rm(list = ls())
+
 ```
