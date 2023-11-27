@@ -282,5 +282,11 @@ ggsave("../plots/heatmap_combined.png", heatmap, width = 12, height = 10, dpi = 
 ```
 
 ```{r}
+#quarto::quarto_render("08_analysis_4_diff_exp_heatmaps_DONE.qmd",output_format = "html",execute = T)
+#file.rename(from = "08_analysis_4_diff_exp_heatmaps_DONE.html",
+#            to = "../results/08_analysis_4_diff_exp_heatmaps_DONE.html")
+```
+
+```{r}
 rm(list = ls())
 ```

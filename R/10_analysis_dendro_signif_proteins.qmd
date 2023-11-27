@@ -129,6 +129,14 @@ library(patchwork)
 hm + ddg_plot 
 ```
 
+
+```{r}
+#quarto::quarto_render("10_analysis_dendro_signif_proteins.qmd",output_format = "html",execute = T)
+#file.rename(from = "10_analysis_dendro_signif_proteins.html",
+#            to = "../results/10_analysis_dendro_signif_proteins.html")
+```
+
+
 ```{r}
 rm(list = ls())
 ```

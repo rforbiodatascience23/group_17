@@ -172,4 +172,86 @@ corr_plot <- function(data,test){
 # Heatmap of results from diff exp analysis
 ############################################
 
+# Small function for extracting the neccesary data from the differential expression analysis results and renaming:
+
+subset_rename_data <- function(data, subtype) {
+  data <- data |>
+    select(c(protein, estimate, adjusted_fdr)) |>
+       # Select only the variables of interest: protein, estimate and adjusted p-value
+    rename(!!str_c("estimate_", subtype) := estimate,
+           !!str_c("adjustedfdr_", subtype) := adjusted_fdr)
+      # Rename columns
+  }
+
+
+# Heatmaps:
+
+heat_map_results <- function(data, fdr_col, title){
+  data_long <- data |>
+    arrange({{fdr_col}}) |>
+    slice(1:20)|>
+    # Select only the top 20 most significant proteins for subtype of interest
+    mutate(protein = factor(protein), 
+           protein = fct_reorder(protein, {{fdr_col}})) |>
+    # Make sure protein is a factor varaible + make the levels the order in 
+    # which each prtein appears. This is for vizualization: if levels are not specified,
+    # the heatmap plots the proteins in alphabetical order. We want to plot
+    # them in order of significance, and thus, determining the levels overrules the 
+    # alphabetical order. 
+    pivot_longer(cols = -protein,
+                 names_to = c(".value", "pam50"),
+                 names_sep = "_") |>
+    drop_na(pam50) |> # removing columns that contain na in the pam50 column.
+    # Pivot longer - because this is how geom_heatmap() reads the data
+    mutate(
+      pam50 = case_when(
+        pam50 == "HER2" ~ "HER2 enriched", 
+        pam50 == "lumA" ~ "Luminal A", 
+        pam50 == "lumB" ~ "Luminal B", 
+        pam50 == "bl" ~ "Basal like"),
+      # Mutating the pam50 column to whole sentences. 
+      # Makes the heatmap more readable and prettier
+      significance = case_when(
+        adjustedfdr < 0.001 ~ "***", 
+        adjustedfdr < 0.01 ~ "**",
+        adjustedfdr < 0.05 ~ "*",
+        TRUE ~ ""
+      )
+      # Add a column of asterisks showing significance. Also to be used in vizualisarion
+    ) 
+
+  
+  heatmap <- ggplot(data_long, aes(x = pam50 , y = factor(protein), fill = estimate))+
+    # Make plot with pam50 subtypes on x-axis and proteins on y-axis, 
+    # Color for the estimate (slope)
+    geom_tile() +
+    # Add tiles
+    scale_fill_gradient2(midpoint = 0, low = "blue", high = "red", mid = "white") +
+    # Specify colouring: midpoint (neutral) should be white, and upregulated 
+    # protein rea, and downregulated blue
+    labs(
+      title = title, 
+      y = "", 
+      x = "", 
+      fill = "Estimate"
+    ) +
+    # Enter labels 
+    geom_text(aes(x =pam50 , y = protein, label = significance), size = 4, vjust = 0.8) +
+    # Add asterisks describing the significane. This uses the 'significance' column
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5), 
+          axis.text.y = element_text(size = 5), 
+          panel.background = element_blank(),
+          plot.title = element_text(size=12))
+  # Small adjustements of size, angles and positioning of the text elements in the
+  # plot, as well as removal of the grey background. 
+  
+  return(heatmap)
+  #display
+}
+
+
+# In summary, this function takes the dataframe that we use, sort according to significance of the subtype we want to use, and finally subset to only the top 20 most significant protein
+# This data-frame is then wrangled - making it into long format + adding columns used for plotting. 
+# Finally, the heatmap in itself is plotted.
+
 

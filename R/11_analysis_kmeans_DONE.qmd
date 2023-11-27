@@ -128,5 +128,11 @@ ggsave("../results/PCA_with_clusters.png", PCA_kmeans, width = 8, height = 6, dp
 ```
 
 ```{r}
+#quarto::quarto_render("11_analysis_kemans_done.qmd",output_format = "html",execute = T)
+#file.rename(from = "11_analysis_kemans_done.html",
+#            to = "../results/11_analysis_kemans_done.html")
+```
+
+```{r}
 rm(list = ls())
 ```

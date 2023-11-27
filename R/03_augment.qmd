@@ -70,3 +70,9 @@ write.table(full_data, "../data/full_data.tsv")
 ```{r}
 rm(list = ls())
 ```
+
+```{r}
+#quarto::quarto_render("03_augment.qmd",output_format = "html",execute = T)
+#file.rename(from = "03_augment.html",
+#            to = "../results/03_augment.html")
+```

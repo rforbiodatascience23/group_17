@@ -17,26 +17,26 @@ rm(list = ls())
 library(curl)
 library(tidyverse)
 library("quarto")
-protein_data <- read_csv("../_raw/77_cancer_proteomes_CPTAC_itraq.csv")
-clinical_data <- read_csv("../_raw/clinical_data_breast_cancer.csv") 
-PAM50_file <- read_csv("../_raw/PAM50_proteins.csv")
+protein_data <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/77_cancer_proteomes_CPTAC_itraq.csv")
+clinical_data <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/clinical_data_breast_cancer.csv")
+PAM50_file <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/PAM50_proteins.csv")
 ```
 
 ```{r}
-write_tsv(protein_data, "../data/protein_load.tsv")
+write_csv2(protein_data, "../data/protein_load.csv")
 
-write_tsv(clinical_data, "../data/clinical_load.tsv")
+write_csv2(clinical_data, "../data/clinical_load.csv")
 
-write_tsv(PAM50_file, "../data/PAM50_load.tsv")
+write_csv2(PAM50_file, "../data/PAM50_load.csv")
+```
+
+```{r}
+quarto::quarto_render("01_load.qmd",output_format = "html")
+file.rename(from = "01_load.html",
+            to = "../results/01_load.html")
 ```
 
 ```{r}
 rm(list = ls())
-```
-
-```{r}
-quarto::quarto_render("01_load.qmd",output_file = "01_load.html",execute = T)
-file.rename(from = "01_load.html",
-            to = "../results/01_load.html")
 ```
 

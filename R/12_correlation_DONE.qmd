@@ -343,5 +343,11 @@ ggsave("../results/Protein_corr_4p.png", p4 , height = 8, width = 10)
 ```
 
 ```{r}
+#quarto::quarto_render("12_correlation_DONE.qmd",output_format = "html",execute = T)
+#file.rename(from = "12_correlation_DONE.html",
+#            to = "../results/12_correlation_DONE.html")
+```
+
+```{r}
 rm(list = ls())
 ```
