@@ -31,9 +31,7 @@ hc_dendro_plot <- function(count_matrix, data_type){
     geom_text(data=ddg_label,
               aes(label=id, x=x, y=-45, colour=as.factor(pam50)), # labels on y axis colored by pam50. 
               size = 1.5) +
-    labs(title = str_c("HC based on", data_type, sep = " ")) + 
-    theme(legend.position="none")
-  
+    labs(title = str_c("HC based on", data_type, sep = " "))
   return(ddg_plot)
 }
 

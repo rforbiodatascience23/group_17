@@ -22,34 +22,18 @@ library("ggdendro")
 
 cm_sig <- read.table("../data/count_matrix_significant_proteins.tsv", header = T) |>
   column_to_rownames('id')
-clinical_data <- read_table(file = "../data/clinical_data.tsv")
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 ```
 
 Next, the hierachial clustering was done exactly as above.
 
 ```{r}
 #| label: hierachial clustering 2
+ddg_plot <- hc_dendro_plot(count_matrix = cm_sig, data_type = "significant genes") + 
+  labs(color = "pam50")
+ddg_plot 
 
-# create distance matrix (scaled) and perform hierachial clustering
-hc <- cm_sig |>
-  dist() |> # calculating the distance for each value
-  hclust(method = "ward.D2")  # applying the hierachial clustering algorithm to the data 
-
-# save clustering as dendogram
-ddg <- as.dendrogram(hc)
-  
-# extract dendogram order
-ddg_order <- order.dendrogram(ddg) # delete if deleting heatmap
-  
-# extract all dendro information
-ddg_data <- dendro_data(ddg)
-
-# add pam50 information to ddg_data
-ddg_label <- label(ddg_data) |>
-  rename(id = label) |> 
-  left_join(clinical_data, by = c("id")) |> 
-  select(x,y, id, pam50)
-
+ggsave("../results/ddg_plot_significant_genes.png", ddg_plot, height = 5, width = 6)
 ```
 
 And the dendrogram visualised as above.
