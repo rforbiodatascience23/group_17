@@ -45,5 +45,11 @@ write_tsv(Basal_like, "../data/diff_exp_Basal_like.tsv")
 ```
 
 ```{r}
+#quarto::quarto_render("07_analysis_diff_exp.qmd",output_format = "html",execute = T)
+#file.rename(from = "07_analysis_diff_exp.html",
+#            to = "../results/07_analysis_diff_exp.html")
+```
+
+```{r}
 rm(list = ls())
 ```
