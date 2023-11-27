@@ -51,7 +51,6 @@ Tumor receptor status for:
 
 ![](../plots/Flowchart.jpeg){fig-align="center"}
 
-
 # Results
 
 ## Clustering based on entire data set {.center}
@@ -96,15 +95,12 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 
 ![](../results/Protein_corr_4p.png){fig-align="center"}
 
-
 ## Discussion
 
-- We were able to see some clustering of samples with the same PAM50 classification when only considering the DE genes.
-  - Not surprising - but what about the samples we grouped differently? 
-  - PAM50 is used for risk stratification - but many are misclasffied.[^2]
-  
-- This data set was not large enough to say anything about risk. 
-  - Combining proteomics with large language models could yield better prognostic tools. 
-
+-   We were able to see some clustering of samples with the same PAM50 classification when only considering the DE genes.
+    -   Not surprising - but what about the samples we grouped differently?
+    -   PAM50 is used for risk stratification - but many are misclasffied.[^2]
+-   This data set was not large enough to say anything about risk.
+    -   Combining proteomics with large language models could yield better prognostic tools.
 
 [^2]: Johansson, Henrik J., et al. "Breast cancer quantitative proteome and proteogenomic landscape." Nature communications 10.1 (2019): 1600.
