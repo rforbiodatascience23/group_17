@@ -48,29 +48,46 @@ linear_model_deg <- function(data, test) {
 
 #Volcano plot
 
-volcano_plot <- function(data,type) {
+volcano_plot <- function(data,subtype) {
   data <- data |>
-    mutate(color_col = case_when(
-      adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-      adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
-      TRUE ~"Not significant"), 
-    log2 = -log2(adjusted_fdr))
+    mutate(
+      color_col = case_when(
+        adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence",
+        adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+        TRUE ~"Not significant"), 
+      log2 = -log2(p.value))
+      #creating new variable color_col, where the condition case_when checks whether #adjusted fdr is lees than 0.05 and estimate smaller or larger than 0.
+      #TRUE-"not signficant is default value of no condition is met."
+  
   ggplot(data = data, aes(x = estimate, y = log2)) +
     geom_point(aes(color = color_col)) +
-    geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
     geom_hline(yintercept = (2^-0.8), linetype = "dashed", color = "black" ) +
+    geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
     scale_color_manual(values = c("Significant positive influence" = "orange", 
                                   "Significant negative influence" = "#69b3a2",
                                   "No significant association" = "grey")) +
     geom_text_repel(data = data |>filter(adjusted_fdr < 0.05),
                     aes(label = protein), hjust = 0, vjust = 0, size = 3, 
                     color = "black") +
-    theme_bw() + 
-    labs(title = str_c("volcano plot of ", type),
+    annotate(geom="text", x=max(data |> pull(estimate)), y=18, label="FDR-adjusted significance level", color="darkgrey") +
+    theme_bw()+
+    labs(title = str_c("Volcano plot of ", subtype),
          color = "Significance level ",
               x = "Estimate", 
               y = "-Log2(FDR-adjusted P-value)")
+  
+          #Initialize a ggplot with data from the HER2 data frame and aesthetics mappings are #specified.
+          #adds points to ploe using color_col varaible for color
+          #labs. sets title and labels
+          # geom_hline adds horizontal lines to the plot
+          #scale_color_manual adds specific color to vlaues dependent of significans levels.
+          #geom_text_rebel add labelse to significant points.
+          #theme_bw add black and white theme.
+          #labs adds title overall and color legends title
+          #plot for HER2
 }
+
+
 
 #Coorrelation plot
 
