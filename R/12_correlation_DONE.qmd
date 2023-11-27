@@ -28,7 +28,7 @@ cts <- read.table("../data/count_matrix_1_77.tsv", header = T)
 protein_IDs <- read_delim("../_raw/77_cancer_proteomes_CPTAC_itraq.csv", delim = ";")
 ```
 
-One-out-of-k encoding for the 4 subgroups
+### One-out-of-k encoding for the 4 subgroups
 
 We will use the binary encoded pam 50 classes for correlation, so from the single column pam50 with 4 classes we create 4 columns, one for each class, where it says 1 for the observation being in the respective class and 0 for not.
 
@@ -41,7 +41,11 @@ corr_kendall <- full_data |>
   focus(er_status, pr_status, her2_final_status)
 ```
 
+<<<<<<< HEAD
 Visualize the correlation matrix
+=======
+### Visualize the correlation in a correlation matrix
+>>>>>>> 517a320ea4bc639b28d1bc41da234f16fc873c85
 
 For the geom tile function in ggplot2 a long data table is needed, so ER, PR and her2 status are pivoted to the single column status.
 
@@ -80,7 +84,7 @@ ggsave("../results/Corr_subclasses.png", res_corr_subclasses , height = 4, width
 
 ## Correlation matrix for sign. protein expression vs. HER2, PR, ER
 
-Load differential expression data.
+### Load differential expression data.
 
 Until now only the clinical data has been analyzed in a correlation matrix. Now it would be interesting to see, what the proteins that came out as significantly differently expressed in the four pam50-classes, are usually associated with. What do they do? Are they associated with the occurrences of proestrogen or estrogen receptors or HER2? This will only show us a correlation and no causality, however it may give an interesting outlook and ideas for further exploration.
 
@@ -93,7 +97,7 @@ cts <- cts |> pivot_longer(cols = -id, names_to = 'variable', values_to = 'value
   left_join(full_data |> select(-starts_with("NP")), by = c("id"))
 ```
 
-Extract significant proteins
+### Extract significant proteins
 
 Now we have the merged datasets with protein expressions and subclass as well as PR/ER and her2 status data for every sample, however we will only look at the proteins that were significant in the differential expression analysis. To obtain these proteins as character vectors, the expression analysis dataset is filtered for only the significant (p-value equal to or lower than 0.05) values, then the first column is pulled, which are the protein IDs.
 
@@ -120,7 +124,7 @@ Luminal_B_sign <- Luminal_B |>
 #length(Sign_proteins)
 ```
 
-Retrieve names of sign proteins (Mapping)
+### Retrieve names of significant proteins (Mapping)
 
 We can also obtain a list of the protein names by transforming the protein ID vector into a column of a dataframe and joining it with the ID to gene dictionary by the RefSeq_accession_number (which is for some reason called as the dataframe name, and has to be stated to be equal to the RefSeq number). This knowledge can be used later to interpret the correlations of the proteins.
 
@@ -149,6 +153,11 @@ Luminal_B_mapping <- Luminal_B_sign |>
 
 ## Create separate correlation matrices for the 4 pam50 classes' significant proteins with the PR, ER and her2 status
 
+<<<<<<< HEAD
+=======
+### Her2 class
+
+>>>>>>> 517a320ea4bc639b28d1bc41da234f16fc873c85
 From the full dataset with all significant protein expressions and the clinical data we extract only the columns with ER, PR, her2 and the HER2-class's significant proteins.
 
 Thereafter, we can create the correlation plot for only differentially expressed genes using the function `corr_plot()` from the `99_proj_func.R` file.

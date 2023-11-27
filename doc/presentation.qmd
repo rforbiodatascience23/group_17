@@ -14,36 +14,37 @@ format:
 editor: visual
 figures: fig-responsive
 ---
+::: {#Introduction layout-ncol=2}
 
-## About the data
+## Introduction
 
--   Breast cancer proteome data
+### PAM50 classification
+Based on microarray or RNA-seq data, looking at 50 representative genes to classify breast-cancer patients, classify samples into four categories:
 
-![Caption](../results/pam50distribution.png){#fig:pam50distribution width=600 align=right}
-
-#![](../results/pam50distribution.png){fig-align="right" width="600"}
-
-### On PAM50
-
--   
-
-Types:
-
--   HER2
-
+-   HER2-enriched
 -   Luminal A
-
 -   Luminal B
-
 -   Basal like
 
-## PCA on whole data set
 
-![](../results/PCA1.png){fig-align="center" width="1501"}
+### Our data
 
-## Hierarchical clustering
+iTRAQ proteome profiling data from 77 breast cancer patients
+![](../results/pam50distribution.png)
+:::
 
-Messy hierarchical
+## Methods and strategy
+
+Some text about our approach, or a flow chart
+
+## Clustering based on entire data set {.center}
+
+::: {layout-ncol=2}
+
+![](../results/PCA1.png)
+
+![](../results/hc_dendro_all.png)
+:::
 
 ## Differential gene expression analysis
 
@@ -51,8 +52,28 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 
 ![](../results/volcano_plots.png){fig-align="center"}
 
+
 ## Results from differential gene expression analysis
 
-![](../results/heatmap_diif_exp_analysis.png){fig-align="center"}
+![](../results/heatmap_combined.png){fig-align="center"}
 
-## 
+## PCA with significant proteins
+::: {layout-ncol=2}
+
+![](../results/PCA1.png)
+
+![](../results/PCA_with_clusters.png)
+:::
+
+## Hierachial clustering with significant proteins 
+::: {layout-ncol=2}
+
+![](../results/hc_dendro_all.png)
+
+![](../results/hc_dendro_sig.png)
+:::
+
+## Correlation
+
+
+## Discussion
