@@ -46,7 +46,7 @@ rm(signif_fdr_prots)
 ```{r}
 
 #Adding the name key - from refSeq number to gene name
-name_key <- read.csv("../NP_to_gene_dictionary/protein_IDs.csv") |>
+name_key <- read.csv("../_raw/NP_to_gene_dictionary/protein_IDs.csv") |>
   distinct(Gene.Names,.keep_all = TRUE) |>
       # Filter for only unique rows
   rename(protein = RefSeq_accession_number, gene = Gene.Names) |>
@@ -83,6 +83,7 @@ combined_long_bl <- combined |>
   pivot_longer(cols = -protein,
                names_to = c(".value", "pam50"),
                names_sep = "_") |>
+  drop_na(pam50) |> # removing columns that contain na in the pam50 column.
       # Pivot longer - because this is how geom_heatmap() reads the data
   mutate(
     pam50 = case_when(
@@ -90,7 +91,7 @@ combined_long_bl <- combined |>
       pam50 == "lumA" ~ "Luminal A", 
       pam50 == "lumB" ~ "Luminal B", 
       pam50 == "bl" ~ "Basal like"),
-        # Mutatet the pam50 column to whole sentences. 
+        # Mutating the pam50 column to whole sentences. 
         # Makes the heatmap more readable and prettier
     significance = case_when(
       adjustedfdr < 0.001 ~ "***", 
@@ -116,6 +117,7 @@ combined_long_lumA <- combined |>
   pivot_longer(cols = -protein,
                names_to = c(".value", "pam50"),
                names_sep = "_") |>
+  drop_na(pam50) |>
   mutate(
     pam50 = case_when(
       pam50 == "HER2" ~ "HER2 enriched", 
@@ -138,6 +140,7 @@ combined_long_lumB <- combined |>
   pivot_longer(cols = -protein,
                names_to = c(".value", "pam50"),
                names_sep = "_") |>
+  drop_na(pam50) |>
   mutate(
     pam50 = case_when(
       pam50 == "HER2" ~ "HER2 enriched", 
@@ -160,6 +163,7 @@ combined_long_HER2 <- combined |>
   pivot_longer(cols = -protein,
                names_to = c(".value", "pam50"),
                names_sep = "_") |>
+  drop_na(pam50) |>
   mutate(
     pam50 = case_when(
       pam50 == "HER2" ~ "HER2 enriched", 

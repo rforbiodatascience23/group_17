@@ -6,6 +6,7 @@ editor: visual
 
 ```{r}
 library(tidyverse)
+source("99_proj_func.R")
 ```
 
 Load data:
@@ -18,7 +19,7 @@ protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T)|>
       #Pivot longer. First step in transposing the matrix. 
   pivot_wider(names_from = id, values_from = value) |>
       #Pivot wider - second step in transposing the matrix
-  rename(id = variable)
+  dplyr::rename(id = variable)
       #Rename the column 'variable' to 'id'
 
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
@@ -106,73 +107,17 @@ HER2 <- full_data |>
     arrange(p.value)
             # arrange data according to best adjusted p-values
 
+# DEG for Lum A, LumB and Basal Like has been identified using the self-made function linear_model_deg
 
 #Luminal A
-Luminal_A <- full_data |>
-  select(c(DGEA_Luminal_A, starts_with("NP"))) |>
-  pivot_longer(cols = starts_with("NP"),
-               names_to = "protein",
-               values_to = "value") |>
-  group_by(protein) |>
-  nest() |> 
-  mutate(LM = map(.x = data,
-                  .f = ~lm(formula = DGEA_Luminal_A ~ value,
-                            data = .x))) |>
-  mutate(LM_tidy = map(.x = LM,
-                          .f = ~broom::tidy(x = .x,
-                                     conf.int = TRUE,
-                                     conf.level = 0.95))) |>
-  unnest(LM_tidy) |>
-  filter(term == "value") |>
-  select(-c(data, LM, term)) |>
-  mutate(adjusted_BH = p.adjust(p.value, n = 12554, method = "BH"), 
-         adjusted_fdr = p.adjust(p.value, n = 12554, method = "fdr")) |>
-  arrange(p.value)
+Luminal_A <- linear_model_deg(full_data,"DGEA_Luminal_A")
 
 #Luminal B
-Luminal_B <- full_data |>
-  select(c(DGEA_Luminal_B, starts_with("NP"))) |>
-  pivot_longer(cols = starts_with("NP"),
-               names_to = "protein",
-               values_to = "value") |>
-  group_by(protein) |>
-  nest() |> 
-  mutate(LM = map(.x = data,
-                  .f = ~lm(formula = DGEA_Luminal_B ~ value,
-                            data = .x))) |>
-  mutate(LM_tidy = map(.x = LM,
-                          .f = ~broom::tidy(x = .x,
-                                     conf.int = TRUE,
-                                     conf.level = 0.95))) |>
-  unnest(LM_tidy) |>
-  filter(term == "value") |>
-  select(-c(data, LM, term)) |>
-  mutate(adjusted_BH = p.adjust(p.value, n = 12554, method = "BH"), 
-         adjusted_fdr = p.adjust(p.value, n = 12554, method = "fdr")) |>
-  arrange(p.value)
-
+Luminal_B <- linear_model_deg(full_data,"DGEA_Luminal_B")
 
 #Basal like
-Basal_like <- full_data |>
-  select(c(DGEA_Basal_like, starts_with("NP"))) |>
-  pivot_longer(cols = starts_with("NP"),
-               names_to = "protein",
-               values_to = "value") |>
-  group_by(protein) |>
-  nest() |> 
-  mutate(LM = map(.x = data,
-                  .f = ~lm(formula = DGEA_Basal_like ~ value,
-                            data = .x))) |>
-  mutate(LM_tidy = map(.x = LM,
-                          .f = ~broom::tidy(x = .x,
-                                     conf.int = TRUE,
-                                     conf.level = 0.95))) |>
-  unnest(LM_tidy) |>
-  filter(term == "value") |>
-  select(-c(data, LM, term)) |>
-  mutate(adjusted_BH = p.adjust(p.value, n = 12554, method = "BH"), 
-         adjusted_fdr = p.adjust(p.value, n = 12554, method = "fdr")) |>
-  arrange(p.value)
+Basal_like <- linear_model_deg(full_data,"DGEA_Basal_like")
+
 ```
 
 Save:
@@ -183,4 +128,8 @@ write_tsv(HER2, "../data/diff_exp_HER2.tsv")
 write_tsv(Luminal_A, "../data/diff_exp_Luminal_A.tsv")
 write_tsv(Luminal_B, "../data/diff_exp_Luminal_B.tsv")
 write_tsv(Basal_like, "../data/diff_exp_Basal_like.tsv")
+```
+
+```{r}
+rm(list = ls())
 ```

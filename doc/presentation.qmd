@@ -19,6 +19,10 @@ figures: fig-responsive
 
 -   Breast cancer proteome data
 
+![Caption](../results/pam50distribution.png){#fig:pam50distribution width=600 align=right}
+
+#![](../results/pam50distribution.png){fig-align="right" width="600"}
+
 ### On PAM50
 
 -   
@@ -35,7 +39,7 @@ Types:
 
 ## PCA on whole data set
 
-![](plots/PCA1.png){fig-align="center" width="1501"}
+![](../results/PCA1.png){fig-align="center" width="1501"}
 
 ## Hierarchical clustering
 
@@ -45,10 +49,10 @@ Messy hierarchical
 
 Differential gene expression analysis using linear models: $lm(PAM50 \sim protein)$
 
-![](plots/volcano_plots.png){fig-align="center"}
+![](../results/volcano_plots.png){fig-align="center"}
 
 ## Results from differential gene expression analysis
 
-![](plots/heatmap_diif_exp_analysis.png){fig-align="center"}
+![](../results/heatmap_diif_exp_analysis.png){fig-align="center"}
 
 ## 

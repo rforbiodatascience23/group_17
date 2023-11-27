@@ -1,0 +1,628 @@
+---
+title: "08_correlation"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(corrr)
+library(ggcorrplot)
+library(ggplot2)
+library(reshape)
+library(purrr)
+library(rcompanion)
+library(patchwork)
+```
+
+## Correlation of 4 subgroups with ER, PR and HER2 from the clinical dataset
+
+Load clinical data
+
+```{r}
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+```
+
+One-out-of-k encoding for the 4 subgroups
+
+We will use the binary encoded pam 50 classes for correlation, so from the single column pam50 with 4 classes we create 4 columns, one for each class, where it says 1 for the observation being in the respective class and 0 for not.
+```{r}
+clinical_data <- clinical_data |>
+  mutate(
+    DGEA_HER2 = case_when(
+      pam50 == "HER2-enriched" ~ 1, 
+      TRUE ~ 0
+    ), 
+    DGEA_Luminal_A = case_when(
+      pam50 == "Luminal A" ~ 1, 
+      TRUE ~ 0
+  ), 
+    DGEA_Luminal_B = case_when(
+      pam50 == "Luminal B" ~ 1, 
+      TRUE ~ 0
+      ),
+    DGEA_Basal_like = case_when(
+      pam50 == "Basal-like" ~ 1, 
+      TRUE ~ 0)) |> 
+#For the correlation matrix later, we want the values to have an order, for example starting with the highest correlation in the top left corner and ending with the smallest in the bottom right corner. For this we need to transform them to factors, which can have a specific order. As I want to display them according to the values of ER, PR and HER2 status, we transform those into factors. At the same time, they are recoded as 0 and 1 for negative and positive as this is needed to perform the correlation.
+  mutate(er_status = as.factor(er_status),  
+    er_status = fct_recode(er_status, "0" = "Negative", "1" = "Positive"),
+#Some of the columns may contain other values, for example observations called "undistinctive", which should be transformed into NAs before doing the correlation. This is done by default when we check that all data is numeric.
+    er_status = as.numeric(as.character(er_status))) |> 
+  mutate(pr_status = as.factor(pr_status),  
+    pr_status = fct_recode(pr_status, "0" = "Negative", "1" = "Positive"),  # Recode
+    pr_status = as.numeric(as.character(pr_status))) |> 
+  mutate(her2_final_status = as.factor(her2_final_status),  
+    her2_final_status = fct_recode(her2_final_status, "0" = "Negative", "1" = "Positive"),
+  her2_final_status = as.numeric(as.character(her2_final_status)))
+    
+#Only the columns about the ER, PR and her2 status, as well as the pam50-classes are needed to make a correlation between them, so we select these columns into a new dataset.
+clinical_corr <- clinical_data |> 
+  select(c("er_status","pr_status", "her2_final_status", "DGEA_HER2", "DGEA_Luminal_A", "DGEA_Luminal_B", "DGEA_Basal_like"))
+
+#Trying the pearson correlation
+corr_pearson <- clinical_corr |> 
+  correlate() |> 
+  focus(er_status, pr_status, her2_final_status)
+  
+#Here Kendall's tau correlation is calculated on the data. This is the correlation that is used later on for the figure.
+corr_kendall <- clinical_corr |> 
+  correlate(method = "kendall") |>
+  focus(er_status, pr_status, her2_final_status)
+
+  
+```
+
+Visualize the correlation in a correlation matrix 
+
+For the geom tile function in ggplot2 a long data table is needed, so ER, PR and her2 status are pivoted to the single column status.
+
+```{r}
+
+c<- corr_kendall |> 
+  dplyr::rename(subclass = term) |>  
+  pivot_longer(ends_with("status"), 
+               names_to = "status", 
+               values_to = "corr") |> 
+#For better readability later on, the column values in subclass and status are recoded, basically just renamed, to have them in the tile plot like this.
+  mutate(
+    subclass = recode(subclass, 
+                      "DGEA_HER2" = "HER2", 
+                      "DGEA_Luminal_A" = "Luminal A",
+                      "DGEA_Luminal_B" = "Luminal B",
+                      "DGEA_Basal_like" = "Basal-like"),
+    status = recode(status, 
+                    "er_status" = "Estrogen", 
+                    "pr_status" = "Progesteron",
+                    "her2_final_status" = "her2")
+  ) |> 
+#The columns subclass and status are converted to factors, with levels being the unique values of the columns in the order they appear in.
+  mutate(
+    subclass = factor(subclass, levels = unique(subclass)),
+    status = factor(status, levels = unique(status))
+  )
+
+
+#Creating the plot from the correlation of the clinical data about the subclasses
+  Corr_subclasses <- ggplot(c, aes(x = subclass, y = status, fill = corr)) +
+  geom_tile(height=0.8, width=0.8) +
+#adding the correlation (corr) values to the plot as a label aesthetic, printing the values as strings with two decimal places (sprintf("%2.f").
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+#the aspect  ratio of the tiles is set to 1 by coord_equal, so both sides have the same length
+  coord_equal() +
+  labs(title = "Correlation matrix of tumor subclasses and ER, PR and her2 status", x = "Subclass", y = "Status", fill = "Correlation") +
+#size the title and the texts at the x and y axis, adjust them vertically and horizontally, display them in a 45 degree angle
+  theme(plot.title = element_text(hjust = 0.4, size = 13),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+#remove grid lines
+        panel.grid.major = element_blank())
+  
+Corr_subclasses
+  
+
+ggsave("../results/Corr_subclasses.png", Corr_subclasses , height = 4, width = 6)
+
+           
+
+```
+
+Try corr matrix with Cramer's V
+
+Here the whole correlation is redone with Cramer's V, as this is one of the favored correlation measure for binary data, however this measure goes only from 0 to 1, indicating the strength of the relationship, but not the direction. As it is also interesting, if the ER/PR/her2 status is positively or negatively associated with the pam50 subclass, the cramer's V correlation will not be used further, but it is useful to compare with the Kendall-correlation, which shows the same strengths of association, but also accurately displays the direction. The strengths are similar, so we can see that we can likely trust the Kendall correlation in this case.
+
+```{r}
+cramers_overview <- colpair_map(clinical_corr, cramerV) |> 
+  focus(er_status, pr_status, her2_final_status)
+
+cramerscorr <- cramers_overview |> 
+  dplyr::rename(subclass = term) |>  
+  pivot_longer(ends_with("status"), 
+               names_to = "status", 
+               values_to = "corr") |> 
+  mutate(
+    subclass = recode(subclass, 
+                      "DGEA_HER2" = "HER2", 
+                      "DGEA_Luminal_A" = "Luminal A",
+                      "DGEA_Luminal_B" = "Luminal B",
+                      "DGEA_Basal_like" = "Basal-like"),
+    status = recode(status, 
+                    "er_status" = "Estrogen", 
+                    "pr_status" = "Progesteron",
+                    "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    subclass = factor(subclass, levels = unique(subclass)),
+    status = factor(status, levels = unique(status))
+  )
+
+
+
+  ggplot(cramerscorr, aes(x = subclass, y = status, fill = corr)) +
+  geom_tile(height=0.8, width=0.8) +
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+  coord_equal() +
+  labs(title = "Correlation matrix of tumor subclasses and ER, PR and her2 status", x = "Subclass", y = "Status", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 12),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+```
+
+
+
+
+
+##Correlation matrix for sign. protein expression vs. HER2, PR, Er Load differential expression data
+Until now only the clinical data has been analyzed in a correlation matrix. Now it would be interesting to see, what the proteins that came out as significantly differently expressed in the four pam50-classes, are usually associated with. What do they do? Are they associated with the occurences of progesteron or estrogen receptors or her2? This will only show us a correlation and no causality, however it may give an interesting outlook and ideas for further exploration.
+
+```{r}
+#First the tables with the estimates and p-values for differential expression of all 4 pam50-classes are loaded.
+HER2 <- read_table("../data/diff_exp_HER2.tsv")
+Luminal_A <- read_table("../data/diff_exp_Luminal_A.tsv")
+Luminal_B <- read_table("../data/diff_exp_Luminal_B.tsv")
+Basal_like <- read_table("../data/diff_exp_Basal_like.tsv")
+
+```
+
+Load and join clinical and protein data
+
+```{r}
+#The protein expression dataset is loaded, the first line contains the column names.
+protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
+#The proteins are now displayed as rows of the first column, but we need the proteins to be in columns, so that we can join the two datasets by the sample ID, so the protein names are first pivoted to a longer format and the IDs are then pivoted into a wider format. The ID column has automatically been named variable, and is now renamed id again.
+  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |> 
+  pivot_wider(names_from = id, values_from = value) |>   
+  dplyr::rename(id = variable)
+
+
+#Join the clinical data with the protein data by the ID column. The clinical data is used as the basis, however some observations give NA for the proteins, as they seem to not be present in the protein dataset. These will be excluded for the correlation.
+full_data <- clinical_data |> 
+  left_join(protein_data, by = "id")
+```
+
+Extract significant proteins
+
+Now we have the merged datasets with protein expressions and subclass as well as PR/ER and her2 status data for every sample, however we will only look at the proteins that were significant in the differential expression analysis. To obtain these proteins as character vectors, the expression analysis dataset is filtered for only the significant (p-value equal to or lower than 0.05) values, then the first column is pulled, which are the protein IDs.
+```{r}
+HER2_sign <- HER2 |>
+  filter(adjusted_fdr < 0.05) |> 
+  pull(var = 1)
+
+Basal_like_sign <- Basal_like |>
+  filter(adjusted_fdr < 0.05) |> 
+  pull(var = 1)
+
+Luminal_A_sign <- Luminal_A |>
+  filter(adjusted_fdr < 0.05) |> 
+  pull(var = 1)
+
+Luminal_B_sign <- Luminal_B |>
+  filter(adjusted_fdr < 0.05) |> 
+  pull(var = 1)
+
+#Sign_proteins <- reduce(list(HER2_sign, Basal_like_sign, Luminal_A_sign, Luminal_B_sign), union)
+
+#length(Sign_proteins)
+```
+
+Retrieve names of sign proteins (Mapping)
+
+We can also obtain a list of the protein names by transforming the protein ID vector into a column of a dataframe and joining it with the ID to gene dictionary by the RefSeq_accession_number (which is for some reason called as the dataframe name, and has to be stated to be equal to the RefSeq number).
+This knowledge can be used later to interpret the correlations of the proteins.
+```{r}
+library(readr)
+protein_IDs <- read_csv("/NP_to_gene_dictionary/protein_IDs.csv")
+View(protein_IDs)
+protein_mapping <- protein_IDs |> 
+  select(RefSeq_accession_number, Protein.names, Gene.Names)
+
+
+HER2_mapping <- HER2_sign |> 
+  data.frame() |> 
+  left_join(protein_mapping, by = c("HER2_sign" = "RefSeq_accession_number"))
+
+Basal_like_mapping <- Basal_like_sign |> 
+  data.frame() |> 
+  left_join(protein_mapping, by = c("Basal_like_sign" = "RefSeq_accession_number"))
+
+Luminal_A_mapping <- Luminal_A_sign |> 
+  data.frame() |> 
+  left_join(protein_mapping, by = c("Luminal_A_sign" = "RefSeq_accession_number"))
+
+Luminal_B_mapping <- Luminal_B_sign |> 
+  data.frame() |> 
+  left_join(protein_mapping, by = c("Luminal_B_sign" = "RefSeq_accession_number"))
+```
+
+
+
+(These were trials to compute all correlations with significant proteins - however these are too many to show effectively)
+```{r}
+#full_data <- full_data |>
+#  select(c(id, er_status, pr_status, her2_final_status, DGEA_HER2, #DGEA_Luminal_A, DGEA_Luminal_B, DGEA_Basal_like, all_of(Sign_proteins))) |>
+#  drop_na()
+
+
+#Sign_protein_corr <- correlate(full_data, method = "kendall") |>
+#  focus(er_status, pr_status, her2_final_status, DGEA_HER2, DGEA_Luminal_A, DGEA_Luminal_B, DGEA_Basal_like)
+
+
+```
+
+Visualize
+
+```{r}
+
+#c2 <- Sign_protein_corr |> 
+ # dplyr::rename(Protein = term) |>   
+ # pivot_longer(cols = c(ends_with("status"),starts_with("DGEA")),
+  #             names_to = "category", 
+   #            values_to = "corr") |> 
+#  mutate(
+ #   category = recode(category, 
+  #                    "DGEA_HER2" = "HER2", 
+   #                   "DGEA_Luminal_A" = "Luminal A",
+    #                  "DGEA_Luminal_B" = "Luminal B",
+     #                 "DGEA_Basal_like" = "Basal-like",
+      #                "er_status" = "Estrogen", 
+       #               "pr_status" = "Progesteron",
+        #              "her2_final_status" = "her2")
+#  ) |> 
+#  mutate(
+ #   category = factor(category, levels = unique(category)))
+
+
+
+
+
+
+```
+
+
+Plot corr matrix with proteins
+
+```{r}
+#  c2plot <- ggplot(c2, aes(x = category, y = Protein, fill = corr)) +
+ # geom_tile() +
+    #geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+#  scale_fill_gradient2(low="blue", mid="white", high="red") +
+ # theme_minimal() +
+ # labs(x = "category", y = "Protein", fill = "Correlation") +
+#  theme(plot.title = element_text(hjust = 0.4, size = 5),
+ #       axis.text.x = element_text(size = 3, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+ #      axis.text.y = element_text(size = 3, margin = margin(0, -3, 0, 0)),
+  #      panel.grid.major = element_blank())
+
+#ggsave("../plots/corr_mat_ful.png", c2plot, height = 20, width = 4)
+```
+
+Create long protein table with ids and expressions
+
+```{r}
+#protein_long <- read.table("../data/count_matrix_1_77.tsv", header = T) |> 
+#pivot_longer(cols = -id, names_to = 'Proteins', values_to = 'Expression') 
+```
+
+
+
+
+
+
+
+##Create separate correlation matrices for the 4 pam50 classes' significant proteins with the PR, ER and her2 status
+
+
+Her2 class
+
+From the full dataset with all significant protein expressions and the clinical data we extract only the columns with ER, PR, her2 and the HER2-class's significant proteins.
+
+```{r}
+Her2_prot <- full_data |>
+  select(c(id, er_status, pr_status, her2_final_status, HER2_sign)) |> 
+  drop_na()
+
+#Do the correlation on these columns, set the focus on the 3 statuses. This means that we dont need to correlate everything with everything, but everything else (in this case the proteins) with the statuses.
+Her2_corr <- correlate(Her2_prot, method = "kendall") |>
+  focus(er_status, pr_status, her2_final_status)
+
+#Rename the automatically named column term to protein.
+#For the tile plot we need the long format, so the statuses are pivoted into one column, and their correlation values are put into the "corr" column. The statuses are renamed so that they will be nicer to read in the plot. Finally, the statuses are transformed to levels.
+Her2_corr <- Her2_corr |> 
+  dplyr::rename(Protein = term) |>   
+  pivot_longer(cols = ends_with("status"),
+               names_to = "status", 
+               values_to = "corr") |> 
+  mutate(
+    status = recode(status, 
+                      "er_status" = "Estrogen", 
+                      "pr_status" = "Progesteron",
+                      "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    status = factor(status, levels = unique(status)))
+
+#For the plot, see explanation in lines 106-120.
+Her2_plot <- ggplot(Her2_corr, aes(x = status, y = Protein, fill = corr)) +
+  geom_tile(height=0.8, width=0.8) +
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
+  theme_minimal() +
+  coord_equal() +
+  labs(title = "HER2-positive", x = "Status", y = "Protein", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 12),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+
+
+Her2_plot
+
+
+ggsave("../plots/corr_Her2.png", Her2_plot, height = 6, width = 5)
+
+```
+
+Luminal A
+
+```{r}
+length(Luminal_A_sign)
+Luminal_A_sign[c(1:5)]
+
+Luminal_A_prot <- full_data |>
+  select(c(id, er_status, pr_status, her2_final_status, Luminal_A_sign[c(1:5)])) |>   drop_na()
+
+
+Luminal_A_corr <- correlate(Luminal_A_prot, method = "kendall") |>
+  focus(er_status, pr_status, her2_final_status)
+
+Luminal_A_corr <- Luminal_A_corr |> 
+  dplyr::rename(Protein = term) |>   
+  pivot_longer(cols = ends_with("status"),
+               names_to = "status", 
+               values_to = "corr") |> 
+  mutate(
+    status = recode(status, 
+                      "er_status" = "Estrogen", 
+                      "pr_status" = "Progesteron",
+                      "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    status = factor(status, levels = unique(status)))
+
+Luminal_A_plot <- ggplot(Luminal_A_corr, aes(x = status, y = Protein, fill = corr)) +
+  geom_tile(height = 0.8, width = 0.8) +
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
+  theme_minimal() +
+  coord_equal() +
+  labs(title = "Luminal A", x = "Status", y = "Protein", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 12),
+        plot.subtitle = element_text(hjust = 0.4),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+
+
+Luminal_A_plot
+
+
+ggsave("../plots/corr_LumA.png", Luminal_A_plot, height = 5, width = 8)
+
+```
+
+Luminal B
+
+```{r}
+length(Luminal_B_sign)
+
+Luminal_B_prot <- full_data |>
+  select(c(id, er_status, pr_status, her2_final_status, Luminal_B_sign)) |>   drop_na()
+
+
+Luminal_B_corr <- correlate(Luminal_B_prot, method = "kendall") |>
+  focus(er_status, pr_status, her2_final_status)
+
+Luminal_B_corr <- Luminal_B_corr |> 
+  dplyr::rename(Protein = term) |>   
+  pivot_longer(cols = ends_with("status"),
+               names_to = "status", 
+               values_to = "corr") |> 
+  mutate(
+    status = recode(status, 
+                      "er_status" = "Estrogen", 
+                      "pr_status" = "Progesteron",
+                      "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    status = factor(status, levels = unique(status)))
+
+Luminal_B_plot <- ggplot(Luminal_B_corr, aes(x = status, y = Protein, fill = corr)) +
+  geom_tile(height = 0.8, width = 0.8) +
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red", limits = c(-1,1)) +
+  theme_minimal() +
+  coord_equal()+
+  labs(title = "Luminal B", x = "Status", y = "Protein", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 12),
+        plot.subtitle = element_text(hjust = 0.4),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+
+
+Luminal_B_plot
+
+
+ggsave("../plots/corr_LumB.png", Luminal_B_plot, height = 5, width = 8)
+
+```
+
+Basal-like
+
+```{r}
+length(Basal_like_sign)
+Basal_like_sign[c(1:5)]
+
+Basal_like_prot <- full_data |>
+  select(c(id, er_status, pr_status, her2_final_status, Basal_like_sign[c(1:5)])) |>   drop_na()
+
+
+Basal_like_corr <- correlate(Basal_like_prot, method = "kendall") |>
+  focus(er_status, pr_status, her2_final_status)
+
+Basal_like_corr <- Basal_like_corr |> 
+  dplyr::rename(Protein = term) |>   
+  pivot_longer(cols = ends_with("status"),
+               names_to = "status", 
+               values_to = "corr") |> 
+  mutate(
+    status = recode(status, 
+                      "er_status" = "Estrogen", 
+                      "pr_status" = "Progesteron",
+                      "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    status = factor(status, levels = unique(status)))
+
+Basal_like_plot <- ggplot(Basal_like_corr, aes(x = status, y = Protein, fill = corr)) +
+  geom_tile(height = 0.8, width = 0.8) +
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  #scale_fill_gradientn(colours=c( "blue",  
+  #                               "white",
+   #                              "red"),
+    #                   values=(c( -1,
+     ##                                  1)),
+       #                guide="colorbar")+
+  scale_fill_gradient2(midpoint = 0, low="blue", mid="white", high="red", limits = c(-1,1)) +
+  theme_minimal() +
+  coord_equal()+
+  labs(title = "Basal-like", x = "Status", y = "Protein", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 12),
+        plot.subtitle = element_text(hjust = 0.4),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+
+
+Basal_like_plot
+
+
+ggsave("../plots/corr_Basal_like.png", Basal_like_plot, height = 8, width = 6)
+
+```
+
+```{r}
+p4 <-(Basal_like_plot + Her2_plot) / (Luminal_A_plot + Luminal_B_plot)+
+  plot_layout(guides = 'collect') +
+  plot_annotation(title = "Correlation of PR, ER and her2 status with significant proteins", 
+        subtitle = "Using top 5 most significant proteins for each PAM50 classification")&
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5), # Adjust title size and horizontal position
+    plot.subtitle = element_text(size = 14, hjust = 0.5) # Adjust subtitle size and horizontal position
+  )
+
+ggsave("../results/Protein_corr_4p.png", p4 , height = 8, width = 10)
+```
+
+##Further trials wih other correlation measures (unimportant for the results)
+Do correlation with Cramers V
+
+```{r}
+cramers_protein_corr <- colpair_map(full_data,cramerV) |> 
+  focus(er_status, pr_status, her2_final_status, DGEA_HER2, DGEA_Luminal_A, DGEA_Luminal_B, DGEA_Basal_like) |> 
+  slice(-c(1))
+
+
+
+cramers_protein_corr <- cramers_protein_corr |> 
+  dplyr::rename(Protein = term) |>   
+  pivot_longer(cols = c(ends_with("status"),starts_with("DGEA")),
+               names_to = "category", 
+               values_to = "corr") |> 
+  mutate(
+    category = recode(category, 
+                      "DGEA_HER2" = "HER2", 
+                      "DGEA_Luminal_A" = "Luminal A",
+                      "DGEA_Luminal_B" = "Luminal B",
+                      "DGEA_Basal_like" = "Basal-like",
+                      "er_status" = "Estrogen", 
+                      "pr_status" = "Progesteron",
+                      "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    category = factor(category, levels = unique(category)))
+
+  
+```
+
+##Create separate corr matrices with Cramers V
+
+Her2 class
+
+```{r}
+
+
+
+Her2_cramer <- colpair_map(Her2_prot,cramerV) |> 
+  focus(er_status, pr_status, her2_final_status) |> 
+  slice(-c(1))
+
+
+Her2_cramer <- Her2_cramer |> 
+  dplyr::rename(Protein = term) |>   
+  pivot_longer(cols = ends_with("status"),
+               names_to = "status", 
+               values_to = "corr") |> 
+  mutate(
+    status = recode(status, 
+                      "er_status" = "Estrogen", 
+                      "pr_status" = "Progesteron",
+                      "her2_final_status" = "her2")
+  ) |> 
+  mutate(
+    status = factor(status, levels = unique(status)))
+
+Her2_cramerplot <- ggplot(Her2_cramer, aes(x = status, y = Protein, fill = corr)) +
+  geom_tile(height=0.8, width=0.8) +
+    geom_text(aes(label = sprintf("%.2f", corr)), color = "black", size = 3)+
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
+  theme_minimal() +
+  coord_equal() +
+  labs(title = "HER2-positive", subtitle = "Correlation of status and protein expression" , x = "Status", y = "Protein", fill = "Correlation") +
+  theme(plot.title = element_text(hjust = 0.4, size = 12),
+        axis.text.x = element_text(size = 8, angle = 45, vjust = 1, hjust = 1, margin = margin(-3, 0, 0, 0)),
+        axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
+        panel.grid.major = element_blank())
+
+
+Her2_cramerplot
+
+
+ggsave("../plots/corr_Her2.png", Her2_plot, height = 6, width = 5)
+
+```

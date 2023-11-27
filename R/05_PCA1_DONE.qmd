@@ -18,7 +18,7 @@ First, required packages were loaded.
 
 library(tidyverse)
 library(broom)
-library(cowplot)
+library(cowplot) # only used for some aesthetics
 
 ```
 
@@ -41,17 +41,15 @@ Next, the PCA was done by first scaling the count matrix, and then the doing the
 ```{r}
 #| label: define PCA
 
-#Create a PCA object scaling the data
-pca <- cm |>
-        scale() |>
-        stats::prcomp()
+pca <- cm |> 
+  stats::prcomp(center=TRUE, scale=TRUE) # transform data to principal components
 
 #Extract variance explained by the PCs
 pca_results <- pca |>
-  broom::tidy("pcs")
+  broom::tidy("pcs") |> # Using broom::tidy to extract results
+  purrr::pluck("percent") # extracting the explained varaince of each PC
 
-pc1var <- pca_results$percent[1]*100
-pc2var <- pca_results$percent[2]*100
+  
 ```
 
 These variables, were used for creating a visual presentation of the principal component analysis, in the form of a classic PCA plot of the first to principal components. Here the individual samples were coloured based on their pam50 classification.
@@ -61,29 +59,29 @@ These variables, were used for creating a visual presentation of the principal c
 
 # Create PCA plot
 pca_plot <- pca |> 
-  augment(clinical_data) |>
-   ggplot(aes(x=.fittedPC1, 
-              y=.fittedPC2, 
-              color = pam50,
-              fill = pam50)) +
+  pluck("x") |> 
+  data.frame() |> 
+   ggplot(aes(x=PC1, 
+              y=PC2, 
+              color = clinical_data |> dplyr::pull("pam50"), # color by pam50 from clinical_data
+              fill = clinical_data |> dplyr::pull("pam50"))) +
    geom_point(shape = 21,
-             size = 2,
+             size = 3, 
              alpha = 0.5) +
-   theme_half_open(12) + 
-   theme(plot.title = element_text(hjust = 0.5)) +
+   theme_bw(base_size = 12) + # font size of text
    background_grid() +
-   xlab(paste('PC1,', pc1var, '% explained variance')) + 
-   ylab(paste('PC2,', pc2var, '% explained variance')) +
+   xlab(str_c('PC1,  ', round(pca_results[1]*100, digits=1), '% VE')) + 
+   ylab(str_c('PC2,  ', round(pca_results[2]*100, digits=1), '% VE')) +
    labs(
      title = "PCA on entire proteomics dataset",
-     color = "pam50"
+     color = "pam50",
+     fill = "pam50"
         )
-
-
-ggsave("../plots/PCA1.png", pca_plot, height = 4, width = 6)
-
-# print PCA plot
+#print the plot
 pca_plot
+
+#save the plot
+ggsave("../results/PCA1.png", pca_plot, height = 4, width = 6)
 
 ```
 
