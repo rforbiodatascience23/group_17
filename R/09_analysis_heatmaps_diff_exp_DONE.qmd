@@ -1,7 +1,10 @@
 ---
-title: "Vizualisation of results from differential gene expression analysis using heatmaps"
-format: html
-editor: visual
+title: "Differential expression analysis: Heatmap"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
 
 ```{r}

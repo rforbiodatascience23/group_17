@@ -1,7 +1,10 @@
 ---
-title: "Volcanoplots of results from differential gene expression analysis"
-format: html
-editor: visual
+title: "Differential expression analysis: Volcano plot"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
 
 ```{r}

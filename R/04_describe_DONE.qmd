@@ -1,7 +1,10 @@
 ---
-title: "03_data_intro"
-format: html
-editor: visual
+title: "Introduction to the dataset"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
 
 # Introduction to the data

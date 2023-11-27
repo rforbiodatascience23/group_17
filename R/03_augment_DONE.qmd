@@ -1,18 +1,11 @@
 ---
-title: "3. Augment"
-format: html
-editor: visual
+title: "03 Augmentation of data"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
-
-In this file, all different kinds of data that we need is made.
-
-Summary of data-sets used for this project (saved in the `data` folder)
-
--   A clean, simple count matrix with just protein-values and subjects
-
--   A dataset of just the clinical data
-
--   A combined dataset of the protein data and clinical data
 
 ### Making the full data set:
 
@@ -78,13 +71,6 @@ full_data <- clinical_data |>
 
 write.table(full_data, "../data/full_data.tsv")
 
-```
-
-```{r}
-#| label: quarto rendering
-#quarto::quarto_render("03_augment.qmd",output_format = "html", execute = T)
-#file.rename(from = "03_augment.html",
-#            to = "../results/03_augment.html")
 ```
 
 ```{r}

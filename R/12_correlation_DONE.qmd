@@ -1,10 +1,11 @@
 ---
-title: "08_correlation"
-format: html
-editor: visual
+title: "Differential expression analysis: Correlation of 4 subgroups"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
-
-## Correlation of 4 subgroups with ER, PR and HER2 from the clinical dataset
 
 ```{r}
 #| label: load packages and data

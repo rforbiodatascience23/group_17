@@ -1,7 +1,10 @@
 ---
-title: "Differential gene expression analysis"
-format: html
-editor: visual
+title: "07 Differential expression"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
 
 ```{r}

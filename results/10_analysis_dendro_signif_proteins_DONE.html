@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Cluster analysis with all proteomic data</title>
+<title>Differential expression analysis: Dendrogram for significant proteins</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -69,17 +69,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="10_analysis_dendro_signif_proteins_DONE_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Cluster analysis with all proteomic data</h1>
+<h1 class="title">Differential expression analysis: Dendrogram for significant proteins</h1>
 </div>
 
 
@@ -94,8 +97,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="analysis-based-on-significant-proteins" class="level3">
-<h3 class="anchored" data-anchor-id="analysis-based-on-significant-proteins">Analysis based on significant proteins</h3>
 <p>We want to see if we get a better clustering when limiting the hierachial analysis to only consider the genes that were significant in our differential expression analysis.</p>
 <p>A count matrix with a reduced dataset - with the proteomics data of only the significant proteins - were loaded.</p>
 <div class="cell">
@@ -130,7 +131,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"../results/ddg_plot_significant_genes.png"</span>, ddg_plot, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">width =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Conclusion</strong>: After filtering the dataset on only the significant proteins based on our differential expression analysis, we see a much better agreement between the hierachial clustering of proteomics data and the clinical pam50 assignments.</p>
-</section>
 
 </main>
 <!-- /main column -->

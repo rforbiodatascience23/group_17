@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>08_correlation</title>
+<title>Differential expression analysis: Correlation of 4 subgroups</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -69,17 +69,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="12_correlation_DONE_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#one-out-of-k-encoding-for-the-4-subgroups" id="toc-one-out-of-k-encoding-for-the-4-subgroups" class="nav-link active" data-scroll-target="#one-out-of-k-encoding-for-the-4-subgroups">One-out-of-k encoding for the 4 subgroups</a></li>
+  <li><a href="#correlation-matrix" id="toc-correlation-matrix" class="nav-link" data-scroll-target="#correlation-matrix">Correlation matrix</a>
+  <ul class="collapse">
+  <li><a href="#correlation-matrix-for-sign.-protein-expression-vs.-her2-pr-er" id="toc-correlation-matrix-for-sign.-protein-expression-vs.-her2-pr-er" class="nav-link" data-scroll-target="#correlation-matrix-for-sign.-protein-expression-vs.-her2-pr-er">Correlation matrix for sign. protein expression vs.&nbsp;HER2, PR, ER</a>
+  <ul class="collapse">
+  <li><a href="#load-differential-expression-data." id="toc-load-differential-expression-data." class="nav-link" data-scroll-target="#load-differential-expression-data.">Load differential expression data.</a></li>
+  <li><a href="#extract-significant-proteins" id="toc-extract-significant-proteins" class="nav-link" data-scroll-target="#extract-significant-proteins">Extract significant proteins</a></li>
+  <li><a href="#retrieve-names-of-significant-proteins-mapping" id="toc-retrieve-names-of-significant-proteins-mapping" class="nav-link" data-scroll-target="#retrieve-names-of-significant-proteins-mapping">Retrieve names of significant proteins (Mapping)</a></li>
+  </ul></li>
+  <li><a href="#create-separate-correlation-matrices-for-the-4-pam50-classes-significant-proteins-with-the-pr-er-and-her2-status" id="toc-create-separate-correlation-matrices-for-the-4-pam50-classes-significant-proteins-with-the-pr-er-and-her2-status" class="nav-link" data-scroll-target="#create-separate-correlation-matrices-for-the-4-pam50-classes-significant-proteins-with-the-pr-er-and-her2-status">Create separate correlation matrices for the 4 pam50 classes’ significant proteins with the PR, ER and her2 status</a></li>
+  <li><a href="#from-the-full-dataset-with-all-significant-protein-expressions-and-the-clinical-data-we-extract-only-the-columns-with-er-pr-her2-and-the-her2-classs-significant-proteins." id="toc-from-the-full-dataset-with-all-significant-protein-expressions-and-the-clinical-data-we-extract-only-the-columns-with-er-pr-her2-and-the-her2-classs-significant-proteins." class="nav-link" data-scroll-target="#from-the-full-dataset-with-all-significant-protein-expressions-and-the-clinical-data-we-extract-only-the-columns-with-er-pr-her2-and-the-her2-classs-significant-proteins.">From the full dataset with all significant protein expressions and the clinical data we extract only the columns with ER, PR, her2 and the HER2-class’s significant proteins.</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">08_correlation</h1>
+<h1 class="title">Differential expression analysis: Correlation of 4 subgroups</h1>
 </div>
 
 
@@ -94,8 +114,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="correlation-of-4-subgroups-with-er-pr-and-her2-from-the-clinical-dataset" class="level2">
-<h2 class="anchored" data-anchor-id="correlation-of-4-subgroups-with-er-pr-and-her2-from-the-clinical-dataset">Correlation of 4 subgroups with ER, PR and HER2 from the clinical dataset</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -240,7 +258,6 @@ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 • Missing treated using: 'pairwise.complete.obs'</code></pre>
 </div>
 </div>
-</section>
 </section>
 <section id="correlation-matrix" class="level1">
 <h1>Correlation matrix</h1>

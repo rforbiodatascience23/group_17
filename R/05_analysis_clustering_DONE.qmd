@@ -1,12 +1,11 @@
 ---
-title: "Cluster analysis with all proteomic data"
-format: html
-editor: visual
+title: "05 analysis of all proteomics data (clustering)"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
-
-# Clustering analysis with all proteomics data
-
-## Hierachial clustering visualised with dendrograms
 
 To investigate if the clinically assigned pam50 categories display in the proteomics dataset, we also wanted to do a hierachial clustering analysis. This was visualised using dendrograms.
 

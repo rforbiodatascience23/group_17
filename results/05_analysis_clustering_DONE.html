@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Cluster analysis with all proteomic data</title>
+<title>05 analysis of all proteomics data (clustering)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -69,17 +69,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="05_analysis_clustering_DONE_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#analysis-based-on-entire-proteomics-data-set" id="toc-analysis-based-on-entire-proteomics-data-set" class="nav-link active" data-scroll-target="#analysis-based-on-entire-proteomics-data-set">Analysis based on entire proteomics data set</a></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Cluster analysis with all proteomic data</h1>
+<h1 class="title">05 analysis of all proteomics data (clustering)</h1>
 </div>
 
 
@@ -94,10 +103,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="clustering-analysis-with-all-proteomics-data" class="level1">
-<h1>Clustering analysis with all proteomics data</h1>
-<section id="hierachial-clustering-visualised-with-dendrograms" class="level2">
-<h2 class="anchored" data-anchor-id="hierachial-clustering-visualised-with-dendrograms">Hierachial clustering visualised with dendrograms</h2>
 <p>To investigate if the clinically assigned pam50 categories display in the proteomics dataset, we also wanted to do a hierachial clustering analysis. This was visualised using dendrograms.</p>
 <p>First, packages and data are loaded.</p>
 <div class="cell">
@@ -129,15 +134,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><strong>Conclusion</strong>: From the colored labels, it is apparent, that the samples don’t group by pam50 categories when a hierachial clustering is made on the entire proteomics dataset.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#quarto::quarto_render("05_analysis_clustering.qmd",output_format = "html",execute = T)</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#file.rename(from = "05_analysis_clustering.html",</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#            to = "../results/05_analysis_clustering.html")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-</section>
 </section>
 
 </main>

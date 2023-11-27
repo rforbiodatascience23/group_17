@@ -1,12 +1,11 @@
 ---
-title: "05_PCA"
-format: html
-editor: visual
+title: "06 Analysis of all proteomics data (PCA analysis)"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
-
-# Clustering analysis with all proteomics data
-
-## Principal component analysis (PCA)
 
 It was investigated if the data set would show any clustering resembling that of the PAM50 criteria, based on the entire proteomics data set. First a PCA analysis was conducted.
 

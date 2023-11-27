@@ -1,21 +1,28 @@
 ---
-title: "00_all"
-format: html
-editor: visual
+title: "Do all scripts file"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
 
 ```{r}
-library(tidyverse)
 ###### FILE 01
-quarto::quarto_render("01_load_DONE.qmd")
+quarto::quarto_render("01_load_DONE.qmd",
+                      execute = T)
 file.rename(from = "01_load_DONE.html",
             to = "../results/01_load_DONE.html")
+file.rename(from = "01_load_DONE_files/",
+            to = "../results/01_load_DONE_files")
 
 
 ###### FILE 02
 quarto::quarto_render("02_clean_DONE.qmd")
-file.rename(from = "02_clean_DONE.qmd",
-            to = "../results/02_clean_DONE.qmd")
+file.rename(from = "02_clean_DONE.html",
+            to = "../results/02_clean_DONE.html")
+file.rename(from = "02_clean_DONE_files/",
+            to = "../results/02_clean_DONE_files")
 
 
 ###### FILE 03
@@ -24,15 +31,18 @@ quarto::quarto_render("03_augment_DONE.qmd",
                       execute = T)
 file.rename(from = "03_augment_DONE.html",
             to = "../results/03_augment_DONE.html")
+file.rename(from = "03_augment_DONE_files/",
+            to = "../results/03_augment_DONE_files")
 
 
 ###### FILE 04
 quarto::quarto_render("04_describe_DONE.qmd",
                       output_format = "html",
                       execute = T)
-
 file.rename(from = "04_describe_DONE.html",
             to = "../results/04_describe_DONE.html")
+file.rename(from = "04_describe_DONE_files/",
+            to = "../results/04_describe_DONE_files")
 
 
 ###### FILE 05
@@ -41,6 +51,8 @@ quarto::quarto_render("05_analysis_clustering_DONE.qmd",
                       execute = T)
 file.rename(from = "05_analysis_clustering_DONE.html",
             to = "../results/05_analysis_clustering_DONE.html")
+file.rename(from = "05_analysis_clustering_DONE_files/",
+            to = "../results/05_analysis_clustering_DONE_files")
 
 
 ###### FILE 06
@@ -49,6 +61,8 @@ quarto::quarto_render("06_analysis_PCA_cluster_DONE.qmd",
                       execute = T)
 file.rename(from = "06_analysis_PCA_cluster_DONE.html",
             to = "../results/06_analysis_PCA_cluster_DONE.html")
+file.rename(from = "06_analysis_PCA_cluster_DONE_files",
+            to = "../results/06_analysis_PCA_cluster_DONE_files")
 
 ###### FILE 07
 quarto::quarto_render("07_analysis_diff_exp_DONE.qmd",
@@ -56,6 +70,8 @@ quarto::quarto_render("07_analysis_diff_exp_DONE.qmd",
                       execute = T)
 file.rename(from = "07_analysis_diff_exp_DONE.html",
             to = "../results/07_analysis_diff_exp_DONE.html")
+file.rename(from = "07_analysis_diff_exp_DONE_files/",
+            to = "../results/07_analysis_diff_exp_DONE_files")
 
 ###### FILE 08
 quarto::quarto_render("08_analysis_volcano_plots_DONE.qmd",
@@ -63,6 +79,8 @@ quarto::quarto_render("08_analysis_volcano_plots_DONE.qmd",
                       execute = T)
 file.rename(from = "08_analysis_volcano_plots_DONE.html",
             to = "../results/08_analysis_volcano_plots_DONE.html")
+file.rename(from = "08_analysis_volcano_plots_DONE_files/",
+            to = "../results/08_analysis_volcano_plots_DONE_files")
 
 ###### FILE 09
 quarto::quarto_render("09_analysis_heatmaps_diff_exp_DONE.qmd",
@@ -70,6 +88,8 @@ quarto::quarto_render("09_analysis_heatmaps_diff_exp_DONE.qmd",
                       execute = T)
 file.rename(from = "09_analysis_heatmaps_diff_exp_DONE.html",
             to = "../results/09_analysis_heatmaps_diff_exp_DONE.html")
+file.rename(from = "09_analysis_heatmaps_diff_exp_DONE_files/",
+            to = "../results/09_analysis_heatmaps_diff_exp_DONE_files")
 
 
 ###### FILE 10
@@ -78,6 +98,8 @@ quarto::quarto_render("10_analysis_dendro_signif_proteins_DONE.qmd",
                       execute = T)
 file.rename(from = "10_analysis_dendro_signif_proteins_DONE.html",
             to = "../results/10_analysis_dendro_signif_proteins_DONE.html")
+file.rename(from = "10_analysis_dendro_signif_proteins_DONE_files/",
+            to = "../results/10_analysis_dendro_signif_proteins_DONE_files")
 
 
 ###### FILE 11
@@ -86,38 +108,17 @@ quarto::quarto_render("11_analysis_kmeans_DONE.qmd",
                       execute = T)
 file.rename(from = "11_analysis_kmeans_DONE.html",
             to = "../results/11_analysis_kmeans_DONE.html")
+file.rename(from = "11_analysis_kmeans_DONE_files/",
+            to = "../results/11_analysis_kmeans_DONE_files")
 
 ###### FILE 12
 quarto::quarto_render("12_correlation_DONE.qmd",
                       output_format = "html",
                       execute = T)
-
 file.rename(from = "12_correlation_DONE.html",
             to = "../results/12_correlation_DONE.html")
+file.rename(from = "12_correlation_DONE_files/",
+            to = "../results/12_correlation_DONE_files")
 
 
 ```
-
-{{< include 01_load_DONE.qmd >}}
-
-{{< include 02_clean_DONE.qmd >}}
-
-{{< include 03_augment_DONE.qmd >}}
-
-{{< include 04_describe_DONE.qmd >}}
-
-{{< include 05_analysis_clustering_DONE.qmd >}}
-
-{{< include 06_analysis_PCA_cluster_DONE.qmd >}}
-
-{{< include 07_analysis_diff_exp_DONE.qmd >}}
-
-{{< include 08_analysis_volcano_plots_DONE.qmd >}}
-
-{{< include 09_analysis_heatmaps_diff_exp_DONE.qmd >}}
-
-{{< include 10_analysis_dendro_signif_proteins_DONE.qmd >}}
-
-{{< include 11_analysis_kmeans_DONE.qmd >}}
-
-{{< include 12_correlation_DONE.qmd >}}

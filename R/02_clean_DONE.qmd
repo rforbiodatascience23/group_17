@@ -1,7 +1,10 @@
 ---
-title: "Cleaning of data"
-format: html
-editor: visual
+title: "02 Cleaning of data"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
 
 ## Cleaning of data

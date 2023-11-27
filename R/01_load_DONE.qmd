@@ -1,14 +1,11 @@
 ---
-title: "Loading of datasets"
-format: html
-editor: visual
+title: "01 loading of data"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
-
-# Introduction to the dataset
-
-# Is the dataset tidy?
-
-## Loading of dataset
 
 ```{r}
 #| label: load packages and data
@@ -27,18 +24,4 @@ PAM50_file <- read_csv2("../_raw/PAM50_proteins.csv")
 write_csv2(protein_data, "../data/protein_load.csv")
 write_csv2(clinical_data, "../data/clinical_load.csv")
 write_csv2(PAM50_file, "../data/PAM50_load.csv")
-```
-
-```{r}
-<<<<<<< HEAD
- #| label: quarto rendering
-#quarto::quarto_render("01_load_DONE.qmd",output_format = "html")
-#file.rename(from = "01_load_DONE.html",
-#            to = "../results/01_load.html")
-```
-
-```{r}
-=======
->>>>>>> 41af585a339fb32094b34b7f5953e03725a070cc
-rm(list = ls())
 ```

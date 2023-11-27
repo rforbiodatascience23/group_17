@@ -1,10 +1,11 @@
 ---
-title: "K-means clustering and "
-format: html
-editor: visual
+title: "Differential expression analysis: K-means clustering of PCA"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
 ---
-
-# K-means clustering using PCA
 
 Here, we want to see if we can determine the PAM50 groups using only the significant proteins from the linear models.
 
