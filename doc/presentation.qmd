@@ -2,6 +2,7 @@
 title: "Group 17"
 format: 
   revealjs:
+    embed-resources: true
     slide-number: c/t
     width: 1600
     height: 900
@@ -32,6 +33,10 @@ Based on microarray or RNA-seq data, looking at 50 representative genes to class
 iTRAQ proteome profiling data from 77 breast cancer patients
 ![](../results/pam50distribution.png)
 :::
+
+
+# Results
+
 
 ## Methods and strategy
 
@@ -73,7 +78,21 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 ![](../results/hc_dendro_sig.png)
 :::
 
-## Correlation
+## Clinical data correlation
 
+![](../results/Corr_subclasses.png){fig-align="center"}
 
-## Discussion
+## Proteomics data correlation
+:::{layout-ncol=2}
+- What did we do
+- What did we see
+- This is nice
+
+![](../results/Protein_corr_4p.png)
+:::
+
+## Conclusion & Discussion
+
+- As expected, no clustering was seen when analysing the full proteomics data set.
+- Considering only the differentially expressed genes, we could some-what replicate the PAM50 classification. 
+- In addition, we investigated correlations [...]

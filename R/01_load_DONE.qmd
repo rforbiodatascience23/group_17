@@ -30,5 +30,15 @@ write_csv2(PAM50_file, "../data/PAM50_load.csv")
 ```
 
 ```{r}
+<<<<<<< HEAD
+ #| label: quarto rendering
+#quarto::quarto_render("01_load_DONE.qmd",output_format = "html")
+#file.rename(from = "01_load_DONE.html",
+#            to = "../results/01_load.html")
+```
+
+```{r}
+=======
+>>>>>>> 41af585a339fb32094b34b7f5953e03725a070cc
 rm(list = ls())
 ```
