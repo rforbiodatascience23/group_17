@@ -109,7 +109,12 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 
 ## Discussion
 
--   We were able to see some clustering of samples with the same PAM50 classification when only considering the DE genes.\
--   PAM50 is used for risk stratification - and not perfect.
--   
+- We were able to see some clustering of samples with the same PAM50 classification when only considering the DE genes.
+- Not surprising - but what about the samples we group differently? 
+- PAM50 is used for risk stratification - but many are misclasffied.[^1]
+- This data set was not large enough to say anything about risk. 
+  - Combining proteomics with large language models could yield better prognostic tools. 
+
 -   In addition, we investigated correlations \[...\]
+
+[^1]: Johansson, Henrik J., et al. "Breast cancer quantitative proteome and proteogenomic landscape." Nature communications 10.1 (2019): 1600.
