@@ -33,7 +33,7 @@ Based on microarray or RNA-seq data, looking at 50 representative genes to class
 ::: {.column width="-51%"}
 ### Our data
 
-iTRAQ-based mass spectrometry proteome profiling data from 77 breast cancer tissues with looking at \~12.000 proteins per sample.[^1]
+iTRAQ-based mass spectrometry proteome profiling data from 77 breast cancer tissues considering \~12.000 proteins per sample.[^1]
 
 ![](../results/pam50distribution.png){width="500" height="300" fig-align="center"}
 
@@ -94,23 +94,17 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 
 ## Proteomics data correlation
 
-::: {layout-ncol="2"}
--   What did we do
--   What did we see
--   This is nice
--   We can also leave out the bullet list
+![](../results/Protein_corr_4p.png){fig-align="center"}
 
-![](../results/Protein_corr_4p.png)
-:::
 
 ## Discussion
 
 - We were able to see some clustering of samples with the same PAM50 classification when only considering the DE genes.
   - Not surprising - but what about the samples we grouped differently? 
   - PAM50 is used for risk stratification - but many are misclasffied.[^2]
+  
 - This data set was not large enough to say anything about risk. 
   - Combining proteomics with large language models could yield better prognostic tools. 
 
--   In addition, we investigated correlations \[...\]
 
 [^2]: Johansson, Henrik J., et al. "Breast cancer quantitative proteome and proteogenomic landscape." Nature communications 10.1 (2019): 1600.
