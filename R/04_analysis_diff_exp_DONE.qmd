@@ -61,62 +61,61 @@ full_data <- clinical_data |>
 
 In the following, the actual gene expression analysis takes place. 4 analyses are made - one for each subtype of PAM50. Each subtype is compared to all the rest of the data. Thus, almost the same code is used 4 times. For HER2, each step is described.
 
+The function for making the linar predictions are made in the `99_proj_func.R` file and are called to this file using `source()`.
+
 ```{r}
 
 #HER2 positive
 HER2 <- full_data |>
   select(c(DGEA_HER2, starts_with("NP"))) |>
-      # Select only the protein data and the column storing information on 
-      # whether a person is the HER2 group of not (binary)
   pivot_longer(cols = starts_with("NP"),
                names_to = "protein",
                values_to = "value") |>
-      # Pivot longer, listing each protein under one another
+
   group_by(protein) |>
-      # Group by protein
+
   nest() |> 
-      # Nest according to the grouping. Data is now nested by proteins. 
+
   mutate(LM = map(.x = data,
                   .f = ~lm(formula = DGEA_HER2 ~ value,
                             data = .x))) |>
-      # Take one nested dataframe (one protein) at a time and run a linear model 
-      # where the protein value is the independent variable, and the HER2-status
-      # is the dependent variable.
-      # store the result in a column in the mother-dataframe called "LM"
-      # The results are now stored in lists nested in the mother dataframe. 
+
   mutate(LM_tidy = map(.x = LM,
                           .f = ~broom::tidy(x = .x,
                                      conf.int = TRUE,
                                      conf.level = 0.95))) |>
-      # Unpack the results from the linear models. Store them in a column 
-      # called 'LM_tidy'
+
   unnest(LM_tidy) |>
-      # Unpack the results into the mother dataframe for easier readability
+
   filter(term == "value") |>
-      # Filter the columns to include only "value". This is done because the last
-      # line of code gave 2 rows of results for each protein - one for intercept
-      # and one for protein. We are only interested in the protein.
+
   select(-c(data, LM, term)) |>
-      # Deselect the column storing the raw protein data to only have the results left
+
   mutate(adjusted_BH = p.adjust(p.value, n = 12554, method = "BH"), 
-            # Benjamini hochberg adjustment for multiple comparisons
+
          adjusted_fdr = p.adjust(p.value, n = 12554, method = "fdr"), 
-            # False discrovery rate adjustment for multiple comparisons
+
          log2 = -log2(p.value)) |>
-            # -log2 transformation of the p-values for use in the vizualisation below
+
     arrange(p.value)
-            # arrange data according to best adjusted p-values
+
 
 # DEG for Lum A, LumB and Basal Like has been identified using the self-made function linear_model_deg
 
+
+source('99_proj_func.R')
+
+# Her 2
+HER2 <- linear_model_deg(data = full_data, test = "DGEA_HER2")
+
 #Luminal A
-Luminal_A <- linear_model_deg(full_data,"DGEA_Luminal_A")
+Luminal_A <- linear_model_deg((data = full_data,test = "DGEA_Luminal_A")
 
 #Luminal B
-Luminal_B <- linear_model_deg(full_data,"DGEA_Luminal_B")
+Luminal_B <- linear_model_deg((data = full_data,test = "DGEA_Luminal_B")
 
 #Basal like
-Basal_like <- linear_model_deg(full_data,"DGEA_Basal_like")
+Basal_like <- linear_model_deg((data = full_data,test = "DGEA_Basal_like")
 
 ```
 

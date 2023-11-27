@@ -1,26 +1,49 @@
+########################################################
 # Linear model to identify differentially expressed genes.
+########################################################
+
 linear_model_deg <- function(data, test) {
   formula <- as.formula(str_c(test, " ~ value"))
   data |> 
     select(c(test, starts_with("NP"))) |>
+        # Select only the protein data and the column storing information on 
+        # whether a person is the HER2 group of not (binary)
     pivot_longer(cols = starts_with("NP"),
                  names_to = "protein",
                  values_to = "value") |>
+        # Pivot longer, listing each protein under one another
     group_by(protein) |>
+        # Group by protein
     nest() |> 
+        # Nest according to the grouping. Data is now nested by proteins. 
     mutate(LM = map(.x = data,
                     .f = ~lm(formula = formula,
                              data = .x))) |>
+        # Take one nested dataframe (one protein) at a time and run a linear model 
+        # where the protein value is the independent variable, and the HER2-status
+        # is the dependent variable.
+        # store the result in a column in the mother-dataframe called "LM"
+        # The results are now stored in lists nested in the mother dataframe. 
     mutate(LM_tidy = map(.x = LM,
                          .f = ~broom::tidy(x = .x,
                                            conf.int = TRUE,
                                            conf.level = 0.95))) |>
+        # Unpack the results from the linear models. Store them in a column 
+        # called 'LM_tidy'
     unnest(LM_tidy) |>
+       # Unpack the results into the mother dataframe for easier readability
     filter(term == "value") |>
+        # Filter the columns to include only "value". This is done because the last
+        # line of code gave 2 rows of results for each protein - one for intercept
+        # and one for protein. We are only interested in the protein.
     select(-c(data, LM, term)) |>
+        # Deselect the column storing the raw protein data to only have the results left
     mutate(adjusted_BH = p.adjust(p.value, n = 12554, method = "BH"), 
+               # Benjamini hochberg adjustment for multiple comparisons
            adjusted_fdr = p.adjust(p.value, n = 12554, method = "fdr")) |>
+               # False discrovery rate adjustment for multiple comparisons
     arrange(p.value)
+               # arrange data according to best adjusted p-values
 }
 
 #Volcano plot
@@ -31,7 +54,7 @@ volcano_plot <- function(data,type) {
       adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
       adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
       TRUE ~"Not significant"), 
-    log2 = -log2(p.value))
+    log2 = -log2(adjusted_fdr))
   ggplot(data = data, aes(x = estimate, y = log2)) +
     geom_point(aes(color = color_col)) +
     geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
@@ -83,3 +106,7 @@ corr_plot <- function(data,test){
           axis.text.y = element_text(size = 8, margin = margin(0, -3, 0, 0)),
           panel.grid.major = element_blank())
 }
+
+
+
+# Heatmap of results from diff exp analysi
