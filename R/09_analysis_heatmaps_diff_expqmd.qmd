@@ -5,16 +5,10 @@ editor: visual
 ---
 
 ```{r}
+#| label: loading packages and data
 library(tidyverse)
 library(patchwork)
 source("99_proj_func.R")
-```
-
-**Load data**
-
-In the following, the results from the differential gene expression analysis is loaded and wrangled by ise of a function `subset_rename_data` from `99_proj_func.R` . The function subsets the data to only the columns of interest for this analysis and renames the coloumns.
-
-```{r}
 
 HER2 <- read.table("../data/diff_exp_HER2.tsv", header = T, sep = "\t") |>
   subset_rename_data(subtype = "HER2")
@@ -28,6 +22,14 @@ lumB <- read.table("../data/diff_exp_Luminal_B.tsv", header = T, sep = "\t")|>
 basal_like <- read.table("../data/diff_exp_Basal_like.tsv", header = T, sep = "\t")|>
   subset_rename_data(subtype = "bl")
 
+```
+
+**Load data**
+
+In the following, the results from the differential gene expression analysis is loaded and wrangled by ise of a function `subset_rename_data` from `99_proj_func.R` . The function subsets the data to only the columns of interest for this analysis and renames the coloumns.
+
+```{r}
+#| label: analysis
 #Extract only neccesary columns and rename for further joining: 
 
 # Find only the significant proteins:
@@ -46,7 +48,7 @@ rm(signif_fdr_prots)
 Combine the datasets to the dataframe we will use:
 
 ```{r}
-
+#| label: analysis
 combined <- left_join(HER2, lumA, by = "protein") |>
       #Combine results dataframes
   left_join(lumB, by = "protein") |>
@@ -69,6 +71,7 @@ Next, the heatmaps of the results are made using the `heat_map_plot` function fr
 -   Makes a heatmap colouring for estimate and indicating significance by the use of asterisks.
 
 ```{r}
+#| label: analysis
 heatmap_bl <- heat_map_results(data = combined, fdr_col = adjustedfdr_bl, title = "Basal like") + theme(legend.position = 'none')
 
 heatmap_HER2 <- heat_map_results(data = combined, fdr_col = adjustedfdr_HER2, title = "HER2")
@@ -80,6 +83,7 @@ heatmap_lumB <- heat_map_results(data = combined, fdr_col = adjustedfdr_lumB, ti
 ```
 
 ```{r}
+#| label: save results
 #Combine all heatmaps using 'patchwork'
 heatmap <- (heatmap_bl + heatmap_HER2)/(heatmap_lumA +heatmap_lumB)+
   plot_layout(guides = 'collect') +
@@ -93,6 +97,7 @@ ggsave("../results/heatmap_combined.png", heatmap, width = 12, height = 10, dpi 
 ```
 
 ```{r}
+#| label: quarto rendering
 #quarto::quarto_render("09_analysis_heatmaps_diff_expqmd.qmd",output_format = "html",execute = T)
 #file.rename(from = "09_analysis_heatmaps_diff_expqmd.html",
 #            to = "../results/09_analysis_heatmaps_diff_expqmd.html")

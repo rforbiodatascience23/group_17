@@ -4,15 +4,14 @@ format: html
 editor: visual
 ---
 
-
 # Introduction to the dataset
 
 # Is the dataset tidy?
 
 ## Loading of dataset
 
-
 ```{r}
+#| label: load packages and data
 rm(list = ls())
 library(curl)
 library(tidyverse)
@@ -23,20 +22,22 @@ PAM50_file <- read_csv("~/group17/lab07_git_exercises/Group 17 Exam/_raw/PAM50_p
 ```
 
 ```{r}
-write_csv2(protein_data, "../data/protein_load.csv")
+#| label: write data to csv file
+#write_csv2 converts the count matrix to a variable of characters
+write_csv(protein_data, "../data/protein_load.csv")
 
-write_csv2(clinical_data, "../data/clinical_load.csv")
+write_csv(clinical_data, "../data/clinical_load.csv")
 
-write_csv2(PAM50_file, "../data/PAM50_load.csv")
+write_csv(PAM50_file, "../data/PAM50_load.csv")
 ```
 
 ```{r}
-quarto::quarto_render("01_load.qmd",output_format = "html")
-file.rename(from = "01_load.html",
+#| label: quarto rendering
+quarto::quarto_render("01_load_DONE.qmd",output_format = "html")
+file.rename(from = "01_load_DONE.html",
             to = "../results/01_load.html")
 ```
 
 ```{r}
 rm(list = ls())
 ```
-

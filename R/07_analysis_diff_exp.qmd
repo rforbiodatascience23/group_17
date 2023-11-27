@@ -5,13 +5,9 @@ editor: visual
 ---
 
 ```{r}
+#| label: loading packages and data
 library(tidyverse)
 source("99_proj_func.R")
-```
-
-Load data:
-
-```{r}
 full_data <- read.table("../data/full_data.tsv", header = T)
 ```
 
@@ -20,6 +16,7 @@ In the following, the actual gene expression analysis takes place. 4 analyses ar
 The function for making the linear predictions are made in the `99_proj_func.R` file and are called to this file using `source()`.
 
 ```{r}
+#| label: analysis
 # Her 2
 HER2 <- linear_model_deg(data = full_data, test = "DGEA_HER2")
 
@@ -37,6 +34,7 @@ Basal_like <- linear_model_deg(data = full_data,test = "DGEA_Basal_like")
 Save the results to the data folder:
 
 ```{r}
+#| label: save results
 # Save the results for easy import into next steps of the analysis.
 write_tsv(HER2, "../data/diff_exp_HER2.tsv")
 write_tsv(Luminal_A, "../data/diff_exp_Luminal_A.tsv")
@@ -45,6 +43,7 @@ write_tsv(Basal_like, "../data/diff_exp_Basal_like.tsv")
 ```
 
 ```{r}
+#| label: quarto rendering
 #quarto::quarto_render("07_analysis_diff_exp.qmd",output_format = "html",execute = T)
 #file.rename(from = "07_analysis_diff_exp.html",
 #            to = "../results/07_analysis_diff_exp.html")

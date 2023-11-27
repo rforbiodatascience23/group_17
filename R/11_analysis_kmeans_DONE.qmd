@@ -11,7 +11,7 @@ Here, we want to see if we can determine the PAM50 groups using only the signifi
 First, we make a PCA using the
 
 ```{r}
-
+#| label: load packages and data
 library(tidyverse)
 HER2 <- read.table("../data/diff_exp_HER2.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing HER2 condition based on count matrix
 lumA <- read.table("../data/diff_exp_Luminal_A.tsv", header = T, sep = "\t") #Loading results from differential expression analysis - predicing luminal A condition based on count matrix
@@ -33,6 +33,7 @@ signif_fdr_prots_unique <- unique(signif_fdr_prots) # extracting only unique gen
 We can now isolate only significant hits form our count matrix.
 
 ```{r}
+#| label: analysis
 count_matrix_reduced <- protein_data |>
   filter(id %in% signif_fdr_prots_unique) |> # Filtering so only differential expressed genes are present. 
   pivot_longer(cols = -id, names_to = "id2", values_to = "value")|> # Transforming to pivot_longer
@@ -46,6 +47,7 @@ count_matrix_reduced |> rownames_to_column("id") |> write_tsv("../data/count_mat
 PCA analysis of count matrix with only differentially expressed genes.
 
 ```{r}
+#| label: analysis
 pca <- count_matrix_reduced |>
   prcomp(center = TRUE,
          scale = TRUE) # prcomp is a function in R to transform the data into principal components. 
@@ -64,6 +66,7 @@ pca  |>
 ```
 
 ```{r}
+#| label: analysis
 pca_plot_axes_labels <- pca |>
   broom::tidy("eigenvalues") |> # extracting tidy function from broom package
   mutate(lbl = str_c("PC", PC, ", VE = ", round(percent*100,2), "%")) |> # Creating a new variable called lbl where values are created by concatenating the principal compoennts and its respective variance into a character string
@@ -71,7 +74,7 @@ pca_plot_axes_labels <- pca |>
 ```
 
 ```{r}
-
+#| label: analysis
 clinical_data <- read_delim("../data/clinical_data.tsv") # Loading the clinical data.
 
 pca_aug <- pca |>
@@ -85,7 +88,7 @@ pca_aug <- pca |>
 Now, we run the k-means algorithm using n = 4, as we have 4 groups we want to determine:
 
 ```{r}
-
+#| label: analysis
 k_means_clusters <- pca_aug |>
   select(c(.fittedPC1, .fittedPC2)) |> # selecting PC1 and PC2
   kmeans(centers = 4) |> # initializing Kmeans clustering with 4 clusters
@@ -95,6 +98,7 @@ k_means_clusters <- pca_aug |>
 ```
 
 ```{r}
+#| label: save results
 PCA_kmeans <- pca_aug |>
   mutate(cluster = k_means_clusters) |>
   ggplot(aes(x = .fittedPC1, # PC1 on x axis

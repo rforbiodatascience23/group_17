@@ -4,6 +4,7 @@ format: html
 editor: visual
 ---
 
+
 # Introduction to the data
 
 The data is derived from a proteogenomic study investigating how DNA mutations affect the expression of the proteins in breast cancer tissue in patients. When DNA is changing it has an impact on the proteome i.e., the functional molecular part of the organisms. In this context the proteins are responsible for enzymatic reactions / signalling, and they are controlling cell division, and DNA repair, etc.
@@ -29,22 +30,31 @@ In this project, we wanted to see how well the proteome profiling relates to the
 \
 To show the distribution of how the 77 samples in the data set were classified by the PAM50 a simple plot was made.
 
-```{r}
-#| label: load packages and data
-#| echo: false
 
-# load packages
-library(tidyverse)
-
-# load clinical data for plotting
-clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
-
+::: {.cell}
+::: {.cell-output .cell-output-stderr}
 ```
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.3     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+```
+:::
+:::
+
 
 A barplot was chosen for visualisation:
 
-```{r}
-#| label: Analysis
+
+::: {.cell}
+
+```{.r .cell-code}
 barplot <- ggplot(data = clinical_data, 
                   mapping = aes(x = pam50)) +
   geom_bar(aes(fill = pam50)) +
@@ -56,18 +66,22 @@ barplot <- ggplot(data = clinical_data,
   geom_hline(yintercept = 19.25, linetype = "dashed", color = "grey")# horisontal line to show an equal distribution
 
 barplot
+```
 
+::: {.cell-output-display}
+![](04_describe_files/figure-html/unnamed-chunk-2-1.png){width=672}
+:::
+
+```{.r .cell-code}
 ggsave("../results/pam50distribution.png", barplot, height = 4, width = 6)
 ```
+:::
+
 
 From the barplot it is evident, that the patients are fairly evenly distributed with the HER2-enriched category being under-represented and both the Luminal A and B slightly over what would be completely even distribution.
 
-```{r}
-#quarto::quarto_render("04_describe.qmd",output_format = "html",execute = T)
-#file.rename(from = "04_describe.html",
-            #to = "../results/04_describe.html")
-```
 
-```{r}
-rm(list = ls())
-```
+
+
+
+

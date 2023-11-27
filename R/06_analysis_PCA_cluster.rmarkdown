@@ -4,6 +4,7 @@ format: html
 editor: visual
 ---
 
+
 # Clustering analysis with all proteomics data
 
 ## Principal component analysis (PCA)
@@ -11,6 +12,7 @@ editor: visual
 It was investigated if the data set would show any clustering resembling that of the PAM50 criteria, based on the entire proteomics data set. First a PCA analysis was conducted.
 
 First, required packages were loaded.
+
 
 ```{r}
 #| echo: false
@@ -22,7 +24,9 @@ library(cowplot) # only used for some aesthetics
 
 ```
 
+
 Next, the required data was loaded. For this analysis it was the count matrix, which was transformed (rows to columns and vice versa), and the clinical data.
+
 
 ```{r}
 #| label: load data (and augment)
@@ -36,7 +40,9 @@ cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
 ```
 
+
 Next, the PCA was done by first scaling the count matrix, and then the doing the actual principal component analysis using the prcomp() function. From the pca output, information about the variance-explanation by each principel component was extracted and stored in the pca_results using the tidy() function.
+
 
 ```{r}
 #| label: define PCA
@@ -52,7 +58,9 @@ pca_results <- pca |>
   
 ```
 
+
 These variables, were used for creating a visual presentation of the principal component analysis, in the form of a classic PCA plot of the first to principal components. Here the individual samples were coloured based on their pam50 classification.
+
 
 ```{r}
 #| label: PCA plot
@@ -85,10 +93,11 @@ ggsave("../results/PCA1.png", pca_plot, height = 4, width = 6)
 
 ```
 
+
 In this PCA based on all the proteomics data, we see no obvious clustering.
 
+
 ```{r}
-#| label: quarto rendering
 quarto::quarto_render("06_analysis_PCA_cluster.qmd",output_format = "html",execute = T)
 file.rename(from = "06_analysis_PCA_cluster.html",
             to = "../results/06_analysis_PCA_cluster.html")
@@ -97,3 +106,4 @@ file.rename(from = "06_analysis_PCA_cluster.html",
 ```{r}
 rm(list = ls())
 ```
+

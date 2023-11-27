@@ -18,13 +18,8 @@ First, packages and data are loaded.
 
 # Packages
 library(tidyverse)
-source("99_proj_func.R")
-
-if (!require('ggendro', character.only = TRUE)) {
-# If not installed, install the package
- install.packages('ggdendro')
-}
 library(ggdendro)
+source("99_proj_func.R")
 
 # data
 clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
@@ -40,7 +35,7 @@ cm <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
 Here, the hierachial clustering is done and plotted as a dendrogram using the `hc_dendro_plot` fundtion from the `99_proj_func.R` file. The function first takes the count matrix and calculates the hierarchical clustering. Hereafter, it plots the results as a dendrogram while colouring for pam50-subtypes
 
 ```{r}
-
+#| label: Hierachial clustering 
 ddg_plot <- hc_dendro_plot(count_matrix = cm, data_type = "full proteomics dataset")
 ddg_plot
 

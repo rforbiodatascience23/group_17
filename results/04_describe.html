@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Loading of datasets</title>
+<title>03_data_intro</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -57,16 +57,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="01_load_files/libs/clipboard/clipboard.min.js"></script>
-<script src="01_load_files/libs/quarto-html/quarto.js"></script>
-<script src="01_load_files/libs/quarto-html/popper.min.js"></script>
-<script src="01_load_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="01_load_files/libs/quarto-html/anchor.min.js"></script>
-<link href="01_load_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="01_load_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="01_load_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="01_load_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="01_load_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="04_describe_files/libs/clipboard/clipboard.min.js"></script>
+<script src="04_describe_files/libs/quarto-html/quarto.js"></script>
+<script src="04_describe_files/libs/quarto-html/popper.min.js"></script>
+<script src="04_describe_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="04_describe_files/libs/quarto-html/anchor.min.js"></script>
+<link href="04_describe_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="04_describe_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="04_describe_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="04_describe_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="04_describe_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Loading of datasets</h1>
+<h1 class="title">03_data_intro</h1>
 </div>
 
 
@@ -94,84 +94,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="introduction-to-the-dataset" class="level1">
-<h1>Introduction to the dataset</h1>
-</section>
-<section id="is-the-dataset-tidy" class="level1">
-<h1>Is the dataset tidy?</h1>
-<section id="loading-of-dataset" class="level2">
-<h2 class="anchored" data-anchor-id="loading-of-dataset">Loading of dataset</h2>
+<section id="introduction-to-the-data" class="level1">
+<h1>Introduction to the data</h1>
+<p>The data is derived from a proteogenomic study investigating how DNA mutations affect the expression of the proteins in breast cancer tissue in patients. When DNA is changing it has an impact on the proteome i.e., the functional molecular part of the organisms. In this context the proteins are responsible for enzymatic reactions / signalling, and they are controlling cell division, and DNA repair, etc.</p>
+<p>The dataset contains information on TCGA ID (Clinical Proteomic Tumour Analysis Consortium; NCI/NIH), RefSeq_accession_number (RefSeq database), and from the Uniprot database following variables were available: Entry name, Protein name, Gene symbol, Gene name, Organism (Homo Sapiens), and Length. Finally, datasets contain information on breast cancer TNM classification (AJCC), tumour receptor status for oestrogen, progesterone, and HER2 - incl conversion of receptor status (influencing treatment effect and survival), survival, and, importantly for our focus in the following project, PAM50 (Prediction Analysis of Microarray 50) classification.</p>
+<p>PAM50 classification is based on a gene signature of 50 genes considered representative of different biological pathways and molecular features. It is used in breast-cancer research to categorize tumors based on microarray or RNA-sequencing data. The four classifications are:</p>
+<ul>
+<li><p>Luminal A</p></li>
+<li><p>Luminal B</p></li>
+<li><p>HER2-enriched</p></li>
+<li><p>Basal-like</p></li>
+</ul>
+<p>In the present study, iTRAQ proteome profiling was performed on 77 breast cancer samples each generally expressing around 12.000 proteins. The protein data was divided by use of K-means clustering into groups with different breast cancer subtypes expressing unique protein signatures.</p>
+<section id="project-aim" class="level2">
+<h2 class="anchored" data-anchor-id="project-aim">Project aim</h2>
+<p>In this project, we wanted to see how well the proteome profiling relates to the PAM50 classification.</p>
+<p><br>
+To show the distribution of how the 77 samples in the data set were classified by the PAM50 a simple plot was made.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(curl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Using libcurl 7.84.0 with LibreSSL/3.3.6</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ✔ dplyr     1.1.3     ✔ readr     2.1.4
 ✔ forcats   1.0.0     ✔ stringr   1.5.0
 ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
 ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-✔ purrr     1.0.2     </code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter()     masks stats::filter()
-✖ dplyr::lag()        masks stats::lag()
-✖ readr::parse_date() masks curl::parse_date()
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"quarto"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>protein_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/group17/lab07_git_exercises/Group 17 Exam/_raw/77_cancer_proteomes_CPTAC_itraq.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 12553 Columns: 86
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr  (3): RefSeq_accession_number, gene_symbol, gene_name
-dbl (83): AO-A12D.01TCGA, C8-A131.01TCGA, AO-A12B.01TCGA, BH-A18Q.02TCGA, C8...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>clinical_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/group17/lab07_git_exercises/Group 17 Exam/_raw/clinical_data_breast_cancer.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 105 Columns: 30
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (17): Complete TCGA ID, Gender, ER Status, PR Status, HER2 Final Status,...
-dbl (13): Age at Initial Pathologic Diagnosis, Days to Date of Last Contact,...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p>A barplot was chosen for visualisation:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>barplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> clinical_data, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> pam50)) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> pam50)) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of patients in the data set based on PAM50 classification"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"PAM50 categories"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"No. of patients"</span>) <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">19.25</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey"</span>)<span class="co"># horisontal line to show an equal distribution</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>barplot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04_describe_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>PAM50_file <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/group17/lab07_git_exercises/Group 17 Exam/_raw/PAM50_proteins.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 100 Columns: 4
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (4): GeneSymbol, RefSeqProteinID, Species, Gene Name
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"../results/pam50distribution.png"</span>, barplot, <span class="at">height =</span> <span class="dv">4</span>, <span class="at">width =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>From the barplot it is evident, that the patients are fairly evenly distributed with the HER2-enriched category being under-represented and both the Luminal A and B slightly over what would be completely even distribution.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#quarto::quarto_render("04_describe.qmd",output_format = "html",execute = T)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#file.rename(from = "04_describe.html",</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="co">#to = "../results/04_describe.html")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#write_csv2 converts the count matrix to a variable of characters</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(protein_data, <span class="st">"../data/protein_load.csv"</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(clinical_data, <span class="st">"../data/clinical_load.csv"</span>)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(PAM50_file, <span class="st">"../data/PAM50_load.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#quarto::quarto_render("01_load.qmd",output_format = "html")</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#file.rename(from = "01_load.html",</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>            <span class="co">#to = "../results/01_load.html")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>

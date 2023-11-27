@@ -51,7 +51,7 @@ And the dendrogram visualised as above.
 
 ```{r}
 
-#| label: dendrogram 2
+#| label: save results
 
 # create dendogram plot based on hierachial clustering
 ddg_plot2 <- ggdendrogram(data = hc, rotate=TRUE) +
@@ -70,73 +70,3 @@ ggsave("../results/hc_dendro_sig.png", ddg_plot2, height = 4, width = 7)
 ```
 
 **Conclusion**: After filtering the dataset on only the significant proteins based on our differential expression analysis, we see a much better agreement between the hierachial clustering of proteomics data and the clinical pam50 assignments.
-
-### Alternative method for visualisation TO BE REMOVED
-
-By using the pheatmap package, we can couple the hierachial clustering analysis and visualisation in a dendogram (as done above) with that in a heatmap in very few steps of code:
-
-```{r}
-library(pheatmap)
-
-cm2 <- read.table("../data/count_matrix_1_77.tsv", header = T) |>
-  column_to_rownames('id')
-
-pheatmap(
-  mat = cm2,
-  clustering_method = "ward.D2", # use hierachial clustering method
-  scale = "row",
-  show_rownames = FALSE,
-  main = "Hierachial clustering analysis, all proteomics data",
-  treeheight_row = 0, #do not display row tree
-  fontsize_col= 3
-  )
-```
-
-\
-\
-\
-\*\*\* I suggest to delete below because I can't figure out how to order the rows like in the dendogram \*\*\*
-
-```{r}
-#| label: visualization
-
-# define long data structure based on the count matrix
-cm_long <- cm |> 
-  rownames_to_column(var = "id") |> # setting rownames to a column named id
-  pivot_longer(cols = -c("id"), names_to = "protein") |> # converting to pivot longer
-  mutate(id = factor(id, levels = unique(id))) # Factorize the id column based on unique values from id ordered by the ddg_order
-
-# heatmap on scaled data:
-hm <- ggplot(data = cm_long, mapping = aes(x = protein, y = value)) +
-        geom_tile(aes(fill=value)) + # heatmap function
-        scale_fill_gradient2(low = "red", high = "blue") + # scale color (high values are blue, low values are red)
-        theme(axis.text.x = element_blank(), # remove label on x axis
-              axis.text.y = element_blank(),
-              legend.position = "left") +
-        geom_text(data=ddg_label,
-            aes(label=id, x=x, y=-20 ,colour=pam50), # labels on y axis colored by pam50. 
-            size = 1.5) + 
-  theme_minimal() + # position of the legend on the left
-hm
-
-
-```
-
-Print the two plots side-by-side using patchwork:
-
-```{r}
-library(patchwork)
-hm + ddg_plot 
-```
-
-
-```{r}
-#quarto::quarto_render("10_analysis_dendro_signif_proteins.qmd",output_format = "html",execute = T)
-#file.rename(from = "10_analysis_dendro_signif_proteins.html",
-#            to = "../results/10_analysis_dendro_signif_proteins.html")
-```
-
-
-```{r}
-rm(list = ls())
-```

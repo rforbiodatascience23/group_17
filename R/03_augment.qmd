@@ -19,24 +19,29 @@ Summary of data-sets used for this project (saved in the `data` folder)
 First, the count matrix is transposed using `pivor_longer` and `pivot_wider`. This is done to get the subjects as rows and proteins as columns.
 
 ```{r}
-
-protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T)|>
-      #Load the count matrix
-  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
-      #Pivot longer. First step in transposing the matrix. 
-  pivot_wider(names_from = id, values_from = value) |>
-      #Pivot wider - second step in transposing the matrix
-  dplyr::rename(id = variable)
-      #Rename the column 'variable' to 'id'
-
+#| label: load packages
+library(tidyverse)
+clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+protein_data <- read.table("../data/count_matrix_1_77.tsv", header = T)
 
 ```
 
 Now, the clinical data is loaded and joined to the protein data in a dataset called `full_data`. Additionally, new columns are made, storing binary information of which subgroup (pam50-classification) each person is in.
 
 ```{r}
-clinical_data <- read.table("../data/clinical_data.tsv", sep = "\t", header = T)
+#| label: load data & augmenting clinical data
       #Read the clinial data
+
+protein_data <- protein_data |>
+      #Load the count matrix
+  pivot_longer(cols = -id, names_to = 'variable', values_to = 'value') |>
+      #Pivot longer. First step in transposing the matrix. 
+  tidyr::pivot_wider(names_from = id, values_from = value) |>
+      #Pivot wider - second step in transposing the matrix
+  dplyr::rename(id = variable)
+      #Rename the column 'variable' to 'id'
+
+
 
 full_data <- clinical_data |>
   mutate( 
@@ -57,9 +62,17 @@ full_data <- clinical_data |>
        # whether the individual is positive (1) or negative (0) for Luminal B
     DGEA_Basal_like = case_when(
       pam50 == "Basal-like" ~ 1, 
-      TRUE ~ 0)) |>
-        # ^ Make a new column called 'DGEA_Basal_like' storing binary information of 
-       # whether the individual is positive (1) or negative (0) for Basal like
+      TRUE ~ 0),
+    er_status = case_when(er_status == "Negative" ~ 0,
+                        er_status == "Positive" ~ 1,
+                        TRUE ~ NA),
+
+  pr_status = case_when(pr_status == "Negative" ~ 0,
+                        pr_status == "Positive" ~ 1,
+                        TRUE ~ NA),
+  her2_final_status = case_when(her2_final_status == "Negative" ~ 0,
+                        her2_final_status == "Positive" ~ 1,
+                        TRUE ~ NA)) |>
   left_join(protein_data, by = "id")
         # Leftjoin the protein expression data to make a big dataframe with everything
 
@@ -68,11 +81,12 @@ write.table(full_data, "../data/full_data.tsv")
 ```
 
 ```{r}
-rm(list = ls())
+#| label: quarto rendering
+#quarto::quarto_render("03_augment.qmd",output_format = "html", execute = T)
+#file.rename(from = "03_augment.html",
+#            to = "../results/03_augment.html")
 ```
 
 ```{r}
-#quarto::quarto_render("03_augment.qmd",output_format = "html",execute = T)
-#file.rename(from = "03_augment.html",
-#            to = "../results/03_augment.html")
+rm(list = ls())
 ```
