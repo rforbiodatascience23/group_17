@@ -174,7 +174,7 @@ Basal_like_plot <- corr_plot(cts, head(Basal_like_sign,5)) +
 p4 <-(Basal_like_plot + Her2_plot) / (Luminal_A_plot + Luminal_B_plot)+
   plot_layout(guides = 'collect') +
   plot_annotation(title = "Correlation of PR, ER and HER2 status with significant proteins", 
-        subtitle = "Using top 5 most significant proteins for each PAM50 classification")&
+        subtitle = "Using top most significant proteins for each PAM50 classification")&
   theme(
     plot.title = element_text(size = 16, hjust = 0.5), # Adjust title size and horizontal position
     plot.subtitle = element_text(size = 14, hjust = 0.5) # Adjust subtitle size and horizontal position

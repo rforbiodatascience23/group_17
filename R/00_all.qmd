@@ -4,6 +4,10 @@ format: html
 editor: visual
 ---
 
+```{r}
+quarto::quarto_render("01_load_DONE.qmd")
+quarto::quarto_render("02_clean_DONE.qmd")
+```
 
 {{< include 01_load_DONE.qmd >}}
 
@@ -28,4 +32,3 @@ editor: visual
 {{< include 11_analysis_kmeans_DONE.qmd >}}
 
 {{< include 12_correlation_DONE.qmd >}}
-

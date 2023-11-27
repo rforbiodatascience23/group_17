@@ -91,12 +91,5 @@ write_tsv(PAM50_file, "../data/PAM50_file.tsv")
 ```
 
 ```{r}
-#| label: quarto rendering
-#quarto::quarto_render("02_clean_DONE.qmd",output_format = "html",execute = T)
-#file.rename(from = "02_clean_DONE.html",
-#            to = "../results/02_clean.html")
-```
-
-```{r}
 rm(list = ls())
 ```
