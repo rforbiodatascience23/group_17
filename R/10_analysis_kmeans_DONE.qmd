@@ -80,23 +80,6 @@ pca_aug <- pca |>
   left_join(clinical_data |>  select(c(id, pam50)), # appending the pam50 columns from the clinical dataset to the pca dataset, based on id. 
             by = "id") 
 
-pca_plot <- pca_aug |> 
-  ggplot(aes(x = .fittedPC1, # PC1 on x axis
-             y = .fittedPC2, # PC2 on y axis
-             colour = pam50, # color based on pam50 
-             fill = pam50)) + # fill based on pam50
-  geom_vline(xintercept = 0) + # creating a vertical line that interceps at x = 0
-  geom_hline(yintercept = 0) + # creating a horizontal line that intercepts at y = 0
-  geom_point(shape = 21, # global are already given above and we not just apply design for the dots 
-             size = 6,
-             alpha = 0.5) + # transparency of the dots is set to 0.5
-  labs(
-    title = "PCA", # title of the data
-    x = pluck(pca_plot_axes_labels, 1), #name of x axis is extracted through the first value of pca_plot_axes_labels variable
-    y = pluck(pca_plot_axes_labels, 2)) #name of y axis is extracted through the second value of pca_plot_axes_labels variable
-
-pca_plot
-
 ```
 
 Now, we run the k-means algorithm using n = 4, as we have 4 groups we want to determine:
@@ -114,19 +97,26 @@ k_means_clusters <- pca_aug |>
 ```{r}
 PCA_kmeans <- pca_aug |>
   mutate(cluster = k_means_clusters) |>
-  ggplot(aes(x = .fittedPC1, y = .fittedPC2, color = factor(k_means_clusters), fill = factor(k_means_clusters))) +
-  geom_vline(xintercept = 0) +
-  geom_hline(yintercept = 0) +
-  geom_point(shape = 21, size = 6, alpha = 0.7, aes(shape = pam50)) +
+  ggplot(aes(x = .fittedPC1, # PC1 on x axis
+             y = .fittedPC2, # PC2 on y axis
+             color = factor(k_means_clusters), # color based on pam50 
+             fill = factor(k_means_clusters))) + # fill based on pam50
+  geom_vline(xintercept = 0) +# creating a vertical line that interceps at x = 0
+  geom_hline(yintercept = 0) +# creating a horizontal line that intercepts at y = 0
+  geom_point(shape = 21, 
+             size = 6, 
+             alpha = 0.7, # transparency of the dots is set to 0.5
+             aes(shape = pam50)) +
+          # global are already given above and we not just apply design for the dots 
   labs(
-    title = "PCA categorized through clusters",
-    x = pluck(pca_plot_axes_labels, 1),
-    y = pluck(pca_plot_axes_labels, 2),
+    title = "PCA categorized through clusters", # title of the data
+    x = pluck(pca_plot_axes_labels, 1), #name of x axis is extracted through the first value of pca_plot_axes_labels variable
+    y = pluck(pca_plot_axes_labels, 2), #name of y axis is extracted through the second value of pca_plot_axes_labels variable
     color = "Cluster factor",
     fill = "Cluster factor"
   ) +
-  theme_bw() + 
-  stat_ellipse(aes(fill = pam50, color = pam50), 
+  theme_bw() + #setting theme to bw
+  stat_ellipse(aes(fill = pam50, color = pam50), #adding informtion on the actual pam50 classifications
                type = "t", 
                geom = "polygon", 
                alpha = 0.1) 
@@ -139,5 +129,4 @@ ggsave("../results/PCA_with_clusters.png", PCA_kmeans, width = 8, height = 6, dp
 
 ```{r}
 rm(list = ls())
-
 ```
