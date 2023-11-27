@@ -2,6 +2,7 @@
 title: "Group 17"
 format: 
   revealjs:
+    embed-resources: true
     slide-number: c/t
     width: 1600
     height: 900
@@ -32,6 +33,10 @@ Based on microarray or RNA-seq data, looking at 50 representative genes to class
 iTRAQ proteome profiling data from 77 breast cancer patients
 ![](../results/pam50distribution.png)
 :::
+
+
+# Results
+
 
 ## Methods and strategy
 
