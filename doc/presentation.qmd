@@ -53,6 +53,9 @@ Tumor receptor status for:
 
 Some text about our approach, or a flow chart
 
+- bullet point 1
+- bullet point 2
+
 
 # Results
 
@@ -66,7 +69,7 @@ Some text about our approach, or a flow chart
 ![](../results/hc_dendro_all.png)
 :::
 
-## Differential gene expression analysis
+## Differential gene expression analysis{.nostretch}
 
 Differential gene expression analysis using linear models: $lm(PAM50 \sim protein)$
 
@@ -102,13 +105,16 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 - What did we do
 - What did we see
 - This is nice
-- we can also leave out the bullet list
+- We can also leave out the bullet list
 
 ![](../results/Protein_corr_4p.png)
 :::
 
-## Conclusion & Discussion
 
-- As expected, no clustering was seen when analysing the full proteomics data set.
-- Considering only the differentially expressed genes, we could some-what replicate the PAM50 classification. 
+## Discussion
+
+- We were able to see some clustering of samples with the same PAM50 classification when only considering the DE genes.  
+- PAM50 is used for risk stratification - and not perfect.
+- 
+
 - In addition, we investigated correlations [...]
