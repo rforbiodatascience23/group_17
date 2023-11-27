@@ -36,7 +36,7 @@ Based on microarray or RNA-seq data, looking at 50 representative genes to class
 
 iTRAQ-based mass spectrometry proteome profiling data from 77 breast cancer tissues[^1]
 
-![](../results/pam50distribution.png){}
+![](../results/pam50distribution.png){width=500 height=300 fig-align="center"}
 
 Tumor receptor status for:
 
