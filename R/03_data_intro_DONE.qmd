@@ -60,3 +60,7 @@ ggsave("../results/pam50distribution.png", barplot, height = 4, width = 6)
 ```
 
 From the barplot it is evident, that the patients are fairly evenly distributed with the HER2-enriched category being under-represented and both the Luminal A and B slightly over what would be completely even distribution.
+
+```{r}
+rm(list = ls())
+```

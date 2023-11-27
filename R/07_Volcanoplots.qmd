@@ -11,24 +11,20 @@ editor: visual
 library(tidyverse)
 library(patchwork)
 library(ggrepel)
+source("99_proj_func.R")
 HER2 <- read_table("../data/diff_exp_HER2.tsv")
 lumA <- read_table("../data/diff_exp_Luminal_A.tsv")
 lumB <- read_table("../data/diff_exp_Luminal_B.tsv")
 basal_like <- read_table("../data/diff_exp_Basal_like.tsv")
 ```
 
-
-
 ```{r}
-#HER2 <- read.table()
-library(ggrepel)
-
 HER2 <- HER2 |>
   mutate(color_col = case_when(
     adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
     adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
     TRUE ~"Not significant"
-  ))
+  ), log2 = -log2(p.value))
 
 plot1 <- ggplot(HER2, aes(x = estimate, y = log2)) +
   geom_point(aes(color = color_col)) +
@@ -47,104 +43,20 @@ plot1 <- ggplot(HER2, aes(x = estimate, y = log2)) +
   labs(title = "volcano plot of HER2",
        color = "Significance level ")
 
-
 plot1
 
 ```
 
 ```{r}
 
-lumA <- lumA |>
-  mutate(color_col = case_when(
-    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
-    TRUE ~"Not significant"
-  ), log2 = -log2(p.value))
+# The redundancy of the plots has been replaced with the volcano_plot function from the "99_proj_func.R" file. 
 
-
-plot2 <- ggplot(lumA, aes(x = estimate, y = log2)) +
-  geom_point(aes(color = color_col)) +
-  labs(title = "Luminal A", 
-       x = "Estimate", 
-       y = "-Log2(FDR-adjusted P-value)") +
-  geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
-  geom_hline(yintercept = (2^-0.8), linetype = "dashed", color = "black" ) +
-  scale_color_manual(values = c("Significant positive influence" = "orange", 
-                                "Significant negative influence" = "#69b3a2",
-                                "No significant association" = "grey")) +
-  geom_text_repel(data = lumA |>filter(adjusted_fdr < 0.05),
-                  aes(label = protein), hjust = 0, vjust = 0, size = 3, 
-                  color = "black") +
-  theme_bw() + 
-  labs(title = "volcano plot of Luminal A",
-       color = "Significance level ")
-
-
-plot2
-
-```
-
-```{r}
-lumB <- lumB |>
-  mutate(color_col = case_when(
-    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
-    TRUE ~"Not significant"
-  ), log2 = -log2(p.value))
-
-plot3 <- ggplot(lumB, aes(x = estimate, y = log2)) +
-  geom_point(aes(color = color_col)) +
-  labs(title = "Luminal B", 
-       x = "Estimate", 
-       y = "-Log2(FDR-adjusted P-value)") +
-  geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
-  geom_hline(yintercept = (2^-0.8), linetype = "dashed", color = "black" ) +
-  scale_color_manual(values = c("Significant positive influence" = "orange", 
-                                "Significant negative influence" = "#69b3a2",
-                                "No significant association" = "grey")) +
-  geom_text_repel(data = lumB |>filter(adjusted_fdr < 0.05),
-                  aes(label = protein), hjust = 0, vjust = 0, size = 3, 
-                  color = "black") +
-  theme_bw() +
-  theme(legend.position = "none") + 
-    labs(title = "volcano plot of Luminal A",
-       color = "Significance level ")
-
-plot3
-```
-
-```{r}
-basal_like <- basal_like |>
-  mutate(color_col = case_when(
-    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
-    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
-    TRUE ~"Not significant"
-  ), log2 = -log2(p.value))
-
-plot4 <- ggplot(basal_like, aes(x = estimate, y = log2)) +
-  geom_point(aes(color = color_col)) +
-  labs(title = "Basal like", 
-       x = "Estimate", 
-       y = "-Log2(FDR-adjusted P-value)") +
-  geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
-  geom_hline(yintercept = (2^-0.8), linetype = "dashed", color = "black" ) +
-  scale_color_manual(values = c("Significant positive influence" = "orange", 
-                                "Significant negative influence" = "#69b3a2",
-                                "No significant association" = "grey")) +
-  geom_text_repel(data = basal_like |>filter(adjusted_fdr < 0.05),
-                  aes(label = protein), hjust = 0, vjust = 0, size = 3, 
-                  color = "black") +
-  theme_bw() +
-    labs(title = "volcano plot of Basal like",
-       color = "Significance level ")
-
-
-plot4
-```
-
-```{r}
-
+plot2 <- volcano_plot(lumA,"lumA")
+plot3 <- volcano_plot(lumB,"lumB")
+plot4 <- volcano_plot(basal_like,"basal_like")
 (plot1 + plot2)/(plot3 + plot4) +
   plot_layout(guides = "collect")
+
+
 
 ```

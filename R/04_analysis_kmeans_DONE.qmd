@@ -130,3 +130,7 @@ PCA_kmeans <- pca_aug |>
   
 PCA_kmeans
 ```
+
+```{r}
+rm(list = ls())
+```

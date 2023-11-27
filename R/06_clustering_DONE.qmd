@@ -149,7 +149,7 @@ ggsave("../results/hc_dendro_sig.png", ddg_plot2, height = 4, width = 7)
 
 **Conclusion**: After filtering the dataset on only the significant proteins based on our differential expression analysis, we see a much better agreement between the hierachial clustering of proteomics data and the clinical pam50 assignments.
 
-### Alternative method for visualisation
+### Alternative method for visualisation TO BE REMOVED
 
 By using the pheatmap package, we can couple the hierachial clustering analysis and visualisation in a dendogram (as done above) with that in a heatmap in very few steps of code:
 

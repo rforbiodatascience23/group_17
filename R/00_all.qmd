@@ -1,0 +1,9 @@
+---
+title: "00_all"
+format: html
+editor: visual
+---
+
+```{r}
+source()
+```

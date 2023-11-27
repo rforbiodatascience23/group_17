@@ -26,3 +26,7 @@ write_tsv(clinical_data, "../data/clinical_load.tsv")
 
 write_tsv(PAM50_file, "../data/PAM50_load.tsv")
 ```
+
+```{r}
+rm(list = ls())
+```
