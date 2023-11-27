@@ -153,12 +153,8 @@ Luminal_B_mapping <- Luminal_B_sign |>
 
 ## Create separate correlation matrices for the 4 pam50 classes' significant proteins with the PR, ER and her2 status
 
-<<<<<<< HEAD
-=======
-### Her2 class
 
->>>>>>> 517a320ea4bc639b28d1bc41da234f16fc873c85
-From the full dataset with all significant protein expressions and the clinical data we extract only the columns with ER, PR, her2 and the HER2-class's significant proteins.
+## From the full dataset with all significant protein expressions and the clinical data we extract only the columns with ER, PR, her2 and the HER2-class's significant proteins.
 
 Thereafter, we can create the correlation plot for only differentially expressed genes using the function `corr_plot()` from the `99_proj_func.R` file.
 
