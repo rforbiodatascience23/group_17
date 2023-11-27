@@ -1,5 +1,5 @@
 ---
-title: "Group 17"
+title: "Comparison of PAM50 classification and proteome profiles in breast cancer tissue"
 format: 
   revealjs:
     embed-resources: true
@@ -15,32 +15,47 @@ format:
 editor: visual
 figures: fig-responsive
 ---
-::: {#Introduction layout-ncol=2}
 
-## Introduction
+## Introduction {.smaller}
 
+:::: {columns}
+
+::: {.column width="49%"}
 ### PAM50 classification
-Based on microarray or RNA-seq data, looking at 50 representative genes to classify breast-cancer patients, classify samples into four categories:
+Based on microarray or RNA-seq data, looking at 50 representative genes to classify breast-cancer tissues, classify samples into four categories:
 
 -   HER2-enriched
 -   Luminal A
 -   Luminal B
 -   Basal like
-
-
-### Our data
-
-iTRAQ proteome profiling data from 77 breast cancer patients
-![](../results/pam50distribution.png)
 :::
 
 
-# Results
+::: {.column width="-51%"}
+### Our data
 
+iTRAQ-based mass spectrometry proteome profiling data from 77 breast cancer tissues[^1]
+
+![](../results/pam50distribution.png){}
+
+Tumor receptor status for:
+
+- Oestrogen (ER)
+- Progesterone (PR)
+- Human epidermal growth factor receptor 2 (HER2)
+:::
+
+[^1]: Mertins, Philipp, et al. "Proteogenomics connects somatic mutations to signalling in breast cancer." Nature 534.7605 (2016): 55-62.
+
+::::
 
 ## Methods and strategy
 
 Some text about our approach, or a flow chart
+
+
+# Results
+
 
 ## Clustering based on entire data set {.center}
 
@@ -75,7 +90,7 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 
 ![](../results/hc_dendro_all.png)
 
-![](../results/hc_dendro_sig.png)
+![](../results/ddg_plot_significant_genes.png)
 :::
 
 ## Clinical data correlation
@@ -87,6 +102,7 @@ Differential gene expression analysis using linear models: $lm(PAM50 \sim protei
 - What did we do
 - What did we see
 - This is nice
+- we can also leave out the bullet list
 
 ![](../results/Protein_corr_4p.png)
 :::
