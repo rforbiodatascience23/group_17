@@ -331,9 +331,9 @@
 </div>
 
 </section>
-<section id="introduction" class="slide level2">
-<h2>Introduction</h2>
-<div class="quarto-layout-panel">
+<section class="slide level2">
+
+<div id="Introduction" class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <p><strong>PAM50 classification</strong></p>
@@ -341,28 +341,37 @@
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <ul>
-<li><p>HER2</p></li>
-<li><p>Luminal A</p></li>
-<li><p>Luminal B</p></li>
-<li><p>Basal like</p></li>
+<li>HER2-enriched</li>
+<li>Luminal A</li>
+<li>Luminal B</li>
+<li>Basal like</li>
 </ul>
 </div>
 </div>
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <p><strong>Our data</strong></p>
-<p>Proteomics data from 77 breast cancer patients <img data-src="../results/pam50distribution.png" id="fig:pam50distribution" data-fig-align="right" width="800"></p>
+<p>iTRAQ proteome profiling data from 77 breast cancer patients <img data-src="../results/pam50distribution.png"></p>
 </div>
 </div>
 </div>
 </section>
-<section id="pca-on-whole-data-set" class="slide level2">
-<h2>PCA on whole data set</h2>
-
-<img data-src="../results/PCA1.png" width="1501" class="r-stretch quarto-figure-center"></section>
-<section id="hierarchical-clustering" class="slide level2">
-<h2>Hierarchical clustering</h2>
-<p>Messy hierarchical</p>
+<section id="methods-and-strategy" class="slide level2">
+<h2>Methods and strategy</h2>
+<p>Some text about our approach, or a flow chart</p>
+</section>
+<section id="clustering-based-on-entire-data-set" class="slide level2 center">
+<h2>Clustering based on entire data set</h2>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="../results/PCA1.png"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="../results/hc_dendro_all.png"></p>
+</div>
+</div>
+</div>
 </section>
 <section id="differential-gene-expression-analysis" class="slide level2">
 <h2>Differential gene expression analysis</h2>
@@ -372,9 +381,38 @@
 <section id="results-from-differential-gene-expression-analysis" class="slide level2">
 <h2>Results from differential gene expression analysis</h2>
 
-<img data-src="../results/heatmap_diif_exp_analysis.png" class="r-stretch quarto-figure-center"></section>
-<section id="section" class="slide level2">
-<h2></h2>
+<img data-src="../results/heatmap_combined.png" class="r-stretch quarto-figure-center"></section>
+<section id="pca-with-significant-proteins" class="slide level2">
+<h2>PCA with significant proteins</h2>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="../results/PCA1.png"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="../results/PCA_with_clusters.png"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="hierachial-clustering-with-significant-proteins" class="slide level2">
+<h2>Hierachial clustering with significant proteins</h2>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="../results/hc_dendro_all.png"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="../results/hc_dendro_sig.png"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="correlation" class="slide level2">
+<h2>Correlation</h2>
+</section>
+<section id="discussion" class="slide level2">
+<h2>Discussion</h2>
 <div class="footer footer-default">
 <p>Group 17, R for Bio Data Science</p>
 </div>
