@@ -15,27 +15,25 @@ editor: visual
 figures: fig-responsive
 ---
 
-## About the data
+## Introduction
 
--   Breast cancer proteome data
+::: {layout-ncol="2"}
+### PAM50 classification
+¨´
+Based on microarray or RNA-seq data, looking at 50 representative genes to classify breast-cancer patients, classify samples into four categories:
 
-![Caption](../results/pam50distribution.png){#fig:pam50distribution width=600 align=right}
-
-#![](../results/pam50distribution.png){fig-align="right" width="600"}
-
-### On PAM50
-
--   
-
-Types:
-
--   HER2
+-   HER2-enriched
 
 -   Luminal A
 
 -   Luminal B
 
 -   Basal like
+
+### Our data
+
+Proteomics data from 77 breast cancer patients ![](../results/pam50distribution.png){#fig:pam50distribution fig-align="right" width="800"}
+:::
 
 ## PCA on whole data set
 
