@@ -75,6 +75,7 @@ Next, the data frames used for the heat-maps are made. Because we had so many si
 
 ```{r}
 combined_long_bl <- combined |>
+  select(-gene)|>
   arrange(adjustedfdr_bl) |>
       # Arrange according to significance (this is for use later on in vizualisation)
   slice(1:20) |>

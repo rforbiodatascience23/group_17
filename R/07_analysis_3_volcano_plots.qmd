@@ -1,0 +1,217 @@
+---
+title: "Volcanoplots"
+author: "cs"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+#loading packages.
+library(tidyverse)
+library(patchwork)
+library(ggrepel)
+#read files.
+HER2 <- read_table("../data/diff_exp_HER2.tsv")
+lumA <- read_table("../data/diff_exp_Luminal_A.tsv")
+lumB <- read_table("../data/diff_exp_Luminal_B.tsv")
+basal_like <- read_table("../data/diff_exp_Basal_like.tsv")
+```
+
+You can add options to executable code like this
+
+```{r}
+library(ggrepel) #read library
+#creating new variable color_col, where the condition case_when checks whether #adjusted fdr is lees than 0.05 and estimate smaller or larger than 0.
+#TRUE-"not signficant is default value of no condition is met."
+
+HER2 <- HER2 |>
+  mutate(color_col = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ))
+#Initialize a ggplot with data from the HER2 data frame and aesthetics mappings are #specified.
+#adds points to ploe using color_col varaible for color
+#labs. sets title and labels
+# geom_hline adds horizontal lines to the plot
+#scale_color_manual adds specific color to vlaues dependent of significans levels.
+#geom_text_rebel add labelse to significant points.
+#theme_bw add black and white theme.
+#labs adds title overall and color legends title
+#plot for HER2
+
+plot1 <- ggplot(HER2, aes(x = estimate, y = log2)) +
+  geom_point(aes(color = color_col)) +
+  labs(title = "HER 2", 
+       x = "Estimate", 
+       y = "-Log2(FDR-adjusted P-value)") +
+  geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
+  geom_hline(yintercept = (2^-10), linetype = "dashed", color = "black" ) +
+  scale_color_manual(values = c("Significant positive influence" = "orange", 
+                                "Significant negative influence" = "#69b3a2",
+                                "No significant association" = "grey")) +
+  geom_text_repel(data = HER2 |>filter(adjusted_fdr < 0.05),
+                  aes(label = protein), hjust = 0, vjust = 0, size = 3, 
+                  color = "black") +
+  theme_bw() + 
+  labs(title = "volcano plot of HER2",
+       color = "Significance level ")
+
+plot1
+```
+
+```{r}
+#creating new variable color_col, where the condition case_when checks whether #adjusted fdr is lees than 0.05 and estimate smaller or larger than 0.
+#TRUE-"not signficant is default value of no condition is met."
+
+lumA <- lumA |>
+  mutate(color_col = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ), log2 = -log2(p.value))
+
+#Initialize a ggplot with data from the Luminal A data frame and aesthetics #mappings are specified.
+#adds points to ploe using color_col varaible for color
+#labs. sets title and labels
+# geom_hline adds horizontal lines to the plot
+#scale_color_manual adds specific color to vlaues dependent of significans levels.
+#geom_text_rebel add labelse to significant points.
+#theme_bw add black and white theme.
+#labs adds title overall and color legends title
+#plot for Luminal A
+
+plot2 <- ggplot(lumA, aes(x = estimate, y = log2)) +
+  geom_point(aes(color = color_col)) +
+  labs(title = "Luminal A", 
+       x = "Estimate", 
+       y = "-Log2(FDR-adjusted P-value)") +
+  geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
+  geom_hline(yintercept = (2^-10), linetype = "dashed", color = "black" ) +
+  scale_color_manual(values = c("Significant positive influence" = "orange", 
+                                "Significant negative influence" = "#69b3a2",
+                                "No significant association" = "grey")) +
+  geom_text_repel(data = lumA |>filter(adjusted_fdr < 0.05),
+                  aes(label = protein), hjust = 0, vjust = 0, size = 3, 
+                  color = "black") +
+  theme_bw() + 
+  labs(title = "volcano plot of Luminal A",
+       color = "Significance level ")
+
+plot2
+```
+
+```{r}
+#creating new variable color_col, where the condition case_when checks whether #adjusted fdr is lees than 0.05 and estimate smaller or larger than 0.
+#TRUE-"not signficant is default value of no condition is met."
+
+lumB <- lumB |>
+  mutate(color_col = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ), log2 = -log2(p.value))
+
+#Initialize a ggplot with data from the Luminal B data frame and aesthetics #mappings are specified.
+#adds points to ploe using color_col varaible for color
+#labs. sets title and labels
+# geom_hline adds horizontal lines to the plot
+#scale_color_manual adds specific color to vlaues dependent of significans levels.
+#geom_text_rebel add labelse to significant points.
+#theme_bw add black and white theme.
+#labs adds title overall and color legends title
+#plot for Luminal B
+
+plot3 <- ggplot(lumB, aes(x = estimate, y = log2)) +
+  geom_point(aes(color = color_col)) +
+  labs(title = "Luminal B", 
+       x = "Estimate", 
+       y = "-Log2(FDR-adjusted P-value)") +
+  geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
+  geom_hline(yintercept = (2^-10), linetype = "dashed", color = "black" ) +
+  scale_color_manual(values = c("Significant positive influence" = "orange", 
+                                "Significant negative influence" = "#69b3a2",
+                                "No significant association" = "grey")) +
+  geom_text_repel(data = lumB |>filter(adjusted_fdr < 0.05),
+                  aes(label = protein), hjust = 0, vjust = 0, size = 3, 
+                  color = "black") +
+  theme_bw() +
+  theme(legend.position = "none") + 
+    labs(title = "volcano plot of Luminal A",
+       color = "Significance level ")
+
+plot3
+```
+
+```{r}
+#creating new variable color_col, where the condition case_when checks whether #adjusted fdr is lees than 0.05 and estimate smaller or larger than 0.
+#TRUE-"not signficant is default value of no condition is met."
+
+basal_like <- basal_like |>
+  mutate(color_col = case_when(
+    adjusted_fdr < 0.05 & estimate > 0 ~ "Significant positive influence", 
+    adjusted_fdr < 0.05 & estimate < 0 ~ "Significant negative influence",
+    TRUE ~"Not significant"
+  ), log2 = -log2(p.value))
+
+#Initialize a ggplot with data from the Basal_like data frame and aesthetics #mappings are specified.
+#adds points to ploe using color_col varaible for color
+#labs. sets title and labels
+# geom_hline adds horizontal lines to the plot
+#scale_color_manual adds specific color to vlaues dependent of significans levels.
+#geom_text_rebel add labelse to significant points.
+#theme_bw add black and white theme.
+#labs adds title overall and color legends title
+#plot for Basal_like
+
+
+plot4 <- ggplot(basal_like, aes(x = estimate, y = log2)) +
+  geom_point(aes(color = color_col)) +
+  labs(title = "Basal like", 
+       x = "Estimate", 
+       y = "-Log2(FDR-adjusted P-value)") +
+  geom_hline(yintercept = 18, linetype = "dashed", color = "black" ) +
+  geom_hline(yintercept = (2^-10), linetype = "dashed", color = "black" ) +
+  scale_color_manual(values = c("Significant positive influence" = "orange", 
+                                "Significant negative influence" = "#69b3a2",
+                                "No significant association" = "grey")) +
+  geom_text_repel(data = basal_like |>filter(adjusted_fdr < 0.05),
+                  aes(label = protein), hjust = 0, vjust = 0, size = 3, 
+                  color = "black") +
+  theme_bw() +
+    labs(title = "volcano plot of Basal like",
+       color = "Significance level ")
+
+plot4
+```
+
+```{r}
+#loads patchwork library to combine the four volcanoplots where / creates to row #and two columns, and collect ensures that legends are shared.
+#the file with combined plot is saved as png file in "/results/ directory with specified dimentions.
+library(patchwork)
+  Volcano_plots <- (plot1 + plot2)/(plot3 + plot4) +
+
+  plot_layout(guides = "collect")
+  
+ggsave("../results/volcano_plots.png", Volcano_plots, height = 8, width = 16, dpi = 300)
+
+```
+
+```{r}
+#loads patchwork library to combine the four volcanoplots where / creates to row #and two columns, and collect ensures that legends are shared.
+#the file with combined plot is saved as png file in "/results/ directory with specified dimentions.
+library(patchwork)
+Volcano_plots <- (plot1 + plot2)/(plot3 + plot4)
+plot_layout(guides = "collect")
+
+ggsave("../results/volcano_plots.png", Volcano_plots, height = 8, width = 16, dpi = 300)
+
+```
